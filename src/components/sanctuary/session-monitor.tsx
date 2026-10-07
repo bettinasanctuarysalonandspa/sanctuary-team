@@ -39,15 +39,15 @@ export function SessionMonitor({ children }: { children: ReactNode }) {
     if (!active) return;
     if (!data.user) {
      if (error && error.status !== 401 && error.status !== 403 && error.name !== 'AuthSessionMissingError') throw error;
-     if (user || error?.status === 401 || error?.status === 403) { await endSession(); return; }
+     if (watchedUser || error?.status === 401 || error?.status === 403) { await endSession(); return; }
      setUser(null); setUnavailable(false); setReady(true); return;
     }
     if (error) throw error;
     const { data: status, error: statusError } = await supabase.rpc('sanctuary_session_status');
     if (statusError) throw statusError;
     if (!active) return;
-    if (!status || typeof status !== 'object' || Array.isArray(status) || status.valid !== true) { await endSession(); return; }
-    const expiresAt = typeof status.expiresAt === 'string' ? Date.parse(status.expiresAt) : NaN;
+    if (!status || typeof status !== 'object' || Array.isArray(status) || status['valid'] !== true) { await endSession(); return; }
+    const expiresAt = typeof status['expiresAt'] === 'string' ? Date.parse(status['expiresAt']) : NaN;
     if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) { await endSession(); return; }
     clearTimeout(expiration);
     // Timers cap at 2^31-1 milliseconds; recheck rather than overflow at 30 days.
@@ -65,11 +65,15 @@ export function SessionMonitor({ children }: { children: ReactNode }) {
   }
   const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
    if (event === 'SIGNED_OUT') {
+    if (channel) { void supabase.removeChannel(channel); channel = undefined; }
+    watchedUser = undefined;
+    signingOut = false;
     clearTimeout(expiration);
     void queryClient.cancelQueries().then(() => queryClient.clear());
     setUser(null); setReady(true); setUnavailable(false);
     void router.navigate({ to: '/auth', replace: true });
    } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+    if (event === 'SIGNED_IN') signingOut = false;
     window.setTimeout(() => { void check(); }, 0);
    }
   });
