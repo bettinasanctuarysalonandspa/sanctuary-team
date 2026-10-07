@@ -94,3 +94,6 @@
  .page-heading h1 { font-size: 31px; } .auth-panel { padding: 25px 22px; } .admin-row h2 { font-size: 17px; }
 }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation: none !important; transition: none !important; } }
+.photo-placeholder { width: 114px; height: 114px; flex-shrink: 0; margin-left: auto; border-radius: 18px; display: grid; place-items: center; background: var(--glass); border: 1px solid var(--border); }
+.photo-placeholder .brand-mark { width: 55px; height: 55px; font-size: 32px; opacity: .65; }
+@media(max-width:600px) { .photo-placeholder { width:85px; height:85px; border-radius:15px; } .photo-placeholder .brand-mark { width:44px; height:44px; font-size:27px; } }
