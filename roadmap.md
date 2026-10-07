@@ -1,5 +1,5 @@
 # Sanctuary Salon AI
-- [ ] Prepare four simple conversational assistants with natural follow-ups and supported voice input — awaiting conversation/history preferences and approved instructions/knowledge.
+- [ ] Prepare four separate conversational assistants, employee-account conversations, and supported voice input — activation awaits approved instructions/knowledge.
 - [ ] Build accurate Consultation pricing calculations — awaiting approved prices and calculation rules.
 - [ ] Keep knowledge, pricing, and employee management owner-only; no extra employee features.
 - [ ] Enforce secure persistent sessions with a 30-day maximum and sign-in after expiry/revocation.
