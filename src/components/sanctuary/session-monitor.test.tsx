@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
  revoked: undefined as undefined | (() => void),
 }));
 vi.mock('@tanstack/react-router', () => ({
- useRouter: () => ({ navigate: mocks.navigate }),
+ useRouter: (() => { const router = { navigate: mocks.navigate }; return () => router; })(),
  useRouterState: () => true,
 }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: {
@@ -61,7 +61,7 @@ describe('Employee session monitoring', () => {
   await act(async () => { mocks.revoked?.(); });
   await waitFor(() => expect(mocks.signOut).toHaveBeenCalledWith({ scope: 'local' }));
   expect(queryClient.getQueryData(['private'])).toBeUndefined();
-  expect(mocks.navigate).toHaveBeenCalledWith({ to: '/auth', replace: true });
+  await waitFor(() => expect(mocks.navigate).toHaveBeenCalledWith({ to: '/auth', replace: true }));
  });
  it('revalidates on focus without ending a valid session', async () => {
   openApp();
@@ -76,5 +76,13 @@ describe('Employee session monitoring', () => {
   await screen.findByText('Unable to verify access');
   expect(screen.queryByText('Private tool workspace')).toBeNull();
   expect(mocks.signOut).not.toHaveBeenCalled();
+ });
+ it('clears private cached information after manual sign-out', async () => {
+  const { queryClient } = openApp();
+  await screen.findByText('Private tool workspace');
+  queryClient.setQueryData(['private'], 'cached employee information');
+  await act(async () => { mocks.authEvent?.('SIGNED_OUT'); });
+  await waitFor(() => expect(queryClient.getQueryData(['private'])).toBeUndefined());
+  expect(mocks.navigate).toHaveBeenCalledWith({ to: '/auth', replace: true });
  });
 });
