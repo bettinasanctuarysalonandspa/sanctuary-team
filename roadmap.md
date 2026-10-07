@@ -1,4 +1,7 @@
 # Sanctuary Salon AI
+- [ ] Enforce secure persistent sessions with a 30-day maximum and sign-in after expiry/revocation.
+- [ ] Add owner-only employee revocation, active-session invalidation, and automatic sign-out.
+- [ ] Verify session continuity, manual sign-out, expiry, and revocation with available accounts.
 - [x] Replace generated spa photography with an elegant placeholder; no replacement photography selected.
 - [x] Build frosted-sage dashboard and shared mobile navigation.
 - [x] Create four empty tool destinations with approved-content-only states.
