@@ -13,4 +13,7 @@
 - Use shared app chrome around the root Outlet and individual content routes, so navigation and page metadata remain consistent.
 - Keep private tools and profiles beneath the managed authenticated layout; enforce employee/admin membership through validated server functions, so an arbitrary signed-in account cannot access employee resources.
 - Store user-facing identity in profiles and privileges only in user_roles; never self-assign employee or owner access.
+- Enforce absolute session age and revocation in database policies and owner RPCs using validated session IDs; browser timers never authorize access.
+- Keep a single root session observer with persistent managed auth, realtime revocation, and foreground checks; clear private caches before sign-out.
+- Revoke employee membership transactionally before attempting an Auth ban; prohibit owner targets and self-revocation.
 - Keep initial tool pages empty and omit AI, pricing logic, and salon-content tables until approved information is supplied.

@@ -8,10 +8,8 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
-import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
-import { SessionProvider } from "@/components/sanctuary/session";
+import { useEffect, type ReactNode } from "react";
+import { SessionMonitor } from "@/components/sanctuary/session-monitor";
 import { AppShell } from "@/components/sanctuary/app-shell";
 import { Button } from "@/components/ui/button";
 
@@ -120,28 +118,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    let active = true;
-    const refresh = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (active) { setUser(data.user); setReady(true); }
-    };
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED' && event !== 'INITIAL_SESSION') return;
-      if (event === 'SIGNED_OUT') { setUser(null); setReady(true); void router.invalidate(); }
-      else { window.setTimeout(() => { void refresh(); if (event !== 'INITIAL_SESSION') { void router.invalidate(); void queryClient.invalidateQueries(); } }, 0); }
-    });
-    void refresh();
-    return () => { active = false; subscription.unsubscribe(); };
-  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <SessionProvider user={user} ready={ready}><AppShell><Outlet /></AppShell></SessionProvider>
+      <SessionMonitor><AppShell><Outlet /></AppShell></SessionMonitor>
     </QueryClientProvider>
   );
 }

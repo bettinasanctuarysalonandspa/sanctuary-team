@@ -14,6 +14,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      employee_access_revocations: {
+        Row: {
+          revoked_at: string
+          revoked_by: string
+          user_id: string
+        }
+        Insert: {
+          revoked_at?: string
+          revoked_by: string
+          user_id: string
+        }
+        Update: {
+          revoked_at?: string
+          revoked_by?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_access_revocations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -65,6 +91,21 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_sanctuary_employees: {
+        Args: never
+        Returns: {
+          display_name: string
+          email: string
+          revoked_at: string
+          user_id: string
+        }[]
+      }
+      revoke_sanctuary_employee: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
+      sanctuary_session_status: { Args: never; Returns: Json }
+      sanctuary_session_valid: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "employee"

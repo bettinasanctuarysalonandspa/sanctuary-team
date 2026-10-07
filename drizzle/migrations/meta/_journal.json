@@ -8,6 +8,13 @@
       "when": 1791409980824,
       "tag": "0000_employee_access_foundation",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791410593074,
+      "tag": "0001_secure_employee_sessions",
+      "breakpoints": true
     }
   ]
 }
