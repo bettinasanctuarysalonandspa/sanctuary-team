@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AccessPendingRouteImport } from './routes/access-pending'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as AuthenticatedEmployeeRouteImport } from './routes/_authenticated/_employee'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedEmployeeAdminRouteImport } from './routes/_authenticated/_employee.admin'
 import { Route as AuthenticatedEmployeeConsultationRouteImport } from './routes/_authenticated/_employee.consultation'
 import { Route as AuthenticatedEmployeeContentStudioRouteImport } from './routes/_authenticated/_employee.content-studio'
@@ -34,6 +37,16 @@ const AccessPendingRoute = AccessPendingRouteImport.update({
   path: '/access-pending',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToolsRoute = ToolsRouteImport.update({
   id: '/tools',
   path: '/tools',
@@ -41,6 +54,11 @@ const ToolsRoute = ToolsRouteImport.update({
 } as any)
 const AuthenticatedEmployeeRoute = AuthenticatedEmployeeRouteImport.update({
   id: '/_employee',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedEmployeeAdminRoute =
@@ -77,7 +95,10 @@ const AuthenticatedEmployeeSalonAiRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/access-pending': typeof AccessPendingRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/tools': typeof ToolsRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
@@ -87,7 +108,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/access-pending': typeof AccessPendingRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/tools': typeof ToolsRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
@@ -99,8 +123,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/access-pending': typeof AccessPendingRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/tools': typeof ToolsRoute
   '/_authenticated/_employee': typeof AuthenticatedEmployeeRouteWithChildren
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/_employee/admin': typeof AuthenticatedEmployeeAdminRoute
   '/_authenticated/_employee/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/_authenticated/_employee/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
@@ -112,7 +139,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/access-pending'
+    | '/auth'
+    | '/reset-password'
     | '/tools'
+    | '/profile'
     | '/admin'
     | '/consultation'
     | '/content-studio'
@@ -122,7 +152,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/access-pending'
+    | '/auth'
+    | '/reset-password'
     | '/tools'
+    | '/profile'
     | '/admin'
     | '/consultation'
     | '/content-studio'
@@ -133,8 +166,11 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/access-pending'
+    | '/auth'
+    | '/reset-password'
     | '/tools'
     | '/_authenticated/_employee'
+    | '/_authenticated/profile'
     | '/_authenticated/_employee/admin'
     | '/_authenticated/_employee/consultation'
     | '/_authenticated/_employee/content-studio'
@@ -146,6 +182,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AccessPendingRoute: typeof AccessPendingRoute
+  AuthRoute: typeof AuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ToolsRoute: typeof ToolsRoute
 }
 
@@ -172,6 +210,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccessPendingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tools': {
       id: '/tools'
       path: '/tools'
@@ -184,6 +236,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedEmployeeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_employee/admin': {
@@ -250,10 +309,12 @@ const AuthenticatedEmployeeRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedEmployeeRoute: typeof AuthenticatedEmployeeRouteWithChildren
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEmployeeRoute: AuthenticatedEmployeeRouteWithChildren,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -263,6 +324,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AccessPendingRoute: AccessPendingRoute,
+  AuthRoute: AuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ToolsRoute: ToolsRoute,
 }
 export const routeTree = rootRouteImport
