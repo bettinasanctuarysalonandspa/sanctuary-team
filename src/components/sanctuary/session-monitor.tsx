@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useRouterState } from '@tanstack/react-router';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { SessionProvider } from './session';
 export function SessionMonitor({ children }: { children: ReactNode }) {
  const router = useRouter();
  const queryClient = useQueryClient();
+ const privatePage = useRouterState({ select: state => ['/consultation', '/emergency-help', '/salon-ai', '/content-studio', '/admin', '/profile'].some(path => state.location.pathname === path || state.location.pathname.startsWith(`${path}/`)) });
  const [user, setUser] = useState<User | null>(null);
  const [ready, setReady] = useState(false);
  const [unavailable, setUnavailable] = useState(false);
@@ -38,8 +39,8 @@ export function SessionMonitor({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.getUser();
     if (!active) return;
     if (!data.user) {
-     if (error && error.status !== 401 && error.status !== 403 && error.name !== 'AuthSessionMissingError') throw error;
-     if (watchedUser || error?.status === 401 || error?.status === 403) { await endSession(); return; }
+     if (error && (error.name === 'AuthRetryableFetchError' || !error.status || error.status >= 500) && error.name !== 'AuthSessionMissingError') throw error;
+     if (watchedUser || (error && error.name !== 'AuthSessionMissingError')) { await endSession(); return; }
      setUser(null); setUnavailable(false); setReady(true); return;
     }
     if (error) throw error;
@@ -91,5 +92,5 @@ export function SessionMonitor({ children }: { children: ReactNode }) {
   };
  // Keep one observer for the entire app, not a new observer per tool.
  }, [router, queryClient, retry]);
- return <SessionProvider user={user} ready={ready}>{unavailable ? <section className="auth-panel"><h1>Unable to verify access</h1><p>Reconnect to continue securely.</p><Button variant="sanctuary" className="mt-5" onClick={() => setRetry(value => value + 1)}>Try again</Button></section> : ready ? children : <div className="auth-panel" role="status">Checking your session…</div>}</SessionProvider>;
+ return <SessionProvider user={user} ready={ready}>{unavailable ? <section className="auth-panel"><h1>Unable to verify access</h1><p>Reconnect to continue securely.</p><Button variant="sanctuary" className="mt-5" onClick={() => setRetry(value => value + 1)}>Try again</Button></section> : ready || !privatePage ? children : <div className="auth-panel" role="status">Checking your session…</div>}</SessionProvider>;
 }
