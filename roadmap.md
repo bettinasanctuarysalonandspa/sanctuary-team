@@ -1,4 +1,5 @@
 # Sanctuary Salon AI
+- [ ] Secure first owner setup: disable self-registration, verify Bettina's chosen account, grant only that account admin access, and verify the Admin dashboard — awaiting owner email.
 - [ ] Prepare four separate conversational assistants, employee-account conversations, and supported voice input — activation awaits approved instructions/knowledge.
 - [ ] Build accurate Consultation pricing calculations — awaiting approved prices and calculation rules.
 - [ ] Add owner-only knowledge and pricing management — awaiting approved files and calculation rules; employee management is implemented.
