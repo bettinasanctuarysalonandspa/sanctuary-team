@@ -1,15 +1,15 @@
 # Sanctuary Salon AI
 - [ ] Prepare four separate conversational assistants, employee-account conversations, and supported voice input — activation awaits approved instructions/knowledge.
 - [ ] Build accurate Consultation pricing calculations — awaiting approved prices and calculation rules.
-- [ ] Keep knowledge, pricing, and employee management owner-only; no extra employee features.
-- [ ] Enforce secure persistent sessions with a 30-day maximum and sign-in after expiry/revocation.
-- [ ] Add owner-only employee revocation, active-session invalidation, and automatic sign-out.
-- [ ] Verify session continuity, manual sign-out, expiry, and revocation with available accounts.
+- [ ] Add owner-only knowledge and pricing management — awaiting approved files and calculation rules; employee management is implemented.
+- [x] Enforce secure persistent sessions with a 30-day maximum and sign-in after expiry/revocation.
+- [x] Add owner-only employee revocation, active-session invalidation, and automatic sign-out.
+- [x] Verify session observer restoration, manual sign-out, expiry, revocation, and offline safeguards with six automated tests.
 - [x] Replace generated spa photography with an elegant placeholder; no replacement photography selected.
 - [x] Build frosted-sage dashboard and shared mobile navigation.
 - [x] Create four empty tool destinations with approved-content-only states.
 - [x] Add employee sign-in, profile foundation, and restricted owner area without seed records.
 - [x] Verify public navigation, signed-out restrictions, and phone/desktop layout.
-- [ ] Verify signed-in employee/owner flows — requires real approved accounts; database currently has no users.
+- [ ] Verify signed-in employee/owner flows across closures and tools, plus actual owner revocation — blocked by no approved accounts; session minting confirms no users exist.
 - [ ] Add authentic Sanctuary photography — requires owner uploads.
 - [ ] Provision owner and employee access — requires owner account identification; no invented users.
