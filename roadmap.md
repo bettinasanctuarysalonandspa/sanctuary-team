@@ -1,0 +1,9 @@
+# Sanctuary Salon AI
+- [x] Replace generated spa photography with an elegant placeholder; no replacement photography selected.
+- [x] Build frosted-sage dashboard and shared mobile navigation.
+- [x] Create four empty tool destinations with approved-content-only states.
+- [x] Add employee sign-in, profile foundation, and restricted owner area without seed records.
+- [x] Verify public navigation, signed-out restrictions, and phone/desktop layout.
+- [ ] Verify signed-in employee/owner flows — requires real approved accounts; database currently has no users.
+- [ ] Add authentic Sanctuary photography — requires owner uploads.
+- [ ] Provision owner and employee access — requires owner account identification; no invented users.

@@ -8,3 +8,9 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Use shared app chrome around the root Outlet and individual content routes, so navigation and page metadata remain consistent.
+- Keep private tools and profiles beneath the managed authenticated layout; enforce employee/admin membership through validated server functions, so an arbitrary signed-in account cannot access employee resources.
+- Store user-facing identity in profiles and privileges only in user_roles; never self-assign employee or owner access.
+- Keep initial tool pages empty and omit AI, pricing logic, and salon-content tables until approved information is supplied.
