@@ -1,11 +1,11 @@
 # Sanctuary Team
-- [ ] Connect approved Content Studio knowledge, owner-only editing, private chat and supported voice; verify Head Spa and Butterfly Weft posts.
+- [x] Connect complete approved Content Studio knowledge, owner-only editing, private chat and supported voice; verified Head Spa and Butterfly Weft posts, caption-only follow-up and reload persistence; 17 tests passed.
 - [x] Separate extension hair from retail products in consultation quote line items and subtotals; preserve checkout math.
 - [x] Show charges included in service, retail product, and extension hair quote totals rather than separate charge lines; preserve listed catalog prices and approved tax rules.
 - [x] Secure first owner setup: self-registration disabled; Bettina's verified Google account (confirmed email) granted admin.
-- [ ] Prepare remaining three separate conversational assistants, employee-account conversations, and supported voice input — activation awaits approved instructions/knowledge.
+- [ ] Prepare Sanctuary Support and Sanctuary Handbook conversational assistants — activation awaits approved instructions/knowledge.
 - [x] Build accurate Consultation pricing calculations (deterministic 3% + 8.25% retail-only math, tested).
-- [ ] Owner knowledge management for the other three assistants — awaiting their approved files.
+- [ ] Owner knowledge management for Sanctuary Support and Sanctuary Handbook — awaiting their approved files.
 - [x] Enforce secure persistent sessions with a 30-day maximum and sign-in after expiry/revocation.
 - [x] Add owner-only employee revocation, active-session invalidation, and automatic sign-out.
 - [x] Verify session observer restoration, manual sign-out, expiry, revocation, and offline safeguards with six automated tests.
