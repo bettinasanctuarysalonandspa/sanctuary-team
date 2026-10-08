@@ -67,7 +67,7 @@ function SetPassword() {
     }
   }
 
-  const name = typeof user?.user_metadata?.full_name === 'string' ? user.user_metadata.full_name : '';
+  const name = typeof user?.user_metadata?.['full_name'] === 'string' ? user.user_metadata['full_name'] : '';
 
   return (
     <section className="auth-panel">
