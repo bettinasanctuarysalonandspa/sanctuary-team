@@ -61,8 +61,8 @@ function Stylists() {
 
 function Services() {
   const q = useQuery({ queryKey: ['private', 'pricing', 'services'], queryFn: async () => ({
-    services: (await must(supabase.from("calc_services").select('id,name,kind,flat_price,unit,active').order('kind').order('name')),
-    levels: (await must(supabase.from("calc_service_level_prices").select("service_id,level,price"))) ?? [],
+    services: await must(supabase.from('calc_services').select('id,name,kind,flat_price,unit,active').order('kind').order('name')),
+    levels: await must(supabase.from('calc_service_level_prices').select('service_id,level,price')),
   }) });
   const { msg, run } = useSave();
   const [filter, setFilter] = useState('');
