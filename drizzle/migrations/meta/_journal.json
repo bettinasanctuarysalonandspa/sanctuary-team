@@ -50,6 +50,13 @@
       "when": 1791480426514,
       "tag": "0006_sanctuary_support",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791482133718,
+      "tag": "0007_employee_invitations",
+      "breakpoints": true
     }
   ]
 }

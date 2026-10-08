@@ -385,6 +385,42 @@ export type Database = {
           },
         ]
       }
+      employee_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          invited_by: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          display_name?: string
+          email: string
+          id?: string
+          invited_by: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          id?: string
+          invited_by?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       guidance_gateway_state: {
         Row: {
           id: number
@@ -579,6 +615,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_sanctuary_invitation: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -595,6 +632,17 @@ export type Database = {
           email: string
           revoked_at: string
           user_id: string
+        }[]
+      }
+      list_sanctuary_invitations: {
+        Args: never
+        Returns: {
+          accepted_at: string
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          status: string
         }[]
       }
       revoke_sanctuary_employee: {
