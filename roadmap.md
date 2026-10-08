@@ -21,3 +21,4 @@
 - [x] Consultation Calculator: chat with voice, owner price editor (/pricing), approved knowledge base loaded.
 - [x] Import L'ANZA products using the owner's L'ANZA 2026 wholesale workbook (not manufacturer retail): wholesale x2 rounded up; flag only products whose wholesale cost is genuinely missing; admin-editable wholesale + retail 
 - [x] Rebrand to Sanctuary Team: rename four sections, new welcome line, remove AI/GPT/Suite from employee-facing wording (wording only).
+- [x] Owner-only team invitations: invite by name and email from Admin, invitation email, set-your-password page, employee access granted on acceptance, resend/withdraw; verified end to end and test data removed.
