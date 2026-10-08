@@ -21,6 +21,7 @@ import { Route as AuthenticatedEmployeeAdminRouteImport } from './routes/_authen
 import { Route as AuthenticatedEmployeeConsultationRouteImport } from './routes/_authenticated/_employee.consultation'
 import { Route as AuthenticatedEmployeeContentStudioRouteImport } from './routes/_authenticated/_employee.content-studio'
 import { Route as AuthenticatedEmployeeEmergencyHelpRouteImport } from './routes/_authenticated/_employee.emergency-help'
+import { Route as AuthenticatedEmployeePricingRouteImport } from './routes/_authenticated/_employee.pricing'
 import { Route as AuthenticatedEmployeeSalonAiRouteImport } from './routes/_authenticated/_employee.salon-ai'
 
 const IndexRoute = IndexRouteImport.update({
@@ -85,6 +86,12 @@ const AuthenticatedEmployeeEmergencyHelpRoute =
     path: '/emergency-help',
     getParentRoute: () => AuthenticatedEmployeeRoute,
   } as any)
+const AuthenticatedEmployeePricingRoute =
+  AuthenticatedEmployeePricingRouteImport.update({
+    id: '/pricing',
+    path: '/pricing',
+    getParentRoute: () => AuthenticatedEmployeeRoute,
+  } as any)
 const AuthenticatedEmployeeSalonAiRoute =
   AuthenticatedEmployeeSalonAiRouteImport.update({
     id: '/salon-ai',
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
+  '/pricing': typeof AuthenticatedEmployeePricingRoute
   '/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
 }
 export interface FileRoutesByTo {
@@ -116,6 +124,7 @@ export interface FileRoutesByTo {
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
+  '/pricing': typeof AuthenticatedEmployeePricingRoute
   '/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
 }
 export interface FileRoutesById {
@@ -132,6 +141,7 @@ export interface FileRoutesById {
   '/_authenticated/_employee/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/_authenticated/_employee/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/_authenticated/_employee/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
+  '/_authenticated/_employee/pricing': typeof AuthenticatedEmployeePricingRoute
   '/_authenticated/_employee/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
 }
 export interface FileRouteTypes {
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/consultation'
     | '/content-studio'
     | '/emergency-help'
+    | '/pricing'
     | '/salon-ai'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/consultation'
     | '/content-studio'
     | '/emergency-help'
+    | '/pricing'
     | '/salon-ai'
   id:
     | '__root__'
@@ -175,6 +187,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_employee/consultation'
     | '/_authenticated/_employee/content-studio'
     | '/_authenticated/_employee/emergency-help'
+    | '/_authenticated/_employee/pricing'
     | '/_authenticated/_employee/salon-ai'
   fileRoutesById: FileRoutesById
 }
@@ -273,6 +286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployeeEmergencyHelpRouteImport
       parentRoute: typeof AuthenticatedEmployeeRoute
     }
+    '/_authenticated/_employee/pricing': {
+      id: '/_authenticated/_employee/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof AuthenticatedEmployeePricingRouteImport
+      parentRoute: typeof AuthenticatedEmployeeRoute
+    }
     '/_authenticated/_employee/salon-ai': {
       id: '/_authenticated/_employee/salon-ai'
       path: '/salon-ai'
@@ -288,6 +308,7 @@ interface AuthenticatedEmployeeRouteChildren {
   AuthenticatedEmployeeConsultationRoute: typeof AuthenticatedEmployeeConsultationRoute
   AuthenticatedEmployeeContentStudioRoute: typeof AuthenticatedEmployeeContentStudioRoute
   AuthenticatedEmployeeEmergencyHelpRoute: typeof AuthenticatedEmployeeEmergencyHelpRoute
+  AuthenticatedEmployeePricingRoute: typeof AuthenticatedEmployeePricingRoute
   AuthenticatedEmployeeSalonAiRoute: typeof AuthenticatedEmployeeSalonAiRoute
 }
 
@@ -299,6 +320,7 @@ const AuthenticatedEmployeeRouteChildren: AuthenticatedEmployeeRouteChildren = {
     AuthenticatedEmployeeContentStudioRoute,
   AuthenticatedEmployeeEmergencyHelpRoute:
     AuthenticatedEmployeeEmergencyHelpRoute,
+  AuthenticatedEmployeePricingRoute: AuthenticatedEmployeePricingRoute,
   AuthenticatedEmployeeSalonAiRoute: AuthenticatedEmployeeSalonAiRoute,
 }
 

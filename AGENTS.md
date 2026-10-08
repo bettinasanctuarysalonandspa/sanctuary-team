@@ -16,4 +16,5 @@
 - Enforce absolute session age and revocation in database policies and owner RPCs using validated session IDs; browser timers never authorize access.
 - Keep a single root session observer with persistent managed auth, realtime revocation, and foreground checks; clear private caches before sign-out.
 - Revoke employee membership transactionally before attempting an Auth ban; prohibit owner targets and self-revocation.
-- Keep initial tool pages empty and omit AI, pricing logic, and salon-content tables until approved information is supplied.
+- Build each tool only from owner-supplied approved data stored in owner-editable tables; quote math runs deterministically in code (integer cents, half-up) via an AI tool call, never AI arithmetic, so prices stay exact and auditable.
+- Keep tools without approved information as empty pages, so nothing is invented.
