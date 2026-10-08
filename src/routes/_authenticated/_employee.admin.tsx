@@ -147,10 +147,12 @@ function AdminEmployees() {
         <h2 className="px-5 pt-5 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Employees</h2>
         {employees.isLoading ? <p className="px-5 py-4 text-sm text-muted-foreground">Loading…</p> : employees.isError ? <p className="px-5 py-4 text-sm text-muted-foreground">The list could not be loaded.</p> : !employees.data?.length ? <p className="px-5 py-4 text-sm text-muted-foreground">No employees yet.</p> : (
           <div className="mt-3 divide-y divide-input">
-            {employees.data.map(employee => (
+            {employees.data.map(employee => {
+              const revoked = Boolean(employee.revoked_at);
+              return (
               <div className="admin-row" key={employee.user_id}>
-                <div className="min-w-0"><strong>{employee.display_name}</strong><p className="truncate text-sm text-muted-foreground">{employee.email}</p><span className={`status status-${employee.status}`}>{employee.status}</span></div>
-                {employee.status !== 'revoked' ? (
+                <div className="min-w-0"><strong>{employee.display_name}</strong><p className="truncate text-sm text-muted-foreground">{employee.email}</p><span className={`status status-${revoked ? 'revoked' : 'active'}`}>{revoked ? 'revoked' : 'active'}</span></div>
+                {!revoked ? (
                   <AlertDialog>
                     <AlertDialogTrigger asChild><Button variant="destructive"><ShieldOff size={14} /> Revoke access</Button></AlertDialogTrigger>
                     <AlertDialogContent>
@@ -166,7 +168,8 @@ function AdminEmployees() {
                   </AlertDialog>
                 ) : null}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
