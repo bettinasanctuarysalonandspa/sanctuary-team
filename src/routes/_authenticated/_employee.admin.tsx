@@ -175,6 +175,20 @@ function AdminEmployees() {
         )}
       </section>
       <section className="glass-panel overflow-hidden">
+        <h2 className="px-5 pt-5 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Consultation Calculator use</h2>
+        <p className="px-5 pt-1 text-sm text-muted-foreground">Questions asked, days used, and last use. Conversations stay private.</p>
+        {usage.isLoading ? <p className="px-5 py-4 text-sm text-muted-foreground">Loading…</p> : usage.isError ? <p className="px-5 py-4 text-sm text-muted-foreground">The list could not be loaded.</p> : !usage.data?.length ? <p className="px-5 py-4 text-sm text-muted-foreground">No team members have signed in yet.</p> : (
+          <div className="mt-3 divide-y divide-input">
+            {usage.data.map(row => (
+              <div className="admin-row" key={row.user_id}>
+                <div className="min-w-0"><strong>{row.display_name || 'Team member'}</strong><p className="text-sm text-muted-foreground">{row.last_used ? `Last used ${new Date(row.last_used).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : 'Not used yet'}</p></div>
+                <div className="text-right text-sm"><strong>{Number(row.questions)}</strong> questions<p className="text-muted-foreground">{Number(row.days_used)} {Number(row.days_used) === 1 ? 'day' : 'days'}</p></div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+      <section className="glass-panel overflow-hidden">
         <h2 className="px-5 pt-5 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Approved information</h2>
         <div className="mt-3 divide-y divide-input">
           {information.map(([tool, description]) => <div className="admin-row" key={tool}><div><strong>{tool}</strong><p className="text-sm text-muted-foreground">{description}</p></div><span className="status status-active">Ready</span></div>)}
