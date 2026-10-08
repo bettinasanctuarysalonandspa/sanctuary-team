@@ -14,3 +14,4 @@
 - [x] Verify owner Admin dashboard opens with verified account — fixed session check to fall back to token issue-time when no server session row exists. Employee flows and revocation test still pending an employee account.
 - [ ] Add authentic Sanctuary photography — requires owner uploads.
 - [x] Provision owner access — Bettina's verified account granted admin; employee accounts still require owner approval.
+- [ ] Consultation Calculator: build chat + owner price editor; load v6 historical data as "needs owner review" drafts (blocked: owner approval of v6 roster/prices)
