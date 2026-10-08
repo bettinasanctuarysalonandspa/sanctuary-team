@@ -58,7 +58,7 @@ export async function handleStudioChat(request: Request) {
     return Response.json({ message: failureMessage }, { status: failureStatus });
   }
   if (first.done || first.value?.type === 'finish') return Response.json({ message: 'Content Studio could not provide this response.' }, { status: 422 });
-  return withLovableAiGatewayRunIdHeader(call.result.toUIMessageStreamResponse({ originalMessages: messages, sendReasoning: false,
+  return withLovableAiGatewayRunIdHeader(call.result.toUIMessageStreamResponse({ originalMessages: messages, generateMessageId: () => crypto.randomUUID(), sendReasoning: false,
     onError: () => failureMessage,
     onFinish: async ({ responseMessage, isAborted }) => {
       if (isAborted && !responseMessage.parts.some(p => p.type === 'text' && p.text)) return;
