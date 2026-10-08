@@ -1,5 +1,5 @@
 # Sanctuary Salon AI
-- [ ] Secure first owner setup: self-registration disabled; owner email approved and saved. Await Bettina accepting an invitation and signing in before verified-account admin grant and dashboard testing.
+- [x] Secure first owner setup: self-registration disabled; Bettina's verified Google account (confirmed email) granted admin.
 - [ ] Prepare four separate conversational assistants, employee-account conversations, and supported voice input — activation awaits approved instructions/knowledge.
 - [ ] Build accurate Consultation pricing calculations — awaiting approved prices and calculation rules.
 - [ ] Add owner-only knowledge and pricing management — awaiting approved files and calculation rules; employee management is implemented.
@@ -13,4 +13,4 @@
 - [x] Verify public navigation, signed-out restrictions, and phone/desktop layout.
 - [ ] Verify signed-in employee/owner flows across closures and tools, plus actual owner revocation — blocked by no approved accounts; session minting confirms no users exist.
 - [ ] Add authentic Sanctuary photography — requires owner uploads.
-- [ ] Provision owner and employee access — requires owner account identification; no invented users.
+- [x] Provision owner access — Bettina's verified account granted admin; employee accounts still require owner approval.
