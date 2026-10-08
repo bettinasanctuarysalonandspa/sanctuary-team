@@ -23,6 +23,7 @@
 - [x] Rebrand to Sanctuary Team: rename four sections, new welcome line, remove AI/GPT/Suite from employee-facing wording (wording only).
 - [x] Owner-only team invitations: invite by name and email from Admin, invitation email, set-your-password page, employee access granted on acceptance, resend/withdraw; verified end to end and test data removed.
 - [x] Sent invitations to 11 team members (all pending, emails verified against the staff photo; Hana Lail's corrected to hanalillylail@gmail.com). Bottom two staff excluded by owner: one on maternity leave, one no longer with the salon.
+- [x] Re-sent all 11 invitations from the live sanctuary-team address so every link opens the real site; invitation links now always point at the published address, never a preview host.
 - [ ] Invite new hires as they join — owner will supply each name and email when hired.
 - [x] HVAC rule update: Brian Ferguson (704-657-7923) is the only HVAC contact; if he can't do the job he tells the team who to use (as before); backup HVAC company list removed from both Support records.
 - [x] Make Sanctuary Team installable from a phone home screen (web app manifest + icon); no offline mode requested.
