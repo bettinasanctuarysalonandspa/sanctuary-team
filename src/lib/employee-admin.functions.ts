@@ -31,3 +31,11 @@ export const listCalculatorUsage = createServerFn({ method: 'GET' })
   if (error) throw new Error('Calculator use could not be loaded. Owner access is required.');
   return data;
  });
+
+export const listInvitationTracker = createServerFn({ method: 'GET' })
+ .middleware([requireSupabaseAuth])
+ .handler(async ({ context }) => {
+  const { data, error } = await context.supabase.rpc('list_invitation_tracker');
+  if (error) throw new Error('Invitation progress could not be loaded. Owner access is required.');
+  return data;
+ });

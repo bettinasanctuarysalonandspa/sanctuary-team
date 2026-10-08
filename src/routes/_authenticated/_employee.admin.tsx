@@ -3,7 +3,7 @@ import { useState, type FormEvent } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { ArrowRight, RefreshCw, ShieldOff, Trash2, UserPlus } from 'lucide-react';
-import { listCalculatorUsage, listEmployees, revokeEmployee } from '@/lib/employee-admin.functions';
+import { listCalculatorUsage, listInvitationTracker, listEmployees, revokeEmployee } from '@/lib/employee-admin.functions';
 import { inviteEmployee, listInvitations, removeInvitation, resendInvitation } from '@/lib/employee-invites.functions';
 import { getEmployeeAccess } from '@/lib/access.functions';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,7 @@ function AdminEmployees() {
   const revoke = useServerFn(revokeEmployee);
   const employees = useQuery({ queryKey: ['sanctuary-employees'], queryFn: () => listEmployees() });
   const invitations = useQuery({ queryKey: ['sanctuary-invitations'], queryFn: () => listInvitations() });
+  const tracker = useQuery({ queryKey: ['sanctuary-invitation-tracker'], queryFn: () => listInvitationTracker(), refetchInterval: 60000 });
   const usage = useQuery({ queryKey: ['sanctuary-calculator-usage'], queryFn: () => listCalculatorUsage() });
 
   async function sendInvite(event: FormEvent) {
@@ -152,7 +153,8 @@ function AdminEmployees() {
                   </div>
                 ) : null}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
