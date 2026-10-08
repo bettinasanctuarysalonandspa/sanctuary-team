@@ -61,8 +61,8 @@ function Stylists() {
 
 function Services() {
   const q = useQuery({ queryKey: ['private', 'pricing', 'services'], queryFn: async () => ({
-    services: await must(supabase.from('calc_services').select('id,name,kind,flat_price,unit,active').order('kind').order('name')),
-    levels: await must(supabase.from('calc_service_level_prices').select('service_id,level,price')),
+    services: (await must(supabase.from("calc_services").select('id,name,kind,flat_price,unit,active').order('kind').order('name')),
+    levels: (await must(supabase.from("calc_service_level_prices").select("service_id,level,price"))) ?? [],
   }) });
   const { msg, run } = useSave();
   const [filter, setFilter] = useState('');
@@ -74,7 +74,7 @@ function Services() {
         {s.kind === 'flat' && <PriceField value={s.flat_price} label={`${s.name} price`} onSave={v => run(() => must(supabase.from('calc_services').update({ flat_price: v, updated_at: new Date().toISOString() }).eq('id', s.id)))}/>}
         {s.unit && <span className="text-xs text-muted-foreground">{s.unit}</span>}
       </div>
-      {s.kind === 'level' && <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">{LEVELS.map(l => { const p = q.data!.levels.find(x => x.service_id === s.id && x.level === l); return <label key={l} className="flex flex-col gap-1 text-xs text-muted-foreground">{l}
+      {s.kind === 'level' && <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">{LEVELS.map(l => { const p = (q.data?.levels ?? []).find(x => x.service_id === s.id && x.level === l); return <label key={l} className="flex flex-col gap-1 text-xs text-muted-foreground">{l}
         <PriceField value={p?.price ?? null} label={`${s.name} ${l}`} onSave={v => run(() => must(supabase.from('calc_service_level_prices').upsert({ service_id: s.id, level: l, price: v ?? 0, effective_date: new Date().toISOString().slice(0, 10) })))}/></label>; })}</div>}
     </li>)}</ul>
     {msg && <p className="form-message sticky bottom-4 mt-4" role="status">{msg}</p>}
