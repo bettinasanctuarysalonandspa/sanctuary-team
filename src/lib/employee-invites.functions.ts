@@ -1,4 +1,4 @@
-import { createServerFn, getRequest } from '@tanstack/react-start';
+import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 
@@ -12,14 +12,15 @@ async function requireOwner(context: { supabase: { rpc: (...args: any[]) => any 
   if (error || data !== true) throw new Error('Owner access is required to manage team accounts.');
 }
 
-function appOrigin() {
-  const url = getRequest()?.url;
-  if (url) {
-    try {
-      return new URL(url).origin;
-    } catch {
-      /* fall through */
-    }
+// Loaded inside the handler so the server-only request helper never enters the
+// browser bundle.
+async function appOrigin() {
+  try {
+    const { getRequest } = await import('@tanstack/react-start/server');
+    const url = getRequest()?.url;
+    if (url) return new URL(url).origin;
+  } catch {
+    /* fall through */
   }
   return undefined;
 }
