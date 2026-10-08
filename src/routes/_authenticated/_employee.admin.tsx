@@ -3,7 +3,7 @@ import { useState, type FormEvent } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { ArrowRight, RefreshCw, ShieldOff, Trash2, UserPlus } from 'lucide-react';
-import { listCalculatorUsage, listEmployees, revokeEmployee } from '@/lib/employee-admin.functions';
+import { listCalculatorUsage, listInvitationTracker, listEmployees, revokeEmployee } from '@/lib/employee-admin.functions';
 import { inviteEmployee, listInvitations, removeInvitation, resendInvitation } from '@/lib/employee-invites.functions';
 import { getEmployeeAccess } from '@/lib/access.functions';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,7 @@ function AdminEmployees() {
   const revoke = useServerFn(revokeEmployee);
   const employees = useQuery({ queryKey: ['sanctuary-employees'], queryFn: () => listEmployees() });
   const invitations = useQuery({ queryKey: ['sanctuary-invitations'], queryFn: () => listInvitations() });
+  const tracker = useQuery({ queryKey: ['sanctuary-invitation-tracker'], queryFn: () => listInvitationTracker(), refetchInterval: 60000 });
   const usage = useQuery({ queryKey: ['sanctuary-calculator-usage'], queryFn: () => listCalculatorUsage() });
 
   async function sendInvite(event: FormEvent) {
@@ -112,14 +113,26 @@ function AdminEmployees() {
       </section>
       <section className="glass-panel overflow-hidden">
         <h2 className="px-5 pt-5 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Invitations</h2>
+        {invitations.data?.length ? (() => {
+          const rows = invitations.data;
+          const t = (id: string) => tracker.data?.find(r => r.invitation_id === id);
+          const opened = rows.filter(r => r.status === 'accepted' || t(r.id)?.opened_at).length;
+          const signedIn = rows.filter(r => t(r.id)?.last_sign_in_at).length;
+          return <p className="px-5 pt-1 text-sm text-muted-foreground">{opened} of {rows.length} opened · {signedIn} of {rows.length} signed in</p>;
+        })() : null}
         {invitations.isLoading ? <p className="px-5 py-4 text-sm text-muted-foreground">Loading…</p> : invitations.isError ? <p className="px-5 py-4 text-sm text-muted-foreground">Invitations could not be loaded.</p> : !invitations.data?.length ? <p className="px-5 py-4 text-sm text-muted-foreground">No invitations yet.</p> : (
           <div className="mt-3 divide-y divide-input">
-            {invitations.data.map(invitee => (
+            {invitations.data.map(invitee => {
+              const track = tracker.data?.find(r => r.invitation_id === invitee.id);
+              const fmt = (d: string) => new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+              const label = track?.last_sign_in_at ? `Signed in ${fmt(track.last_sign_in_at)}` : invitee.status === 'accepted' || track?.opened_at ? `Opened ${track?.opened_at ? fmt(track.opened_at) : ''}` : 'Not opened yet';
+              return (
               <div className="admin-row" key={invitee.id}>
                 <div className="min-w-0">
                   <strong>{invitee.display_name}</strong>
                   <p className="truncate text-sm text-muted-foreground">{invitee.email}</p>
                   <span className={`status status-${invitee.status === 'accepted' ? 'active' : 'revoked'}`}>{invitee.status === 'accepted' ? 'Joined' : 'Waiting'}</span>
+                  <p className="mt-1 text-xs text-muted-foreground">{label}</p>
                 </div>
                 {invitee.status !== 'accepted' ? (
                   <div className="flex flex-wrap justify-end gap-2">
@@ -140,7 +153,8 @@ function AdminEmployees() {
                   </div>
                 ) : null}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
