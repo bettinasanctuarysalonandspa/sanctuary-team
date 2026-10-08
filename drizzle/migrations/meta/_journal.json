@@ -36,6 +36,13 @@
       "when": 1791476948501,
       "tag": "0004_content_studio",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791479578509,
+      "tag": "0005_sanctuary_guidance",
+      "breakpoints": true
     }
   ]
 }
