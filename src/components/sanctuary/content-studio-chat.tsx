@@ -13,7 +13,7 @@ import { Shimmer } from '@/components/ai-elements/shimmer';
 
 type Recognition = { lang: string; start(): void; stop(): void; onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null };
 export function ContentStudioChat({ initialMessages }: { initialMessages: UIMessage[] }) {
-  const transport = useMemo(() => new DefaultChatTransport({ api: '/api/content-studio', headers: async () => { const { data } = await supabase.auth.getSession(); return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {}; }, prepareSendMessagesRequest: ({ messages, ...rest }) => ({ ...rest, body: { messages: messages.map(m => ({ id: m.id, role: m.role, parts: m.parts.filter(p => p.type === 'text') })) } }) }), []);
+  const transport = useMemo(() => new DefaultChatTransport({ api: '/api/content-studio', headers: async () => { const { data } = await supabase.auth.getSession(); return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {}; }, prepareSendMessagesRequest: ({ messages, headers }) => ({ ...(headers ? { headers } : {}), body: { messages: messages.map(m => ({ id: m.id, role: m.role, parts: m.parts.filter(p => p.type === 'text') })) } }) }), []);
   const { messages, sendMessage, status, error, stop, setMessages, clearError } = useChat({ messages: initialMessages, transport });
   const clear = useServerFn(clearStudioMessages);
   const [text, setText] = useState('');

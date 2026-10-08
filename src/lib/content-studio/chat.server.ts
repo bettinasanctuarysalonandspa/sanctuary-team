@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { convertToModelMessages, type UIMessage } from 'ai';
 import { createResponsesCall } from './responses.server.ts';
 import { studioPrompt } from './prompt';
+import { withLovableAiGatewayRunIdHeader } from './run-id.server.ts';
 
 const inputSchema = z.object({ messages: z.array(z.object({ id: z.string().min(1).max(200), role: z.enum(['user', 'assistant']), parts: z.array(z.object({ type: z.literal('text'), text: z.string().max(4000) })).min(1) })).min(1).max(100) });
 
@@ -46,7 +47,9 @@ export async function handleStudioChat(request: Request) {
   const modelMessages = convertToModelMessages(messages.map(m => ({ ...m, parts: m.parts.filter(p => p.type === 'text') })));
   const call = createResponsesCall(gatewayRequest, { baseURL: 'https://ai.gateway.lovable.dev/v1', apiKey, model: 'openai/gpt-6-astra' }, modelMessages, studioPrompt(knowledge));
   // Provider errors are handled before returning a stream; never auto-retry.
-  const first = await call.result.fullStream[Symbol.asyncIterator]().next();
+  const iterator = call.result.fullStream[Symbol.asyncIterator]();
+  let first = await iterator.next();
+  while (!first.done && first.value.type !== 'error' && first.value.type !== 'text-delta' && first.value.type !== 'finish') first = await iterator.next();
   if (first.value?.type === 'error') {
     const error = first.value.error as { statusCode?: number; responseBody?: string };
     failureStatus = error.statusCode ?? 500;
@@ -54,7 +57,8 @@ export async function handleStudioChat(request: Request) {
     if ([402, 403, 404].includes(failureStatus)) await supabaseAdmin.from('content_studio_gateway_state').upsert({ id: 1, paused: true, reason: failureMessage, updated_at: new Date().toISOString() });
     return Response.json({ message: failureMessage }, { status: failureStatus });
   }
-  return call.result.toUIMessageStreamResponse({ originalMessages: messages, sendReasoning: false,
+  if (first.done || first.value?.type === 'finish') return Response.json({ message: 'Content Studio could not provide this response.' }, { status: 422 });
+  return withLovableAiGatewayRunIdHeader(call.result.toUIMessageStreamResponse({ originalMessages: messages, sendReasoning: false,
     onError: () => failureMessage,
     onFinish: async ({ responseMessage, isAborted }) => {
       if (isAborted && !responseMessage.parts.some(p => p.type === 'text' && p.text)) return;
@@ -62,5 +66,5 @@ export async function handleStudioChat(request: Request) {
       const { error } = await db.from('content_studio_messages').upsert({ user_id: userId, message_id: plain.id, message: plain as unknown as Database['public']['Tables']['content_studio_messages']['Insert']['message'] }, { onConflict: 'user_id,message_id' });
       if (error) throw new Error('Your answer could not be saved.');
     },
-  });
+  }), call.runIdFetch);
 }

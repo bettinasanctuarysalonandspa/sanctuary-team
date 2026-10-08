@@ -6,7 +6,7 @@ import type { UIMessage } from 'ai';
 export const listStudioMessages = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   const { data, error } = await context.supabase.from('content_studio_messages').select('message').eq('user_id', context.userId).order('id', { ascending: false }).limit(80);
   if (error) throw new Error('Your conversation could not be loaded.');
-  return (data ?? []).reverse().map(r => r.message as unknown as UIMessage);
+  return (data ?? []).reverse().map(r => { const m = r.message as unknown as UIMessage; return { id: m.id, role: m.role as 'user' | 'assistant', parts: m.parts.filter(p => p.type === 'text').map(p => ({ type: 'text' as const, text: p.text })) }; });
 });
 export const clearStudioMessages = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   const { error } = await context.supabase.from('content_studio_messages').delete().eq('user_id', context.userId);
