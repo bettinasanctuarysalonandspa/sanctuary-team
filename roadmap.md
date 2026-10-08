@@ -22,5 +22,6 @@
 - [x] Import L'ANZA products using the owner's L'ANZA 2026 wholesale workbook (not manufacturer retail): wholesale x2 rounded up; flag only products whose wholesale cost is genuinely missing; admin-editable wholesale + retail 
 - [x] Rebrand to Sanctuary Team: rename four sections, new welcome line, remove AI/GPT/Suite from employee-facing wording (wording only).
 - [x] Owner-only team invitations: invite by name and email from Admin, invitation email, set-your-password page, employee access granted on acceptance, resend/withdraw; verified end to end and test data removed.
-- [x] Sent invitations to 11 team members (all pending). Remaining ~4 staff cut off in photo — waiting on owner for their names/emails.
+- [x] Sent invitations to 11 team members (all pending). Bottom two staff excluded by owner: one on maternity leave, one no longer with the salon.
+- [ ] Invite new hires as they join — owner will supply each name and email when hired.
 - [x] HVAC rule update: Brian Ferguson (704-657-7923) is the only HVAC contact; if he can't do the job he tells the team who to use (as before); backup HVAC company list removed from both Support records.
