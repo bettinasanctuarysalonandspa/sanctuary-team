@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 
-export const Route = createFileRoute('/_authenticated/_employee/guidance-knowledge')({ beforeLoad: ({ context }) => { if (!context.access.admin) throw redirect({ to: '/access-pending' }); }, loader: () => getGuidanceKnowledge(), head: () => appHead('Sanctuary Guidance information', 'Owner-approved Sanctuary Guidance brand instructions and dated knowledge.'), component: Knowledge });
+export const Route = createFileRoute('/_authenticated/_employee/guidance-knowledge')({ beforeLoad: ({ context }) => { if (!context.access.admin) throw redirect({ to: '/access-pending' }); }, loader: () => getGuidanceKnowledge(), head: () => appHead('Sanctuary Guidance information', 'Owner-approved handbook, Code of Honor and Sanctuary policies for Sanctuary Guidance.'), component: Knowledge });
 function Knowledge() {
   const initial = Route.useLoaderData();
   const save = useServerFn(saveGuidanceKnowledge);
