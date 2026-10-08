@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AccessPendingRouteImport } from './routes/access-pending'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SetPasswordRouteImport } from './routes/set-password'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as AuthenticatedEmployeeRouteImport } from './routes/_authenticated/_employee'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -52,6 +53,11 @@ const AuthRoute = AuthRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetPasswordRoute = SetPasswordRouteImport.update({
+  id: '/set-password',
+  path: '/set-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsRoute = ToolsRouteImport.update({
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/access-pending': typeof AccessPendingRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/set-password': typeof SetPasswordRoute
   '/tools': typeof ToolsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/content-studio': typeof ApiContentStudioRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/access-pending': typeof AccessPendingRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/set-password': typeof SetPasswordRoute
   '/tools': typeof ToolsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/content-studio': typeof ApiContentStudioRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/access-pending': typeof AccessPendingRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/set-password': typeof SetPasswordRoute
   '/tools': typeof ToolsRoute
   '/_authenticated/_employee': typeof AuthenticatedEmployeeRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/access-pending'
     | '/auth'
     | '/reset-password'
+    | '/set-password'
     | '/tools'
     | '/profile'
     | '/api/content-studio'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/access-pending'
     | '/auth'
     | '/reset-password'
+    | '/set-password'
     | '/tools'
     | '/profile'
     | '/api/content-studio'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/access-pending'
     | '/auth'
     | '/reset-password'
+    | '/set-password'
     | '/tools'
     | '/_authenticated/_employee'
     | '/_authenticated/profile'
@@ -272,6 +284,7 @@ export interface RootRouteChildren {
   AccessPendingRoute: typeof AccessPendingRoute
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SetPasswordRoute: typeof SetPasswordRoute
   ToolsRoute: typeof ToolsRoute
   ApiContentStudioRoute: typeof ApiContentStudioRoute
   ApiGuidanceRoute: typeof ApiGuidanceRoute
@@ -313,6 +326,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/set-password': {
+      id: '/set-password'
+      path: '/set-password'
+      fullPath: '/set-password'
+      preLoaderRoute: typeof SetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tools': {
@@ -477,6 +497,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccessPendingRoute: AccessPendingRoute,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SetPasswordRoute: SetPasswordRoute,
   ToolsRoute: ToolsRoute,
   ApiContentStudioRoute: ApiContentStudioRoute,
   ApiGuidanceRoute: ApiGuidanceRoute,

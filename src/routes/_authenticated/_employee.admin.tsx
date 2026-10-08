@@ -1,43 +1,182 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
-import { appHead } from '@/lib/app-meta';
-import { tools } from '@/components/sanctuary/tools';
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-import { ShieldOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel } from '@/components/ui/alert-dialog';
+import { ArrowRight, RefreshCw, ShieldOff, Trash2, UserPlus } from 'lucide-react';
 import { listEmployees, revokeEmployee } from '@/lib/employee-admin.functions';
-export const Route = createFileRoute('/_authenticated/_employee/admin')({ beforeLoad: ({ context }) => { if (!context.access.admin) throw redirect({ to: '/access-pending' }); }, head: () => appHead('Owner administration', 'The restricted owner workspace for Sanctuary approved information.'), component: Admin });
-function Admin() {
- const fetchEmployees = useServerFn(listEmployees);
- const revoke = useServerFn(revokeEmployee);
- const queryClient = useQueryClient();
- const employees = useQuery({ queryKey: ['owner-employees'], queryFn: () => fetchEmployees() });
- const [selected, setSelected] = useState<{ id: string; name: string } | null>(null);
- const [busy, setBusy] = useState(false);
- const [message, setMessage] = useState('');
- async function confirmRevocation() {
-  if (!selected || busy) return;
-  setBusy(true); setMessage('');
-  try {
-   const result = await revoke({ data: { userId: selected.id } });
-   setMessage(result.authBlocked ? 'Employee access revoked on all devices.' : 'Employee access is blocked on all devices. Account sign-in blocking could not finish; contact support.');
-   setSelected(null);
-   await queryClient.invalidateQueries({ queryKey: ['owner-employees'] });
-  } catch (error) { setMessage(error instanceof Error ? error.message : 'Access could not be revoked.'); }
-  finally { setBusy(false); }
- }
- return <>
-  <div className="page-heading"><p className="eyebrow">OWNER ADMINISTRATION</p><h1>Employee access</h1></div>
-  {employees.isPending ? <p role="status">Loading employee access…</p> : employees.error ? <div className="form-message" role="alert">Employee access could not be loaded.<Button variant="link" onClick={() => void employees.refetch()}>Try again</Button></div> : employees.data?.length ? <ul className="divide-y divide-input" aria-label="Employee access">{employees.data.map(employee => <li key={employee.user_id} className="flex flex-wrap items-center justify-between gap-4 py-5"><div className="min-w-0"><h2 className="break-words text-xl">{employee.display_name || employee.email}</h2>{employee.display_name && <p className="break-all text-sm text-muted-foreground">{employee.email}</p>}<p className="mt-1 text-xs text-muted-foreground">{employee.revoked_at ? 'Access revoked' : 'Employee'}</p></div>{!employee.revoked_at && <Button variant="glass" onClick={() => { setMessage(''); setSelected({ id: employee.user_id, name: employee.display_name || employee.email }); }}><ShieldOff size={16}/>Revoke access</Button>}</li>)}</ul> : <p className="text-sm text-muted-foreground">No approved employee accounts yet.</p>}
-  <AlertDialog open={selected !== null} onOpenChange={open => { if (!open && !busy) setSelected(null); }}><AlertDialogContent className="w-[calc(100%-3rem)] rounded-lg"><AlertDialogHeader><AlertDialogTitle>Revoke employee access?</AlertDialogTitle><AlertDialogDescription className="break-words">{selected?.name} will lose access to Sanctuary on every device.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel><Button variant="destructive" disabled={busy} onClick={() => void confirmRevocation()}><ShieldOff size={16}/>{busy ? 'Revoking…' : 'Confirm revocation'}</Button></AlertDialogFooter></AlertDialogContent></AlertDialog>
-  {message && <p className="form-message" role="status">{message}</p>}
-  <div className="page-heading mt-10"><h2 className="text-2xl">Approved information</h2><p>Information management is built with each tool, step by step.</p></div>{tools.map((tool, i) => i === 0
-   ? <Link to="/pricing" className="admin-row" key={tool.path}><span className={`tool-icon ${tool.tone}`}><tool.icon size={19}/></span><div><h2>{tool.title}</h2><p>Stylists, services, products and extensions</p></div><span className="status">Edit prices</span></Link>
-   : i === 1 ? <Link to="/support-knowledge" className="admin-row" key={tool.path}><span className={`tool-icon ${tool.tone}`}><tool.icon size={19}/></span><div><h2>{tool.title}</h2><p>Emergency procedures and contacts</p></div><span className="status">Edit information</span></Link>
-   : i === 2 ? <Link to="/guidance-knowledge" className="admin-row" key={tool.path}><span className={`tool-icon ${tool.tone}`}><tool.icon size={19}/></span><div><h2>{tool.title}</h2><p>Handbook, Code of Honor and approved policies</p></div><span className="status">Edit information</span></Link>
-   : i === 3 ? <Link to="/content-knowledge" className="admin-row" key={tool.path}><span className={`tool-icon ${tool.tone}`}><tool.icon size={19}/></span><div><h2>{tool.title}</h2><p>Brand instructions and approved information</p></div><span className="status">Edit information</span></Link>
-   : <div className="admin-row" key={tool.path}><span className={`tool-icon ${tool.tone}`}><tool.icon size={19}/></span><div><h2>{tool.title}</h2><p>No approved information</p></div><span className="status">Not configured</span></div>)}
- </>;
+import { inviteEmployee, listInvitations, removeInvitation, resendInvitation } from '@/lib/employee-invites.functions';
+import { getEmployeeAccess } from '@/lib/access.functions';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { appHead } from '@/lib/app-meta';
+
+export const Route = createFileRoute('/_authenticated/_employee/admin')({
+  head: () => appHead('Employee access', 'Owner administration for Sanctuary Team employee accounts.'),
+  beforeLoad: async ({ context }) => {
+    if (!context.access.admin) throw redirect({ to: '/access-pending' });
+  },
+  component: AdminEmployees,
+});
+
+const information = [
+  ['Consultation Calculator', 'Approved service and product prices'],
+  ['Sanctuary Support', 'Client concerns, procedures, escalation'],
+  ['Sanctuary Guidance', 'Employee Handbook and Code of Honor'],
+  ['Content Studio', 'Brand voice, services, campaigns'],
+];
+
+function AdminEmployees() {
+  const queryClient = useQueryClient();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const invite = useServerFn(inviteEmployee);
+  const resend = useServerFn(resendInvitation);
+  const remove = useServerFn(removeInvitation);
+  const revoke = useServerFn(revokeEmployee);
+  const employees = useQuery({ queryKey: ['sanctuary-employees'], queryFn: () => listEmployees() });
+  const invitations = useQuery({ queryKey: ['sanctuary-invitations'], queryFn: () => listInvitations() });
+
+  async function sendInvite(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setMessage('');
+    try {
+      await invite({ data: { name, email } });
+      setMessage(`${name} was invited. They can open the link in their email to join.`);
+      setName('');
+      setEmail('');
+      await queryClient.invalidateQueries({ queryKey: ['sanctuary-invitations'] });
+      await queryClient.invalidateQueries({ queryKey: ['sanctuary-employees'] });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'The invitation could not be sent. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function resendInvite(inviteEmail: string) {
+    setMessage('');
+    try {
+      await resend({ data: { email: inviteEmail } });
+      setMessage(`The invitation for ${inviteEmail} was sent again.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'The invitation could not be sent again.');
+    }
+  }
+
+  async function removeInvite(id: string, inviteEmail: string) {
+    setMessage('');
+    try {
+      await remove({ data: { id } });
+      setMessage(`The invitation for ${inviteEmail} was withdrawn.`);
+      await queryClient.invalidateQueries({ queryKey: ['sanctuary-invitations'] });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'The invitation could not be withdrawn.');
+    }
+  }
+
+  async function revokeAccess(id: string) {
+    const result = await revoke({ data: { target_user_id: id } });
+    if (!result.blocked) setMessage('The person could not be removed. Please try again.');
+    else if (!result.authBlocked) setMessage('Their employee access was removed, but the final account step is still pending. Please try again.');
+    else setMessage('Their access was removed. They are signed out immediately.');
+    await queryClient.invalidateQueries({ queryKey: ['sanctuary-employees'] });
+  }
+
+  return (
+    <div className="grid gap-5">
+      <div>
+        <p className="eyebrow">OWNER ADMINISTRATION</p>
+        <h1 className="page-heading">Employee access</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Invite people to the team, and remove access the moment it ends.</p>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-4">
+        <Button variant="glass" asChild><Link to="/pricing">Service and product prices</Link></Button>
+        <Button variant="glass" asChild><Link to="/support-knowledge">Sanctuary Support</Link></Button>
+        <Button variant="glass" asChild><Link to="/guidance-knowledge">Sanctuary Guidance</Link></Button>
+        <Button variant="glass" asChild><Link to="/content-knowledge">Content Studio</Link></Button>
+      </div>
+      <section className="glass-panel p-5">
+        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-primary"><UserPlus size={15} /> Invite someone to the team</h2>
+        <p className="mt-2 text-sm text-muted-foreground">They receive a private link in their email. No account, no password, nothing to sign up for — they choose a password when they open it.</p>
+        <form className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto]" onSubmit={sendInvite}>
+          <Input placeholder="Name" value={name} onChange={e => setName(e.target.value)} required aria-label="Name" />
+          <Input placeholder="Email address" type="email" value={email} onChange={e => setEmail(e.target.value)} required aria-label="Email address" />
+          <Button variant="sanctuary" type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send invitation'}<ArrowRight size={15} /></Button>
+        </form>
+        {message && <div role="status" className="form-message">{message}</div>}
+      </section>
+      <section className="glass-panel overflow-hidden">
+        <h2 className="px-5 pt-5 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Invitations</h2>
+        {invitations.isLoading ? <p className="px-5 py-4 text-sm text-muted-foreground">Loading…</p> : invitations.isError ? <p className="px-5 py-4 text-sm text-muted-foreground">Invitations could not be loaded.</p> : !invitations.data?.length ? <p className="px-5 py-4 text-sm text-muted-foreground">No invitations yet.</p> : (
+          <div className="mt-3 divide-y divide-input">
+            {invitations.data.map(invitee => (
+              <div className="admin-row" key={invitee.id}>
+                <div className="min-w-0">
+                  <strong>{invitee.display_name}</strong>
+                  <p className="truncate text-sm text-muted-foreground">{invitee.email}</p>
+                  <span className={`status status-${invitee.status === 'accepted' ? 'active' : 'revoked'}`}>{invitee.status === 'accepted' ? 'Joined' : 'Waiting'}</span>
+                </div>
+                {invitee.status !== 'accepted' ? (
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <Button variant="glass" onClick={() => void resendInvite(invitee.email)}><RefreshCw size={14} /> Send again</Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild><Button variant="destructive"><Trash2 size={14} /> Withdraw</Button></AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Withdraw this invitation?</AlertDialogTitle>
+                          <AlertDialogDescription>{invitee.email} will no longer be able to join with this link.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Keep</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => void removeInvite(invitee.id, invitee.email)}>Withdraw</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+      <section className="glass-panel overflow-hidden">
+        <h2 className="px-5 pt-5 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Employees</h2>
+        {employees.isLoading ? <p className="px-5 py-4 text-sm text-muted-foreground">Loading…</p> : employees.isError ? <p className="px-5 py-4 text-sm text-muted-foreground">The list could not be loaded.</p> : !employees.data?.length ? <p className="px-5 py-4 text-sm text-muted-foreground">No employees yet.</p> : (
+          <div className="mt-3 divide-y divide-input">
+            {employees.data.map(employee => (
+              <div className="admin-row" key={employee.user_id}>
+                <div className="min-w-0"><strong>{employee.display_name}</strong><p className="truncate text-sm text-muted-foreground">{employee.email}</p><span className={`status status-${employee.status}`}>{employee.status}</span></div>
+                {employee.status !== 'revoked' ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild><Button variant="destructive"><ShieldOff size={14} /> Revoke access</Button></AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Revoke {employee.display_name}’s access?</AlertDialogTitle>
+                        <AlertDialogDescription>They will be signed out immediately and cannot return to any Sanctuary tool.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Keep access</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => void revokeAccess(employee.user_id)}>Revoke access</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+      <section className="glass-panel overflow-hidden">
+        <h2 className="px-5 pt-5 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Approved information</h2>
+        <div className="mt-3 divide-y divide-input">
+          {information.map(([tool, description]) => <div className="admin-row" key={tool}><div><strong>{tool}</strong><p className="text-sm text-muted-foreground">{description}</p></div><span className="status status-active">Ready</span></div>)}
+        </div>
+      </section>
+      <Button variant="link" asChild className="back-link justify-start px-0"><Link to="/">Return to Sanctuary Team</Link></Button>
+    </div>
+  );
 }
