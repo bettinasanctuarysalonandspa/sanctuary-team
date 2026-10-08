@@ -64,6 +64,13 @@
       "when": 1791494200976,
       "tag": "0008_calculator_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791494372103,
+      "tag": "0009_invitation_tracker",
+      "breakpoints": true
     }
   ]
 }

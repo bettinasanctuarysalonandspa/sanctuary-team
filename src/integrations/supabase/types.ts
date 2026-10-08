@@ -635,6 +635,14 @@ export type Database = {
           user_id: string
         }[]
       }
+      list_invitation_tracker: {
+        Args: never
+        Returns: {
+          invitation_id: string
+          last_sign_in_at: string
+          opened_at: string
+        }[]
+      }
       list_sanctuary_employees: {
         Args: never
         Returns: {
