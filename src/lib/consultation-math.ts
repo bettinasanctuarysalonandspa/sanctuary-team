@@ -10,10 +10,11 @@ export function percentHalfUp(cents: number, bps: number): number {
   return Math.floor((cents * bps + 5000) / 10000);
 }
 
-export function checkoutTotals(serviceCents: number, retailCents: number) {
-  const amenity = percentHalfUp(serviceCents + retailCents, AMENITY_RATE_BPS);
-  const tax = percentHalfUp(retailCents, RETAIL_TAX_RATE_BPS);
-  return { services: serviceCents, retail: retailCents, amenity, tax, total: serviceCents + retailCents + amenity + tax };
+export function checkoutTotals(serviceCents: number, retailCents: number, extensionHairCents = 0) {
+  const taxableRetail = retailCents + extensionHairCents;
+  const amenity = percentHalfUp(serviceCents + taxableRetail, AMENITY_RATE_BPS);
+  const tax = percentHalfUp(taxableRetail, RETAIL_TAX_RATE_BPS);
+  return { services: serviceCents, retail: retailCents, extensionHair: extensionHairCents, amenity, tax, total: serviceCents + taxableRetail + amenity + tax };
 }
 
 export function lanzaRetailFromWholesale(wholesale: number): number {
