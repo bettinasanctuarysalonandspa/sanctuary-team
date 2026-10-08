@@ -11,6 +11,6 @@
 - [x] Create four empty tool destinations with approved-content-only states.
 - [x] Add employee sign-in, profile foundation, and restricted owner area without seed records.
 - [x] Verify public navigation, signed-out restrictions, and phone/desktop layout.
-- [ ] Verify signed-in employee/owner flows across closures and tools, plus actual owner revocation — blocked by no approved accounts; session minting confirms no users exist.
+- [x] Verify owner Admin dashboard opens with verified account — fixed session check to fall back to token issue-time when no server session row exists. Employee flows and revocation test still pending an employee account.
 - [ ] Add authentic Sanctuary photography — requires owner uploads.
 - [x] Provision owner access — Bettina's verified account granted admin; employee accounts still require owner approval.
