@@ -1,4 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { appHead } from '@/lib/app-meta';
-import { ToolPage } from '@/components/sanctuary/tool-page';
-export const Route = createFileRoute('/_authenticated/_employee/salon-ai')({ head: () => appHead('Sanctuary Guidance', 'Your resource for policies, procedures, communication, and professional growth.'), component: () => <ToolPage index={2}/> });
+import { ArrowLeft } from 'lucide-react';
+import { GuidanceChat } from '@/components/sanctuary/guidance-chat';
+import { listGuidanceMessages } from '@/lib/guidance.functions';
+export const Route = createFileRoute('/_authenticated/_employee/salon-ai')({ loader: () => listGuidanceMessages(), head: () => appHead('Sanctuary Guidance', 'Your resource for policies, procedures, communication, and professional growth.'), component: Guidance });
+function Guidance() { const messages = Route.useLoaderData(); return <><Link to="/tools" className="back-link"><ArrowLeft size={15}/>All tools</Link><div className="page-heading"><h1>Sanctuary Guidance</h1><p>Your resource for policies, procedures, communication, and professional growth.</p></div><GuidanceChat initialMessages={messages}/></>; }
