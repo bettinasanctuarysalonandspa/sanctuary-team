@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Mic, MicOff, RotateCcw, SendHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { clearConsultation, listConsultationMessages, sendConsultationMessage } from '@/lib/consultation.functions';
@@ -67,7 +68,7 @@ export function ConsultationChat() {
           : shown.map(m => (
             <div key={m.id} className={m.role === 'user' ? 'ml-auto max-w-[85%] rounded-2xl bg-primary px-4 py-2 text-primary-foreground' : 'mr-auto max-w-[92%] rounded-2xl bg-background px-4 py-3 text-foreground shadow-sm'}>
               {m.role === 'user' ? <p className="whitespace-pre-wrap break-words">{m.content}</p>
-                : <div className="prose prose-sm max-w-none break-words [&_li]:my-0.5 [&_p]:my-1.5 [&_table]:text-sm [&_ul]:my-1.5"><ReactMarkdown>{m.content}</ReactMarkdown></div>}
+                : <div className="prose prose-sm max-w-none break-words [&_li]:my-0.5 [&_p]:my-1.5 [&_table]:text-sm [&_ul]:my-1.5"><ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown></div>}
             </div>
           ))}
         {pending && <p role="status" className="mr-auto text-sm text-muted-foreground">Thinking…</p>}
