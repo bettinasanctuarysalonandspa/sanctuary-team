@@ -1,8 +1,8 @@
 # Sanctuary Salon AI
 - [x] Secure first owner setup: self-registration disabled; Bettina's verified Google account (confirmed email) granted admin.
-- [ ] Prepare four separate conversational assistants, employee-account conversations, and supported voice input — activation awaits approved instructions/knowledge.
-- [ ] Build accurate Consultation pricing calculations — awaiting approved prices and calculation rules.
-- [ ] Add owner-only knowledge and pricing management — awaiting approved files and calculation rules; employee management is implemented.
+- [ ] Prepare remaining three separate conversational assistants, employee-account conversations, and supported voice input — activation awaits approved instructions/knowledge.
+- [x] Build accurate Consultation pricing calculations (deterministic 3% + 8.25% retail-only math, tested).
+- [ ] Owner knowledge management for the other three assistants — awaiting their approved files.
 - [x] Enforce secure persistent sessions with a 30-day maximum and sign-in after expiry/revocation.
 - [x] Add owner-only employee revocation, active-session invalidation, and automatic sign-out.
 - [x] Verify session observer restoration, manual sign-out, expiry, revocation, and offline safeguards with six automated tests.
@@ -14,5 +14,6 @@
 - [x] Verify owner Admin dashboard opens with verified account — fixed session check to fall back to token issue-time when no server session row exists. Employee flows and revocation test still pending an employee account.
 - [ ] Add authentic Sanctuary photography — requires owner uploads.
 - [x] Provision owner access — Bettina's verified account granted admin; employee accounts still require owner approval.
-- [ ] Consultation Calculator: build chat + owner price editor; load v6 historical data as "needs owner review" drafts (blocked: owner approval of v6 roster/prices)
-- [ ] Import L'ANZA products using the owner's L'ANZA 2026 wholesale workbook (not manufacturer retail): wholesale x2 rounded up; flag only products whose wholesale cost is genuinely missing; admin-editable wholesale + retail (blocked: waiting for owner to upload the workbook)
+- [x] Consultation Calculator: chat with voice, owner price editor (/pricing), approved knowledge base loaded.
+- [x] Import L'ANZA products using the owner's L'ANZA 2026 wholesale workbook (not manufacturer retail): wholesale x2 rounded up; flag only products whose wholesale cost is genuinely missing; admin-editable wholesale + retail 
+- [x] Rebrand to Sanctuary Team: rename four sections, new welcome line, remove AI/GPT/Suite from employee-facing wording (wording only).

@@ -14,6 +14,276 @@ export type Database = {
   }
   public: {
     Tables: {
+      calc_aliases: {
+        Row: {
+          id: number
+          meaning: string
+          phrase: string
+        }
+        Insert: {
+          id?: never
+          meaning: string
+          phrase: string
+        }
+        Update: {
+          id?: never
+          meaning?: string
+          phrase?: string
+        }
+        Relationships: []
+      }
+      calc_audit_log: {
+        Row: {
+          action: string
+          actor: string | null
+          created_at: string
+          id: number
+          new_row: Json | null
+          old_row: Json | null
+          table_name: string
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          created_at?: string
+          id?: never
+          new_row?: Json | null
+          old_row?: Json | null
+          table_name: string
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          created_at?: string
+          id?: never
+          new_row?: Json | null
+          old_row?: Json | null
+          table_name?: string
+        }
+        Relationships: []
+      }
+      calc_extension_costs: {
+        Row: {
+          cost_per_section: number
+          full_weft_cost: number
+          hair_id: number
+        }
+        Insert: {
+          cost_per_section: number
+          full_weft_cost: number
+          hair_id: number
+        }
+        Update: {
+          cost_per_section?: number
+          full_weft_cost?: number
+          hair_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calc_extension_costs_hair_id_fkey"
+            columns: ["hair_id"]
+            isOneToOne: true
+            referencedRelation: "calc_extension_hair"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calc_extension_hair: {
+        Row: {
+          active: boolean
+          id: number
+          length_in: number
+          name: string
+          price_per_section: number
+        }
+        Insert: {
+          active?: boolean
+          id?: never
+          length_in: number
+          name: string
+          price_per_section: number
+        }
+        Update: {
+          active?: boolean
+          id?: never
+          length_in?: number
+          name?: string
+          price_per_section?: number
+        }
+        Relationships: []
+      }
+      calc_product_costs: {
+        Row: {
+          product_id: number
+          updated_at: string
+          wholesale_cost: number
+        }
+        Insert: {
+          product_id: number
+          updated_at?: string
+          wholesale_cost: number
+        }
+        Update: {
+          product_id?: number
+          updated_at?: string
+          wholesale_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calc_product_costs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "calc_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calc_products: {
+        Row: {
+          active: boolean
+          brand: string
+          id: number
+          line: string | null
+          name: string
+          notes: string | null
+          retail_price: number | null
+          size: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          brand: string
+          id?: never
+          line?: string | null
+          name: string
+          notes?: string | null
+          retail_price?: number | null
+          size?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          brand?: string
+          id?: never
+          line?: string | null
+          name?: string
+          notes?: string | null
+          retail_price?: number | null
+          size?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      calc_service_level_prices: {
+        Row: {
+          effective_date: string
+          level: string
+          price: number
+          service_id: number
+        }
+        Insert: {
+          effective_date?: string
+          level: string
+          price: number
+          service_id: number
+        }
+        Update: {
+          effective_date?: string
+          level?: string
+          price?: number
+          service_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calc_service_level_prices_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "calc_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calc_services: {
+        Row: {
+          active: boolean
+          flat_price: number | null
+          id: number
+          kind: string
+          name: string
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          flat_price?: number | null
+          id?: never
+          kind: string
+          name: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          flat_price?: number | null
+          id?: never
+          kind?: string
+          name?: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      calc_stylists: {
+        Row: {
+          active: boolean
+          id: number
+          level: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          id?: never
+          level: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          id?: never
+          level?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      consultation_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: number
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: never
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: never
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       employee_access_revocations: {
         Row: {
           revoked_at: string
@@ -91,6 +361,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_sanctuary_employee: { Args: never; Returns: boolean }
+      is_sanctuary_owner: { Args: never; Returns: boolean }
       list_sanctuary_employees: {
         Args: never
         Returns: {
