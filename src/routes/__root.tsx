@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sanctuary Salon AI" },
+      { title: "Sanctuary Team" },
       { name: "description", content: "Sanctuary Salon & Spa employee workspace." },
       { name: "author", content: "Sanctuary Salon & Spa" },
       { property: "og:type", content: "website" },
