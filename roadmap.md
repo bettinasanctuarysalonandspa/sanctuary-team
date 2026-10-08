@@ -5,9 +5,8 @@
 - [x] Show charges included in service, retail product, and extension hair quote totals rather than separate charge lines; preserve listed catalog prices and approved tax rules.
 - [x] Secure first owner setup: self-registration disabled; Bettina's verified Google account (confirmed email) granted admin.
 - [x] Sanctuary Guidance active with handbook, Guidance knowledge file and source-of-truth summary; owner editor at Admin.
-- [ ] Sanctuary Support assistant — awaits approved knowledge.
+- [x] Sanctuary Support active with owner emergency operations file; quick emergency buttons; owner editor. Missing contacts/locations pending owner.
 - [x] Build accurate Consultation pricing calculations (deterministic 3% + 8.25% retail-only math, tested).
-- [ ] Owner knowledge management for Sanctuary Support — awaiting approved files.
 - [x] Enforce secure persistent sessions with a 30-day maximum and sign-in after expiry/revocation.
 - [x] Add owner-only employee revocation, active-session invalidation, and automatic sign-out.
 - [x] Verify session observer restoration, manual sign-out, expiry, revocation, and offline safeguards with six automated tests.
