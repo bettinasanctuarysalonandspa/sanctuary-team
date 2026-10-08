@@ -12,17 +12,25 @@ async function requireOwner(context: { supabase: { rpc: (...args: any[]) => any 
   if (error || data !== true) throw new Error('Owner access is required to manage team accounts.');
 }
 
+// The address invitation links must open: the real site, never a preview host.
+const PUBLISHED_ORIGIN = 'https://sanctuary-team.lovable.app';
+
 // Loaded inside the handler so the server-only request helper never enters the
 // browser bundle.
 async function appOrigin() {
   try {
     const { getRequest } = await import('@tanstack/react-start/server');
     const url = getRequest()?.url;
-    if (url) return new URL(url).origin;
+    if (url) {
+      const parsed = new URL(url);
+      const host = parsed.hostname;
+      const isPreview = host === 'localhost' || host === '127.0.0.1' || host.startsWith('id-preview--');
+      if (!isPreview) return parsed.origin;
+    }
   } catch {
     /* fall through */
   }
-  return undefined;
+  return PUBLISHED_ORIGIN;
 }
 
 /** Creates the account, grants employee access, and emails the private invitation link. */
