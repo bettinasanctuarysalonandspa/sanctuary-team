@@ -17,8 +17,10 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as AuthenticatedEmployeeRouteImport } from './routes/_authenticated/_employee'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as ApiContentStudioRouteImport } from './routes/api/content-studio'
 import { Route as AuthenticatedEmployeeAdminRouteImport } from './routes/_authenticated/_employee.admin'
 import { Route as AuthenticatedEmployeeConsultationRouteImport } from './routes/_authenticated/_employee.consultation'
+import { Route as AuthenticatedEmployeeContentKnowledgeRouteImport } from './routes/_authenticated/_employee.content-knowledge'
 import { Route as AuthenticatedEmployeeContentStudioRouteImport } from './routes/_authenticated/_employee.content-studio'
 import { Route as AuthenticatedEmployeeEmergencyHelpRouteImport } from './routes/_authenticated/_employee.emergency-help'
 import { Route as AuthenticatedEmployeePricingRouteImport } from './routes/_authenticated/_employee.pricing'
@@ -62,6 +64,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiContentStudioRoute = ApiContentStudioRouteImport.update({
+  id: '/api/content-studio',
+  path: '/api/content-studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedEmployeeAdminRoute =
   AuthenticatedEmployeeAdminRouteImport.update({
     id: '/admin',
@@ -72,6 +79,12 @@ const AuthenticatedEmployeeConsultationRoute =
   AuthenticatedEmployeeConsultationRouteImport.update({
     id: '/consultation',
     path: '/consultation',
+    getParentRoute: () => AuthenticatedEmployeeRoute,
+  } as any)
+const AuthenticatedEmployeeContentKnowledgeRoute =
+  AuthenticatedEmployeeContentKnowledgeRouteImport.update({
+    id: '/content-knowledge',
+    path: '/content-knowledge',
     getParentRoute: () => AuthenticatedEmployeeRoute,
   } as any)
 const AuthenticatedEmployeeContentStudioRoute =
@@ -106,8 +119,10 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/tools': typeof ToolsRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/api/content-studio': typeof ApiContentStudioRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
+  '/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/pricing': typeof AuthenticatedEmployeePricingRoute
@@ -120,8 +135,10 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/tools': typeof ToolsRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/api/content-studio': typeof ApiContentStudioRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
+  '/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/pricing': typeof AuthenticatedEmployeePricingRoute
@@ -137,8 +154,10 @@ export interface FileRoutesById {
   '/tools': typeof ToolsRoute
   '/_authenticated/_employee': typeof AuthenticatedEmployeeRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/api/content-studio': typeof ApiContentStudioRoute
   '/_authenticated/_employee/admin': typeof AuthenticatedEmployeeAdminRoute
   '/_authenticated/_employee/consultation': typeof AuthenticatedEmployeeConsultationRoute
+  '/_authenticated/_employee/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/_authenticated/_employee/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/_authenticated/_employee/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/_authenticated/_employee/pricing': typeof AuthenticatedEmployeePricingRoute
@@ -153,8 +172,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/tools'
     | '/profile'
+    | '/api/content-studio'
     | '/admin'
     | '/consultation'
+    | '/content-knowledge'
     | '/content-studio'
     | '/emergency-help'
     | '/pricing'
@@ -167,8 +188,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/tools'
     | '/profile'
+    | '/api/content-studio'
     | '/admin'
     | '/consultation'
+    | '/content-knowledge'
     | '/content-studio'
     | '/emergency-help'
     | '/pricing'
@@ -183,8 +206,10 @@ export interface FileRouteTypes {
     | '/tools'
     | '/_authenticated/_employee'
     | '/_authenticated/profile'
+    | '/api/content-studio'
     | '/_authenticated/_employee/admin'
     | '/_authenticated/_employee/consultation'
+    | '/_authenticated/_employee/content-knowledge'
     | '/_authenticated/_employee/content-studio'
     | '/_authenticated/_employee/emergency-help'
     | '/_authenticated/_employee/pricing'
@@ -198,6 +223,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ToolsRoute: typeof ToolsRoute
+  ApiContentStudioRoute: typeof ApiContentStudioRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -258,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/content-studio': {
+      id: '/api/content-studio'
+      path: '/api/content-studio'
+      fullPath: '/api/content-studio'
+      preLoaderRoute: typeof ApiContentStudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/_employee/admin': {
       id: '/_authenticated/_employee/admin'
       path: '/admin'
@@ -270,6 +303,13 @@ declare module '@tanstack/react-router' {
       path: '/consultation'
       fullPath: '/consultation'
       preLoaderRoute: typeof AuthenticatedEmployeeConsultationRouteImport
+      parentRoute: typeof AuthenticatedEmployeeRoute
+    }
+    '/_authenticated/_employee/content-knowledge': {
+      id: '/_authenticated/_employee/content-knowledge'
+      path: '/content-knowledge'
+      fullPath: '/content-knowledge'
+      preLoaderRoute: typeof AuthenticatedEmployeeContentKnowledgeRouteImport
       parentRoute: typeof AuthenticatedEmployeeRoute
     }
     '/_authenticated/_employee/content-studio': {
@@ -306,6 +346,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedEmployeeRouteChildren {
   AuthenticatedEmployeeAdminRoute: typeof AuthenticatedEmployeeAdminRoute
   AuthenticatedEmployeeConsultationRoute: typeof AuthenticatedEmployeeConsultationRoute
+  AuthenticatedEmployeeContentKnowledgeRoute: typeof AuthenticatedEmployeeContentKnowledgeRoute
   AuthenticatedEmployeeContentStudioRoute: typeof AuthenticatedEmployeeContentStudioRoute
   AuthenticatedEmployeeEmergencyHelpRoute: typeof AuthenticatedEmployeeEmergencyHelpRoute
   AuthenticatedEmployeePricingRoute: typeof AuthenticatedEmployeePricingRoute
@@ -316,6 +357,8 @@ const AuthenticatedEmployeeRouteChildren: AuthenticatedEmployeeRouteChildren = {
   AuthenticatedEmployeeAdminRoute: AuthenticatedEmployeeAdminRoute,
   AuthenticatedEmployeeConsultationRoute:
     AuthenticatedEmployeeConsultationRoute,
+  AuthenticatedEmployeeContentKnowledgeRoute:
+    AuthenticatedEmployeeContentKnowledgeRoute,
   AuthenticatedEmployeeContentStudioRoute:
     AuthenticatedEmployeeContentStudioRoute,
   AuthenticatedEmployeeEmergencyHelpRoute:
@@ -349,6 +392,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ToolsRoute: ToolsRoute,
+  ApiContentStudioRoute: ApiContentStudioRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

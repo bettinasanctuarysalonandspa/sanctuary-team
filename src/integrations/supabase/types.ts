@@ -284,6 +284,81 @@ export type Database = {
         }
         Relationships: []
       }
+      content_studio_gateway_state: {
+        Row: {
+          id: number
+          paused: boolean
+          reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          paused?: boolean
+          reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          paused?: boolean
+          reason?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_studio_knowledge: {
+        Row: {
+          approved: boolean
+          content: string
+          id: string
+          source: string
+          source_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean
+          content: string
+          id?: string
+          source: string
+          source_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean
+          content?: string
+          id?: string
+          source?: string
+          source_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_studio_messages: {
+        Row: {
+          created_at: string
+          id: number
+          message: Json
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          message: Json
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          message?: Json
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       employee_access_revocations: {
         Row: {
           revoked_at: string
