@@ -1,4 +1,5 @@
 # Sanctuary Team
+- [ ] Connect approved Content Studio knowledge, owner-only editing, private chat and supported voice; verify Head Spa and Butterfly Weft posts.
 - [x] Separate extension hair from retail products in consultation quote line items and subtotals; preserve checkout math.
 - [x] Show charges included in service, retail product, and extension hair quote totals rather than separate charge lines; preserve listed catalog prices and approved tax rules.
 - [x] Secure first owner setup: self-registration disabled; Bettina's verified Google account (confirmed email) granted admin.
