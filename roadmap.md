@@ -25,3 +25,4 @@
 - [x] Sent invitations to 11 team members (all pending, emails verified against the staff photo; Hana Lail's corrected to hanalillylail@gmail.com). Bottom two staff excluded by owner: one on maternity leave, one no longer with the salon.
 - [ ] Invite new hires as they join — owner will supply each name and email when hired.
 - [x] HVAC rule update: Brian Ferguson (704-657-7923) is the only HVAC contact; if he can't do the job he tells the team who to use (as before); backup HVAC company list removed from both Support records.
+- [x] Make Sanctuary Team installable from a phone home screen (web app manifest + icon); no offline mode requested.
