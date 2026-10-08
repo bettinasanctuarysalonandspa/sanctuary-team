@@ -15,3 +15,4 @@
 - [ ] Add authentic Sanctuary photography — requires owner uploads.
 - [x] Provision owner access — Bettina's verified account granted admin; employee accounts still require owner approval.
 - [ ] Consultation Calculator: build chat + owner price editor; load v6 historical data as "needs owner review" drafts (blocked: owner approval of v6 roster/prices)
+- [ ] Import L'ANZA products using wholesale x2 round-up; flag products without wholesale cost for review; admin-editable wholesale + retail
