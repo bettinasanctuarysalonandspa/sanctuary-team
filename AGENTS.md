@@ -21,3 +21,4 @@
 - Allocate rounded checkout charges deterministically across quote categories using largest remainders, so charge-inclusive category totals reconcile exactly without modifying catalog prices.
 - Keep Content Studio knowledge and private transcripts isolated from calculator data; load approved dated owner-editable records on every request so corrections take effect without changing prices.
 - Use AI Elements and authenticated same-origin streaming for Content Studio, replay server-owned history and persist plain text messages; keep the existing consultation interface unchanged.
+- Point invitation and other auth email links at the canonical published site address, never a preview or development host, so links still open on the team's phones.
