@@ -60,6 +60,7 @@ export const inviteEmployee = createServerFn({ method: 'POST' })
       data: { full_name: data.name },
     });
     if (error) {
+      console.error('[sanctuary-invite] account creation failed:', error.message);
       await context.supabase.from('employee_invitations').delete().eq('id', record.data.id);
       throw new Error('The invitation could not be sent. Check the email address and try again.');
     }
