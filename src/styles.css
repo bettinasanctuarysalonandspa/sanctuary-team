@@ -70,6 +70,8 @@
 .card-arrow { position: absolute; right: 22px; top: 27px; color: var(--muted-foreground); }
 .sanctuary-note { display: flex; gap: 24px; align-items: center; margin-top: 25px; padding: 20px 0; border-top: 1px solid color-mix(in oklab,var(--sage) 25%,transparent); }
 .sanctuary-note h2 { font-size: 23px; margin-top: 5px; } .sanctuary-note p { font-size: 12px; color: var(--muted-foreground); margin-top: 8px; line-height: 1.7; }
+.install-hint { font-size: 11px !important; letter-spacing: .01em; color: color-mix(in oklab,var(--muted-foreground) 82%,transparent) !important; padding-left: 11px; border-left: 1px solid color-mix(in oklab,var(--gold) 45%,transparent); }
+
 .sanctuary-note img { width: 114px; height: 114px; object-fit: cover; border-radius: 18px; margin-left: auto; }
 .app-footer { font-size: 10px; color: var(--muted-foreground); margin-top: 16px; display: flex; gap: 6px; align-items: center; }
 .bottom-nav { position: fixed; z-index: 20; bottom: 0; left: 0; right: 0; background: oklch(.985 .004 155 / .85); backdrop-filter: blur(22px); border-top: 1px solid var(--border); padding: 12px 24px calc(13px + env(safe-area-inset-bottom)); }
