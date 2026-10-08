@@ -24,3 +24,10 @@ export const revokeEmployee = createServerFn({ method: 'POST' })
   const { error: banError } = await supabaseAdmin.auth.admin.updateUserById(data.userId, { ban_duration: '876000h' });
   return { blocked: true, authBlocked: !banError };
  });
+export const listCalculatorUsage = createServerFn({ method: 'GET' })
+ .middleware([requireSupabaseAuth])
+ .handler(async ({ context }) => {
+  const { data, error } = await context.supabase.rpc('list_calculator_usage');
+  if (error) throw new Error('Calculator use could not be loaded. Owner access is required.');
+  return data;
+ });

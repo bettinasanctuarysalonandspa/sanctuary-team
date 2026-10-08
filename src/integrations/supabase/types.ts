@@ -625,6 +625,16 @@ export type Database = {
       }
       is_sanctuary_employee: { Args: never; Returns: boolean }
       is_sanctuary_owner: { Args: never; Returns: boolean }
+      list_calculator_usage: {
+        Args: never
+        Returns: {
+          days_used: number
+          display_name: string
+          last_used: string
+          questions: number
+          user_id: string
+        }[]
+      }
       list_sanctuary_employees: {
         Args: never
         Returns: {
