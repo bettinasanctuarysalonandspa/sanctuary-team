@@ -12,17 +12,25 @@ async function requireOwner(context: { supabase: { rpc: (...args: any[]) => any 
   if (error || data !== true) throw new Error('Owner access is required to manage team accounts.');
 }
 
+// The address invitation links must open: the real site, never a preview host.
+const PUBLISHED_ORIGIN = 'https://sanctuary-team.lovable.app';
+
 // Loaded inside the handler so the server-only request helper never enters the
 // browser bundle.
 async function appOrigin() {
   try {
     const { getRequest } = await import('@tanstack/react-start/server');
     const url = getRequest()?.url;
-    if (url) return new URL(url).origin;
+    if (url) {
+      const parsed = new URL(url);
+      const host = parsed.hostname;
+      const isPreview = host === 'localhost' || host === '127.0.0.1' || host.startsWith('id-preview--');
+      if (!isPreview) return parsed.origin;
+    }
   } catch {
     /* fall through */
   }
-  return undefined;
+  return PUBLISHED_ORIGIN;
 }
 
 /** Creates the account, grants employee access, and emails the private invitation link. */
@@ -56,7 +64,7 @@ export const inviteEmployee = createServerFn({ method: 'POST' })
     if (record.error) throw new Error('The invitation could not be recorded. Please try again.');
 
     const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
-      redirectTo: `${await appOrigin() ?? ''}/set-password`,
+      redirectTo: `${await appOrigin()}/set-password`,
       data: { full_name: data.name },
     });
     if (error) {
@@ -83,7 +91,7 @@ export const resendInvitation = createServerFn({ method: 'POST' })
     await requireOwner(context);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const { error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
-      redirectTo: `${await appOrigin() ?? ''}/set-password`,
+      redirectTo: `${await appOrigin()}/set-password`,
     });
     if (error) throw new Error('The invitation could not be sent again. Please try again.');
     await context.supabase.from('employee_invitations').update({ updated_at: new Date().toISOString() }).eq('email', data.email);
