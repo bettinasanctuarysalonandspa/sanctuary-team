@@ -2,7 +2,7 @@ import { Calculator, LifeBuoy, Sparkles, PenLine, ArrowUpRight } from 'lucide-re
 import { Link } from '@tanstack/react-router';
 export const tools = [
  { title: 'Consultation Calculator', description: 'Service pricing, product prescriptions, and client investment.', path: '/consultation', icon: Calculator, tone: 'consultation', empty: 'Approved pricing is on its way', detail: 'No service prices, stylist levels, products, taxes, or amenity charges have been added yet.' },
- { title: 'Sanctuary Support', description: 'Help with client situations, salon procedures, and problem-solving.', path: '/emergency-help', icon: LifeBuoy, tone: 'emergency', empty: 'Guidance awaiting approval', detail: 'Salon policies and escalation procedures have not been added. This tool cannot provide guidance yet.' },
+ { title: 'Sanctuary Support', description: 'Help with client situations, salon procedures, and problem-solving.', path: '/emergency-help', icon: LifeBuoy, tone: 'emergency', empty: 'Ready to help', detail: 'Step-by-step help for urgent salon situations.' },
  { title: 'Sanctuary Guidance', description: 'Your resource for policies, procedures, communication, and professional growth.', path: '/salon-ai', icon: Sparkles, tone: 'education', empty: 'Ready for your questions', detail: 'Answers come from the Employee Handbook, approved Sanctuary policies, and our Code of Honor.' },
  { title: 'Content Studio', description: 'Social media, marketing, video scripts, and creative content.', path: '/content-studio', icon: PenLine, tone: 'studio', empty: 'A space for your salon’s voice', detail: 'Approved brand guidance and product information have not been added. This tool is not active yet.' },
 ] as const;

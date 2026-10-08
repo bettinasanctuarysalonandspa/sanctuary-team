@@ -43,6 +43,13 @@
       "when": 1791479578509,
       "tag": "0005_sanctuary_guidance",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791480426514,
+      "tag": "0006_sanctuary_support",
+      "breakpoints": true
     }
   ]
 }
