@@ -18,3 +18,4 @@
 - Revoke employee membership transactionally before attempting an Auth ban; prohibit owner targets and self-revocation.
 - Build each tool only from owner-supplied approved data stored in owner-editable tables; quote math runs deterministically in code (integer cents, half-up) via an AI tool call, never AI arithmetic, so prices stay exact and auditable.
 - Keep tools without approved information as empty pages, so nothing is invented.
+- Allocate rounded checkout charges deterministically across quote categories using largest remainders, so charge-inclusive category totals reconcile exactly without modifying catalog prices.

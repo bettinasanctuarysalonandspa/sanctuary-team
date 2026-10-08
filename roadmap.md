@@ -1,5 +1,6 @@
 # Sanctuary Salon AI
 - [ ] Separate extension hair from retail products in consultation quote line items and subtotals; preserve checkout math.
+- [ ] Show charges included in service, retail product, and extension hair quote totals rather than separate charge lines; preserve listed catalog prices and approved tax rules.
 - [x] Secure first owner setup: self-registration disabled; Bettina's verified Google account (confirmed email) granted admin.
 - [ ] Prepare remaining three separate conversational assistants, employee-account conversations, and supported voice input — activation awaits approved instructions/knowledge.
 - [x] Build accurate Consultation pricing calculations (deterministic 3% + 8.25% retail-only math, tested).
