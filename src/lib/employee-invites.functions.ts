@@ -56,7 +56,7 @@ export const inviteEmployee = createServerFn({ method: 'POST' })
     if (record.error) throw new Error('The invitation could not be recorded. Please try again.');
 
     const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
-      redirectTo: `${appOrigin() ?? ''}/set-password`,
+      redirectTo: `${await appOrigin() ?? ''}/set-password`,
       data: { full_name: data.name },
     });
     if (error) {
@@ -82,7 +82,7 @@ export const resendInvitation = createServerFn({ method: 'POST' })
     await requireOwner(context);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const { error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
-      redirectTo: `${appOrigin() ?? ''}/set-password`,
+      redirectTo: `${await appOrigin() ?? ''}/set-password`,
     });
     if (error) throw new Error('The invitation could not be sent again. Please try again.');
     await context.supabase.from('employee_invitations').update({ updated_at: new Date().toISOString() }).eq('email', data.email);
