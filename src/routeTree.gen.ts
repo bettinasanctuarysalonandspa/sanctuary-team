@@ -20,6 +20,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as ApiContentStudioRouteImport } from './routes/api/content-studio'
 import { Route as AuthenticatedEmployeeAdminRouteImport } from './routes/_authenticated/_employee.admin'
 import { Route as AuthenticatedEmployeeConsultationRouteImport } from './routes/_authenticated/_employee.consultation'
+import { Route as AuthenticatedEmployeeContentKnowledgeRouteImport } from './routes/_authenticated/_employee.content-knowledge'
 import { Route as AuthenticatedEmployeeContentStudioRouteImport } from './routes/_authenticated/_employee.content-studio'
 import { Route as AuthenticatedEmployeeEmergencyHelpRouteImport } from './routes/_authenticated/_employee.emergency-help'
 import { Route as AuthenticatedEmployeePricingRouteImport } from './routes/_authenticated/_employee.pricing'
@@ -80,6 +81,12 @@ const AuthenticatedEmployeeConsultationRoute =
     path: '/consultation',
     getParentRoute: () => AuthenticatedEmployeeRoute,
   } as any)
+const AuthenticatedEmployeeContentKnowledgeRoute =
+  AuthenticatedEmployeeContentKnowledgeRouteImport.update({
+    id: '/content-knowledge',
+    path: '/content-knowledge',
+    getParentRoute: () => AuthenticatedEmployeeRoute,
+  } as any)
 const AuthenticatedEmployeeContentStudioRoute =
   AuthenticatedEmployeeContentStudioRouteImport.update({
     id: '/content-studio',
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/api/content-studio': typeof ApiContentStudioRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
+  '/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/pricing': typeof AuthenticatedEmployeePricingRoute
@@ -130,6 +138,7 @@ export interface FileRoutesByTo {
   '/api/content-studio': typeof ApiContentStudioRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
+  '/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/pricing': typeof AuthenticatedEmployeePricingRoute
@@ -148,6 +157,7 @@ export interface FileRoutesById {
   '/api/content-studio': typeof ApiContentStudioRoute
   '/_authenticated/_employee/admin': typeof AuthenticatedEmployeeAdminRoute
   '/_authenticated/_employee/consultation': typeof AuthenticatedEmployeeConsultationRoute
+  '/_authenticated/_employee/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/_authenticated/_employee/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/_authenticated/_employee/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/_authenticated/_employee/pricing': typeof AuthenticatedEmployeePricingRoute
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/api/content-studio'
     | '/admin'
     | '/consultation'
+    | '/content-knowledge'
     | '/content-studio'
     | '/emergency-help'
     | '/pricing'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/api/content-studio'
     | '/admin'
     | '/consultation'
+    | '/content-knowledge'
     | '/content-studio'
     | '/emergency-help'
     | '/pricing'
@@ -197,6 +209,7 @@ export interface FileRouteTypes {
     | '/api/content-studio'
     | '/_authenticated/_employee/admin'
     | '/_authenticated/_employee/consultation'
+    | '/_authenticated/_employee/content-knowledge'
     | '/_authenticated/_employee/content-studio'
     | '/_authenticated/_employee/emergency-help'
     | '/_authenticated/_employee/pricing'
@@ -292,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployeeConsultationRouteImport
       parentRoute: typeof AuthenticatedEmployeeRoute
     }
+    '/_authenticated/_employee/content-knowledge': {
+      id: '/_authenticated/_employee/content-knowledge'
+      path: '/content-knowledge'
+      fullPath: '/content-knowledge'
+      preLoaderRoute: typeof AuthenticatedEmployeeContentKnowledgeRouteImport
+      parentRoute: typeof AuthenticatedEmployeeRoute
+    }
     '/_authenticated/_employee/content-studio': {
       id: '/_authenticated/_employee/content-studio'
       path: '/content-studio'
@@ -326,6 +346,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedEmployeeRouteChildren {
   AuthenticatedEmployeeAdminRoute: typeof AuthenticatedEmployeeAdminRoute
   AuthenticatedEmployeeConsultationRoute: typeof AuthenticatedEmployeeConsultationRoute
+  AuthenticatedEmployeeContentKnowledgeRoute: typeof AuthenticatedEmployeeContentKnowledgeRoute
   AuthenticatedEmployeeContentStudioRoute: typeof AuthenticatedEmployeeContentStudioRoute
   AuthenticatedEmployeeEmergencyHelpRoute: typeof AuthenticatedEmployeeEmergencyHelpRoute
   AuthenticatedEmployeePricingRoute: typeof AuthenticatedEmployeePricingRoute
@@ -336,6 +357,8 @@ const AuthenticatedEmployeeRouteChildren: AuthenticatedEmployeeRouteChildren = {
   AuthenticatedEmployeeAdminRoute: AuthenticatedEmployeeAdminRoute,
   AuthenticatedEmployeeConsultationRoute:
     AuthenticatedEmployeeConsultationRoute,
+  AuthenticatedEmployeeContentKnowledgeRoute:
+    AuthenticatedEmployeeContentKnowledgeRoute,
   AuthenticatedEmployeeContentStudioRoute:
     AuthenticatedEmployeeContentStudioRoute,
   AuthenticatedEmployeeEmergencyHelpRoute:
