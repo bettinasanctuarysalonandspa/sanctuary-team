@@ -7,7 +7,7 @@ const inviteSchema = z.object({
   email: z.string().trim().toLowerCase().email('Enter a valid email address.'),
 });
 
-async function requireOwner(context: { supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }; userId: string }) {
+async function requireOwner(context: { supabase: { rpc: (...args: any[]) => any }; userId: string }) {
   const { data, error } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' });
   if (error || data !== true) throw new Error('Owner access is required to manage team accounts.');
 }
