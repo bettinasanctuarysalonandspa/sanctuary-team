@@ -61,7 +61,7 @@ const quoteInput = z.object({
   services: z.array(z.object({ service_id: z.number().int(), quantity: z.number().int().min(1) })),
   products: z.array(z.object({ product_id: z.number().int(), quantity: z.number().int().min(1), source: z.enum(['stylist', 'assistant']) })),
   extension_hair: z.array(z.object({ length_in: z.number().int(), sections: z.number().int().min(1) })),
-  salonscale_estimate: z.number().nullable().describe('Stylist-provided SalonScale estimate in dollars, or null'),
+  salonscale_estimate: z.number().nullable().describe('SalonScale estimate in dollars ONLY if the stylist volunteered one; otherwise null. Never ask for it.'),
 });
 
 export function calculateQuote(c: Catalog, q: z.infer<typeof quoteInput>) {
@@ -105,7 +105,7 @@ export function calculateQuote(c: Catalog, q: z.infer<typeof quoteInput>) {
     retail_products_including_charges_and_tax: money(t.retail),
     extension_hair_including_charges_and_tax: money(t.extensionHair),
     estimated_total: money(t.total),
-    salonscale_separate: q.salonscale_estimate == null ? 'Not provided by stylist' : `${money(toCents(q.salonscale_estimate))} (stylist estimate, may change based on color used; not included above)`,
+    salonscale_separate: q.salonscale_estimate == null ? 'Not applicable — the stylist writes out the SalonScale total separately' : `${money(toCents(q.salonscale_estimate))} (stylist estimate, may change based on color used; not included above)`,
     problems,
   };
 }
