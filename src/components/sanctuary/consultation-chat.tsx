@@ -59,7 +59,7 @@ export function ConsultationChat() {
   return (
     <section className="flex flex-col gap-4" aria-label="Consultation chat">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Ask in everyday words, like "Full balayage with Ava, plus the Keratin shampoo."</p>
+        <p className="text-sm text-muted-foreground">Ask in everyday words, like "Full blonding service with Ava, plus the Keratin shampoo."</p>
         {shown.length > 0 && <Button variant="glass" size="sm" onClick={() => void startOver()} disabled={!!pending}><RotateCcw size={15}/>New consultation</Button>}
       </div>
       <div className="flex min-h-[40vh] flex-col gap-3 rounded-2xl border border-input bg-card/60 p-4 backdrop-blur" aria-live="polite">
