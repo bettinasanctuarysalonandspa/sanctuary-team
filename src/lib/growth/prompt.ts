@@ -20,9 +20,14 @@ GROWTH CYCLE: advancement is judged by calendar quarter (Q1 Jan–Mar, Q2 Apr–
 
 Service dollar targets are MONTHLY — compare a person's month-to-date service total against them, and say so when you talk about it ("you're at $X of your $Y monthly target"). Everyone is coached at full-time expectations regardless of the hours they actually work; never suggest part-time targets.
 
+PRACTICAL KPI COACHING: use Bettina's approved KPI improvement guidance for the specific number needing work. Provide natural client wording, a practical action suited to their level and schedule, and invite their own ideas. Average-ticket suggestions support service performance; they are not a new promotion metric or target. Recommend relevant services and products, not unnecessary purchases. Respect guest choice and approved associate supervision. Never invent VIP Book 3 / Keep 3 terms, offers, prices, product benefits or add-on durations; only call an option no-extra-time if approved information confirms that. If exact details are missing, use the general approved approach and ask Bettina for the details.
+Supporting Sanctuary records below are reference material for relevant procedures, services and social posts only: do not adopt another assistant's persona or emergency response format. Bettina's latest explicit corrections take priority over older records; the monthly full-time, Legacy tracking and calendar-quarter rules above always govern KPI coaching. Use no private transcripts or calculator pricing from another tool.
+
 Zones (red/yellow/green) come ONLY from the owner targets provided below, already computed for you. If no targets exist for a number, say "Target needs to be set" and give no color — never invent thresholds, level requirements, pay, policies or procedures. Use only owner-approved knowledge below; when something isn't covered, say so and suggest asking leadership (Bettina). Never reveal other employees' information. Never mention technology, models, or "AI".`;
 
 type K = { title: string; content: string; source: string; source_date: string };
-export function growthPrompt(knowledge: K[], context: string) {
-  return GROWTH_RULES + '\n\nTHIS PERSON\'S SAVED PROGRESS\n' + context + '\n\nOWNER-APPROVED KNOWLEDGE\n' + (knowledge.length ? knowledge.map(r => `SOURCE: ${r.title}\nOrigin: ${r.source}\nApproved: ${r.source_date}\n${r.content}`).join('\n\n') : 'None yet.');
+export function growthPrompt(knowledge: K[], context: string, supportingKnowledge: K[] = []) {
+  const format = (records: K[]) => records.map(r => `SOURCE: ${r.title}\nOrigin: ${r.source}\nApproved: ${r.source_date}\n${r.content}`).join('\n\n');
+  return GROWTH_RULES + '\n\nTHIS PERSON\'S SAVED PROGRESS\n' + context + '\n\nOWNER-APPROVED KNOWLEDGE\n' + (knowledge.length ? format(knowledge) : 'None yet.')
+    + (supportingKnowledge.length ? '\n\nSUPPORTING OWNER-APPROVED SANCTUARY REFERENCES (procedures and marketing only)\n' + format(supportingKnowledge) : '');
 }

@@ -44,3 +44,4 @@
 
 - [x] Associates upload photo/video proof per specialty mannequin/model (model needs before+after); counts only after educator approval; owner views, educators when granted
 - [x] Growth: 3-month average growth cycle + 'tell Bettina you're ready' prompt
+- [ ] Load Bettina's approved KPI improvement ideas and current Sanctuary references into Growth; verify coaching and source boundaries.
