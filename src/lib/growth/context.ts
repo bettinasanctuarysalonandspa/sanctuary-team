@@ -15,7 +15,12 @@ export async function loadGrowth(db: Db, userId: string, level: string | null) {
   if (profile.error || checkins.error || items.error || targets.error) throw new Error('Saved progress could not be loaded.');
   const latest = (checkins.data?.[0]?.metrics ?? {}) as Metrics;
   const t = (targets.data ?? []) as Target[];
-  const zones = GROWTH_METRICS.map(m => ({ key: m.key, label: m.label, value: latest[m.key], zone: zoneFor(latest[m.key], t.find(x => x.metric === m.key)), target: t.find(x => x.metric === m.key) ?? null }));
+  // Service dollar targets are monthly: zone off the month-to-date total, not one week.
+  const monthPrefix = new Date().toISOString().slice(0, 7);
+  const monthService = (checkins.data ?? []).filter(c => String(c.week_start).startsWith(monthPrefix)).reduce((sum, c) => sum + (Number((c.metrics as Metrics).service_revenue) || 0), 0);
+  const serviceValue = monthService || latest.service_revenue;
+  const zoneValues: Metrics = { ...latest, ...(serviceValue != null ? { service_revenue: serviceValue } : {}) };
+  const zones = GROWTH_METRICS.map(m => ({ key: m.key, label: m.label, value: zoneValues[m.key], zone: zoneFor(zoneValues[m.key], t.find(x => x.metric === m.key)), target: t.find(x => x.metric === m.key) ?? null }));
   return { level, profile: profile.data, checkins: (checkins.data ?? []).map(c => ({ ...c, metrics: c.metrics as Metrics })), items: items.data ?? [], targets: t, zones };
 }
 
@@ -25,7 +30,7 @@ export function describeGrowth(name: string, g: Awaited<ReturnType<typeof loadGr
   if (g.profile?.start_date) lines.push(`Start date: ${g.profile.start_date}`);
   lines.push('Weekly check-ins (newest first):');
   lines.push(g.checkins.length ? g.checkins.map(c => `- Week of ${c.week_start}: ` + Object.entries(c.metrics).map(([k, v]) => `${GROWTH_METRICS.find(m => m.key === k)?.label ?? k} ${formatMetric(k, v)}`).join(', ')).join('\n') : '- None yet');
-  lines.push('Current zones (computed from owner targets): ' + g.zones.map(z => `${z.label}: ${z.zone === 'unset' ? 'no target set' : z.zone}`).join('; '));
+  lines.push('Current zones (computed from owner targets; Service revenue zone uses the month-to-date total against the monthly target): ' + g.zones.map(z => `${z.label}: ${z.zone === 'unset' ? 'no target set' : z.zone}`).join('; '));
   const reqs = g.targets.filter(t => t.next_level_requirement).map(t => `${t.metric}: ${t.next_level_requirement}`);
   if (reqs.length) lines.push('Next-level requirements: ' + reqs.join('; '));
   const open = g.items.filter(i => !i.done && i.kind !== 'note');
