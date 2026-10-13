@@ -18,7 +18,8 @@ export async function loadGrowth(db: Db, userId: string, level: string | null) {
   // Service dollar targets are monthly: zone off the month-to-date total, not one week.
   const monthPrefix = new Date().toISOString().slice(0, 7);
   const monthService = (checkins.data ?? []).filter(c => String(c.week_start).startsWith(monthPrefix)).reduce((sum, c) => sum + (Number((c.metrics as Metrics).service_revenue) || 0), 0);
-  const zoneValues: Metrics = { ...latest, service_revenue: monthService || latest.service_revenue };
+  const serviceValue = monthService || latest.service_revenue;
+  const zoneValues: Metrics = { ...latest, ...(serviceValue != null ? { service_revenue: serviceValue } : {}) };
   const zones = GROWTH_METRICS.map(m => ({ key: m.key, label: m.label, value: zoneValues[m.key], zone: zoneFor(zoneValues[m.key], t.find(x => x.metric === m.key)), target: t.find(x => x.metric === m.key) ?? null }));
   return { level, profile: profile.data, checkins: (checkins.data ?? []).map(c => ({ ...c, metrics: c.metrics as Metrics })), items: items.data ?? [], targets: t, zones };
 }
