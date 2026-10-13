@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_authenticated/_employee/pricing')({
   component: Pricing,
 });
 
-const LEVELS = ['New Artist', 'Designer 1', 'Designer 2', 'Advanced 1', 'Advanced 2', 'Master 1', 'Master 2', 'Legacy'] as const;
+const LEVELS = ['New Stylist', 'Designer 1', 'Designer 2', 'Advanced 1', 'Advanced 2', 'Master 1', 'Master 2', 'Legacy'] as const;
 const TABS = ['Stylists', 'Services', 'Products', 'Extensions'] as const;
 const input = 'h-10 rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
@@ -43,7 +43,7 @@ function Pricing() {
 function Stylists() {
   const q = useQuery({ queryKey: ['private', 'pricing', 'stylists'], queryFn: () => must(supabase.from('calc_stylists').select('id,name,level,active').order('name')) });
   const { msg, run } = useSave();
-  const [name, setName] = useState(''); const [level, setLevel] = useState<string>('New Artist');
+  const [name, setName] = useState(''); const [level, setLevel] = useState<string>('New Stylist');
   return <section>
     <ul className="divide-y divide-input">{q.data?.map(s => <li key={s.id} className="flex flex-wrap items-center gap-3 py-3">
       <span className="min-w-40 flex-1 font-medium">{s.name}</span>
