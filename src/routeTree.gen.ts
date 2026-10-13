@@ -24,6 +24,8 @@ import { Route as ApiGuidanceRouteImport } from './routes/api/guidance'
 import { Route as ApiSupportRouteImport } from './routes/api/support'
 import { Route as AuthenticatedEmployeeAdminRouteImport } from './routes/_authenticated/_employee.admin'
 import { Route as AuthenticatedEmployeeBootcampRouteImport } from './routes/_authenticated/_employee.bootcamp'
+import { Route as AuthenticatedEmployeeClientJourneyRouteImport } from './routes/_authenticated/_employee.client-journey'
+import { Route as AuthenticatedEmployeeClientJourneyAdminRouteImport } from './routes/_authenticated/_employee.client-journey-admin'
 import { Route as AuthenticatedEmployeeConsultationRouteImport } from './routes/_authenticated/_employee.consultation'
 import { Route as AuthenticatedEmployeeContentKnowledgeRouteImport } from './routes/_authenticated/_employee.content-knowledge'
 import { Route as AuthenticatedEmployeeContentStudioRouteImport } from './routes/_authenticated/_employee.content-studio'
@@ -110,6 +112,18 @@ const AuthenticatedEmployeeBootcampRoute =
     path: '/bootcamp',
     getParentRoute: () => AuthenticatedEmployeeRoute,
   } as any)
+const AuthenticatedEmployeeClientJourneyRoute =
+  AuthenticatedEmployeeClientJourneyRouteImport.update({
+    id: '/client-journey',
+    path: '/client-journey',
+    getParentRoute: () => AuthenticatedEmployeeRoute,
+  } as any)
+const AuthenticatedEmployeeClientJourneyAdminRoute =
+  AuthenticatedEmployeeClientJourneyAdminRouteImport.update({
+    id: '/client-journey-admin',
+    path: '/client-journey-admin',
+    getParentRoute: () => AuthenticatedEmployeeRoute,
+  } as any)
 const AuthenticatedEmployeeConsultationRoute =
   AuthenticatedEmployeeConsultationRouteImport.update({
     id: '/consultation',
@@ -185,6 +199,8 @@ export interface FileRoutesByFullPath {
   '/api/support': typeof ApiSupportRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
   '/bootcamp': typeof AuthenticatedEmployeeBootcampRoute
+  '/client-journey': typeof AuthenticatedEmployeeClientJourneyRoute
+  '/client-journey-admin': typeof AuthenticatedEmployeeClientJourneyAdminRoute
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
@@ -210,6 +226,8 @@ export interface FileRoutesByTo {
   '/api/support': typeof ApiSupportRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
   '/bootcamp': typeof AuthenticatedEmployeeBootcampRoute
+  '/client-journey': typeof AuthenticatedEmployeeClientJourneyRoute
+  '/client-journey-admin': typeof AuthenticatedEmployeeClientJourneyAdminRoute
   '/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
@@ -238,6 +256,8 @@ export interface FileRoutesById {
   '/api/support': typeof ApiSupportRoute
   '/_authenticated/_employee/admin': typeof AuthenticatedEmployeeAdminRoute
   '/_authenticated/_employee/bootcamp': typeof AuthenticatedEmployeeBootcampRoute
+  '/_authenticated/_employee/client-journey': typeof AuthenticatedEmployeeClientJourneyRoute
+  '/_authenticated/_employee/client-journey-admin': typeof AuthenticatedEmployeeClientJourneyAdminRoute
   '/_authenticated/_employee/consultation': typeof AuthenticatedEmployeeConsultationRoute
   '/_authenticated/_employee/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/_authenticated/_employee/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
@@ -265,6 +285,8 @@ export interface FileRouteTypes {
     | '/api/support'
     | '/admin'
     | '/bootcamp'
+    | '/client-journey'
+    | '/client-journey-admin'
     | '/consultation'
     | '/content-knowledge'
     | '/content-studio'
@@ -290,6 +312,8 @@ export interface FileRouteTypes {
     | '/api/support'
     | '/admin'
     | '/bootcamp'
+    | '/client-journey'
+    | '/client-journey-admin'
     | '/consultation'
     | '/content-knowledge'
     | '/content-studio'
@@ -317,6 +341,8 @@ export interface FileRouteTypes {
     | '/api/support'
     | '/_authenticated/_employee/admin'
     | '/_authenticated/_employee/bootcamp'
+    | '/_authenticated/_employee/client-journey'
+    | '/_authenticated/_employee/client-journey-admin'
     | '/_authenticated/_employee/consultation'
     | '/_authenticated/_employee/content-knowledge'
     | '/_authenticated/_employee/content-studio'
@@ -450,6 +476,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployeeBootcampRouteImport
       parentRoute: typeof AuthenticatedEmployeeRoute
     }
+    '/_authenticated/_employee/client-journey': {
+      id: '/_authenticated/_employee/client-journey'
+      path: '/client-journey'
+      fullPath: '/client-journey'
+      preLoaderRoute: typeof AuthenticatedEmployeeClientJourneyRouteImport
+      parentRoute: typeof AuthenticatedEmployeeRoute
+    }
+    '/_authenticated/_employee/client-journey-admin': {
+      id: '/_authenticated/_employee/client-journey-admin'
+      path: '/client-journey-admin'
+      fullPath: '/client-journey-admin'
+      preLoaderRoute: typeof AuthenticatedEmployeeClientJourneyAdminRouteImport
+      parentRoute: typeof AuthenticatedEmployeeRoute
+    }
     '/_authenticated/_employee/consultation': {
       id: '/_authenticated/_employee/consultation'
       path: '/consultation'
@@ -526,6 +566,8 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedEmployeeRouteChildren {
   AuthenticatedEmployeeAdminRoute: typeof AuthenticatedEmployeeAdminRoute
   AuthenticatedEmployeeBootcampRoute: typeof AuthenticatedEmployeeBootcampRoute
+  AuthenticatedEmployeeClientJourneyRoute: typeof AuthenticatedEmployeeClientJourneyRoute
+  AuthenticatedEmployeeClientJourneyAdminRoute: typeof AuthenticatedEmployeeClientJourneyAdminRoute
   AuthenticatedEmployeeConsultationRoute: typeof AuthenticatedEmployeeConsultationRoute
   AuthenticatedEmployeeContentKnowledgeRoute: typeof AuthenticatedEmployeeContentKnowledgeRoute
   AuthenticatedEmployeeContentStudioRoute: typeof AuthenticatedEmployeeContentStudioRoute
@@ -541,6 +583,10 @@ interface AuthenticatedEmployeeRouteChildren {
 const AuthenticatedEmployeeRouteChildren: AuthenticatedEmployeeRouteChildren = {
   AuthenticatedEmployeeAdminRoute: AuthenticatedEmployeeAdminRoute,
   AuthenticatedEmployeeBootcampRoute: AuthenticatedEmployeeBootcampRoute,
+  AuthenticatedEmployeeClientJourneyRoute:
+    AuthenticatedEmployeeClientJourneyRoute,
+  AuthenticatedEmployeeClientJourneyAdminRoute:
+    AuthenticatedEmployeeClientJourneyAdminRoute,
   AuthenticatedEmployeeConsultationRoute:
     AuthenticatedEmployeeConsultationRoute,
   AuthenticatedEmployeeContentKnowledgeRoute:
