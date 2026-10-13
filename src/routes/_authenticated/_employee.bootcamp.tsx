@@ -252,7 +252,7 @@ function ProofSection({ data, track, canReview, modelsOpen }: { data: Data; trac
   async function send(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault(); const form = e.currentTarget; const fd = new FormData(form);
     const groups: [string, File[]][] = (stage === 'model' ? ['before', 'after', 'video'] : ['photo', 'video']).map(k => [k, (fd.getAll(k) as File[]).filter(f => f.size > 0)]);
-    if (stage === 'model' && (!groups[0][1].length || !groups[1][1].length)) { setMsg('Please add a before photo and an after photo.'); return; }
+    if (stage === 'model' && (!groups[0]?.[1].length || !groups[1]?.[1].length)) { setMsg('Please add a before photo and an after photo.'); return; }
     if (!groups.some(g => g[1].length)) { setMsg('Please add at least one photo or video.'); return; }
     setBusy(true); setMsg('Uploading…');
     try {
@@ -260,7 +260,7 @@ function ProofSection({ data, track, canReview, modelsOpen }: { data: Data; trac
       for (const [kind, list] of groups) for (const file of list) {
         const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
         const path = `${data.me}/${track}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const { error } = await supabase.storage.from('growth-proof').upload(path, file, { contentType: file.type || undefined });
+        const { error } = await supabase.storage.from('growth-proof').upload(path, file, file.type ? { contentType: file.type } : {});
         if (error) throw new Error('A file could not be uploaded. Videos must be under 200MB.');
         files.push({ path, kind: (file.type.startsWith('video/') ? 'video' : kind) as 'before' | 'after' | 'photo' | 'video', media_type: file.type || 'application/octet-stream' });
       }
