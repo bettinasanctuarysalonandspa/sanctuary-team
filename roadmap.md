@@ -39,3 +39,5 @@
 - [x] Bootcamp (Shampoo, Blowout & Color-Assistance) inside Growth: co-stylist + educator views, printable cue cards, per-skill approvals, editable lessons
 - [x] Make educators: Ava, Miranda, Katie, Kat, Bettina
 - [x] Color Foundations homework tab: onboarding checklist, topics, stylist questions, after-service reflections; education tracked separately
+- [x] Specialty tracks (balayage, babylights, combo, ombré, platinum 10/1, curly; Kat no curly)
+- [x] Bootcamp: no product brand names

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { LESSONS, SKILLS } from './bootcamp/lessons';
 import { HOMEWORK_KEYS } from './bootcamp/homework';
+import { TRACK_KEYS } from './bootcamp/specialty';
 
 const SKILL_KEYS = [...SKILLS.map(s => s.key), ...HOMEWORK_KEYS] as [string, ...string[]];
 const LESSON_IDS = LESSONS.map(l => l.id) as [string, ...string[]];
@@ -75,5 +76,30 @@ export const replyReflection = createServerFn({ method: 'POST' }).middleware([re
     await requireEducator(context.supabase);
     const { error } = await context.supabase.from('bootcamp_reflections').update({ educator_reply: data.reply }).eq('id', data.id);
     if (error) throw new Error('Reply could not be saved.');
+    return { ok: true };
+  });
+
+export const getSpecialty = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth])
+  .inputValidator(input => z.object({ costylist: z.string().uuid() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const sb = context.supabase;
+    const [entries, restr, roster] = await Promise.all([
+      sb.from('specialty_entries').select('*').eq('costylist_id', data.costylist).order('created_at', { ascending: false }),
+      sb.from('specialty_signoff_restrictions').select('track').eq('educator_id', context.userId),
+      sb.rpc('list_bootcamp_roster'),
+    ]);
+    if (entries.error) throw new Error('Specialty progress could not be loaded.');
+    const names = Object.fromEntries((roster.data ?? []).map((r: { user_id: string; display_name: string }) => [r.user_id, r.display_name]));
+    return { entries: (entries.data ?? []).map(e => ({ ...e, educator_name: names[e.educator_id] ?? 'Educator' })), blocked: (restr.data ?? []).map(r => r.track) };
+  });
+
+export const addSpecialtyEntry = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+  .inputValidator(input => z.object({ costylist: z.string().uuid(), track: z.enum(TRACK_KEYS), stage: z.enum(['mannequin', 'model', 'final']), approved: z.boolean(), service: t, technique: t, result: t, feedback: t, next_assignment: t }).parse(input))
+  .handler(async ({ context, data }) => {
+    const { data: ok } = await context.supabase.rpc('can_sign_specialty', { _track: data.track });
+    if (!ok) throw new Error('You are not authorized to sign off on this specialty.');
+    const { costylist, ...rest } = data;
+    const { error } = await context.supabase.from('specialty_entries').insert({ costylist_id: costylist, educator_id: context.userId, ...rest });
+    if (error) throw new Error('Could not be saved.');
     return { ok: true };
   });

@@ -844,6 +844,66 @@ export type Database = {
         }
         Relationships: []
       }
+      specialty_entries: {
+        Row: {
+          approved: boolean
+          costylist_id: string
+          created_at: string
+          educator_id: string
+          feedback: string | null
+          id: number
+          next_assignment: string | null
+          result: string | null
+          service: string | null
+          stage: string
+          technique: string | null
+          track: string
+        }
+        Insert: {
+          approved?: boolean
+          costylist_id: string
+          created_at?: string
+          educator_id: string
+          feedback?: string | null
+          id?: never
+          next_assignment?: string | null
+          result?: string | null
+          service?: string | null
+          stage: string
+          technique?: string | null
+          track: string
+        }
+        Update: {
+          approved?: boolean
+          costylist_id?: string
+          created_at?: string
+          educator_id?: string
+          feedback?: string | null
+          id?: never
+          next_assignment?: string | null
+          result?: string | null
+          service?: string | null
+          stage?: string
+          technique?: string | null
+          track?: string
+        }
+        Relationships: []
+      }
+      specialty_signoff_restrictions: {
+        Row: {
+          educator_id: string
+          track: string
+        }
+        Insert: {
+          educator_id: string
+          track: string
+        }
+        Update: {
+          educator_id?: string
+          track?: string
+        }
+        Relationships: []
+      }
       support_gateway_state: {
         Row: {
           id: number
@@ -943,6 +1003,7 @@ export type Database = {
     }
     Functions: {
       accept_sanctuary_invitation: { Args: never; Returns: string }
+      can_sign_specialty: { Args: { _track: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
