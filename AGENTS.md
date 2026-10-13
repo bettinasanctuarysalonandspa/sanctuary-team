@@ -23,3 +23,4 @@
 - Use AI Elements and authenticated same-origin streaming for Content Studio, replay server-owned history and persist plain text messages; keep the existing consultation interface unchanged.
 - Point invitation and other auth email links at the canonical published site address, never a preview or development host, so links still open on the team's phones.
 - Derive invitation "joined" status and employee membership from the account's own confirmation in the database, so the owner's roster stays correct even when someone completes setup through a path the app's accept step never ran.
+- Growth coach: per-person progress lives in growth_* tables; zones computed in code from growth_level_targets, levels read from calc_stylists.user_id — single source of level truth.
