@@ -30,8 +30,9 @@
 
 - [ ] Calculator rules: standard shampoo default (liter/travel only when stated), never ask SalonScale estimate, home care products separate from services; test in Kaitlyn's app.
 
-- [ ] Sanctuary Growth — Coach & KPI Tracker (5th section): coach chat, Associate 12-week training, New Stylist builder, Designer performance coach, weekly accountability + zones; waiting on owner content (12-week sequence, thresholds, Growth Coach instructions)
-- [ ] Growth: remember each person's progress over time so they never re-enter info; coach builds on prior history
-- [ ] Growth: starting level per person = calculator stylist level; owner will upload level-requirements form
-- [ ] Growth: employees upload photos/screenshots of forms & KPIs; coach reads them and updates progress
-- [ ] Growth: KPI Quick View targets loaded (rebooking, utilization, RTS, service \$ full/part time); confirm service \$ period + who is part time; New Artist/Legacy have no chart rows
+- [x] Sanctuary Growth — Coach & KPI Tracker (5th section): coach chat, Associate 12-week training, New Stylist builder, Designer performance coach, weekly accountability + zones; waiting on owner content (12-week sequence, thresholds, Growth Coach instructions)
+- [x] Growth: remember each person's progress over time so they never re-enter info; coach builds on prior history
+- [x] Growth: starting level per person = calculator stylist level; owner will upload level-requirements form
+- [x] Growth: employees upload photos/screenshots of forms & KPIs; coach reads them and updates progress
+- [x] Growth: KPI Quick View targets loaded (rebooking, utilization, RTS, service \$ full/part time); confirm service \$ period + who is part time; New Artist/Legacy have no chart rows
+- [ ] Growth open: service $ time period (weekly/monthly?), who is part time, Heather not on stylist list
