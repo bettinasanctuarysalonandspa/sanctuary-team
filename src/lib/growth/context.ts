@@ -4,6 +4,14 @@ import { GROWTH_METRICS, formatMetric, zoneFor, monthlyKpis, quarterlyAverages, 
 
 type Db = SupabaseClient<Database>;
 
+const LEVEL_ORDER = ['New Stylist', 'Designer 1', 'Designer 2', 'Advanced 1', 'Advanced 2', 'Master 1', 'Master 2', 'Legacy'];
+
+function nextLevel(level: string | null): string | null {
+  if (!level) return null;
+  const i = LEVEL_ORDER.indexOf(level);
+  return i >= 0 && i < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[i + 1] : null;
+}
+
 /** Loads one person's saved growth record (RLS scopes it to the caller, or the owner). */
 export async function loadGrowth(db: Db, userId: string, level: string | null) {
   const [profile, checkins, items, targets] = await Promise.all([
