@@ -14,7 +14,8 @@ export async function loadGrowth(db: Db, userId: string, level: string | null) {
   ]);
   if (profile.error || checkins.error || items.error || targets.error) throw new Error('Saved progress could not be loaded.');
   const raw = (checkins.data?.[0]?.metrics ?? {}) as Metrics;
-  const latest: Metrics = { ...raw, ...(rtsPct(raw.retail_sales, raw.service_revenue) != null ? { rts_pct: rtsPct(raw.retail_sales, raw.service_revenue) } : {}) };
+  const rts = rtsPct(raw.retail_sales, raw.service_revenue);
+  const latest: Metrics = rts != null ? { ...raw, rts_pct: rts } : raw;
   const t = (targets.data ?? []) as Target[];
   // Service dollar targets are monthly: zone off the month-to-date total, not one week.
   const monthPrefix = new Date().toISOString().slice(0, 7);
