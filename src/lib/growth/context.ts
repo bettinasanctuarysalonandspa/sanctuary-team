@@ -51,7 +51,7 @@ export function describeGrowth(name: string, g: Awaited<ReturnType<typeof loadGr
     const gap = k.key === 'avg_bill' && k.value != null && k.target?.green_min != null ? ` (${k.value >= Number(k.target.green_min) ? 'at or above' : formatMetric(k.key, Math.round((Number(k.target.green_min) - k.value) * 100) / 100) + ' below'} green)` : '';
     const nextGap = k.key === 'avg_bill' && g.nextTicketTarget != null ? `; next level (${g.nextLevel}) green target ${formatMetric(k.key, g.nextTicketTarget)}${k.value != null ? ` — ${k.value >= g.nextTicketTarget ? 'at or above' : formatMetric(k.key, Math.round((g.nextTicketTarget - k.value) * 100) / 100) + ' below'}` : ''}` : '';
     const missing = k.key === 'avg_bill' && k.value == null ? 'Data needed (or No visits)' : formatMetric(k.key, k.value);
-    return `${k.label} ${missing}${gap} vs target ${k.target?.green_min != null ? formatMetric(k.key, Number(k.target.green_min)) : 'needs to be set'} → ${k.zone === 'unset' ? (k.target?.green_min == null ? 'no rating (target needs to be set)' : 'no number') : k.zone}`;
+    return `${k.label} ${missing}${gap} vs target ${k.target?.green_min != null ? formatMetric(k.key, Number(k.target.green_min)) : 'needs to be set'}${nextGap} → ${k.zone === 'unset' ? (k.target?.green_min == null ? 'no rating (target needs to be set)' : 'no number') : k.zone}`;
   }).join('; ')).join('\n'));
   const reqs = g.targets.filter(t => t.next_level_requirement).map(t => `${t.metric}: ${t.next_level_requirement}`);
   if (reqs.length) lines.push('Next-level requirements: ' + reqs.join('; '));
