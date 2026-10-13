@@ -9,7 +9,7 @@ const LEVEL_ORDER = ['New Stylist', 'Designer 1', 'Designer 2', 'Advanced 1', 'A
 function nextLevel(level: string | null): string | null {
   if (!level) return null;
   const i = LEVEL_ORDER.indexOf(level);
-  return i >= 0 && i < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[i + 1] : null;
+  return i >= 0 && i < LEVEL_ORDER.length - 1 ? (LEVEL_ORDER[i + 1] ?? null) : null;
 }
 
 /** Loads one person's saved growth record (RLS scopes it to the caller, or the owner). */
