@@ -17,6 +17,7 @@ function Growth() {
   return <>
     <Link to="/tools" className="back-link"><ArrowLeft size={15}/>All tools</Link>
     <div className="page-heading"><h1>Sanctuary Growth</h1><p>Your coach and KPI tracker. {growth.level ? <>Level: <strong>{growth.level}</strong>{growth.profile?.training_week ? ` · Week ${growth.profile.training_week} of 12` : ''}</> : 'Your level will appear once leadership adds you to the stylist list.'}</p></div>
+    <Link to="/bootcamp" className="glass-panel mb-4 block p-4"><p className="eyebrow">ASSOCIATE PROGRAM · FOUNDATIONAL TRAINING</p><p className="font-medium">Shampoo, Blowout & Color-Assistance Bootcamp</p><p className="text-sm text-muted-foreground">Lessons, cue cards, Color Foundations homework and approvals.</p></Link>
     <div role="tablist" className="mb-4 flex gap-2">{tabs.map(t => <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-full border px-4 py-1.5 text-sm ${tab === t ? 'border-primary bg-primary text-primary-foreground' : 'border-input bg-card/60'}`}>{t}</button>)}</div>
     {tab === 'Coach' && <GrowthChat initialMessages={messages} starters={starters}/>}
     {tab === 'My Progress' && <GrowthProgress growth={growth}/>}

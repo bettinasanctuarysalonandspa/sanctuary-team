@@ -108,3 +108,9 @@
 .zone-red { background: color-mix(in oklab, var(--destructive) 18%, transparent); color: var(--destructive); }
 .zone-unset { background: var(--muted); color: var(--muted-foreground); }
 .tool-icon.growth { background: color-mix(in oklab,var(--primary) 16%,transparent); color: var(--primary); }
+
+@media print {
+  .app-header, .app-footer, .bottom-nav, .no-print { display: none !important; }
+  .cue-card { break-inside: avoid; box-shadow: none !important; backdrop-filter: none !important; border: 1px solid currentColor; margin-bottom: 12px; }
+  .print-lines { height: 4rem; border-bottom: 1px solid currentColor; }
+}
