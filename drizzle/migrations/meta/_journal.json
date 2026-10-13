@@ -99,6 +99,13 @@
       "when": 1791917580465,
       "tag": "0013_specialty_tracks",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1791918089109,
+      "tag": "0014_specialty_proof",
+      "breakpoints": true
     }
   ]
 }
