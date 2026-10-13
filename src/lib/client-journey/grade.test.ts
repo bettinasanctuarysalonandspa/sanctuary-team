@@ -11,6 +11,6 @@ describe('Client Journey grading', () => {
     const r = gradeClientJourney(four, 90);
     expect(r.passed).toBe(false); expect(r.missed).toHaveLength(4); expect(r.areas).toContain('Discovery and stylist matching');
   });
-  it('shows misses even when passing', () => { expect(gradeClientJourney(perfect.map((a, i) => (i === 29 ? 0 : a)), 90).missed[0].n).toBe(30); });
+  it('shows misses even when passing', () => { expect(gradeClientJourney(perfect.map((a, i) => (i === 29 ? 0 : a)), 90).missed[0]?.n).toBe(30); });
   it('requires every answer', () => { expect(() => gradeClientJourney(perfect.slice(1), 90)).toThrow(); });
 });

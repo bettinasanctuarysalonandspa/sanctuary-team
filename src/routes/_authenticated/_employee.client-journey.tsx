@@ -57,7 +57,7 @@ function ClientJourney() {
         {data.next ? <label className="flex gap-2"><input type="radio" checked={purpose === 'advancement'} onChange={() => setPurpose('advancement')}/>Level advancement: {data.level} → {data.next}</label> : <p className="text-muted-foreground">You're at Legacy — no advancement test needed.</p>}
       </div>
       {CJ_QUESTIONS.map((q, i) => <fieldset key={q.n} className="glass-panel grid gap-2 p-4">
-        {(i === 0 || CJ_QUESTIONS[i - 1].part !== q.part) && <p className="eyebrow">Part {q.part} · {q.area}</p>}
+        {(i === 0 || CJ_QUESTIONS[i - 1]?.part !== q.part) && <p className="eyebrow">Part {q.part} · {q.area}</p>}
         <legend className="sr-only">Question {q.n}</legend>
         <p className="font-medium">{q.n}. {q.question}</p>
         {q.choices.map((c, ci) => <label key={ci} className={`flex cursor-pointer gap-2 rounded-lg border p-2 text-sm ${answers[i] === ci ? 'border-primary bg-primary/10' : 'border-input/60'}`}>
