@@ -127,6 +127,13 @@
       "when": 1791924275325,
       "tag": "0017_level_changers",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1791932862801,
+      "tag": "0018_specialty_proof_on_behalf",
+      "breakpoints": true
     }
   ]
 }
