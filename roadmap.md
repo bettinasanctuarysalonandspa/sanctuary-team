@@ -32,3 +32,5 @@
 
 - [ ] Sanctuary Growth — Coach & KPI Tracker (5th section): coach chat, Associate 12-week training, New Stylist builder, Designer performance coach, weekly accountability + zones; waiting on owner content (12-week sequence, thresholds, Growth Coach instructions)
 - [ ] Growth: remember each person's progress over time so they never re-enter info; coach builds on prior history
+- [ ] Growth: starting level per person = calculator stylist level; owner will upload level-requirements form
+- [ ] Growth: employees upload photos/screenshots of forms & KPIs; coach reads them and updates progress

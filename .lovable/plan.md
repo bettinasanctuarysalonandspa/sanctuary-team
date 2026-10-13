@@ -15,6 +15,18 @@ Each time they open the coach, it already knows where they left off: "Last week 
 
 Weekly check-ins are pre-filled from last week, so they only change what's different.
 
+## Starting levels
+
+Each person's starting level comes straight from the Consultation Calculator's stylist list (e.g. Kaitlyn, Logan, Jasmine = New Artist). Changing someone's level there moves them in Growth too, so there's one place to update. The level requirements (what each level needs to move up) come from the form the owner will upload.
+
+## Photos and screenshots
+
+Team members can tap a camera button in the coach chat to send:
+- Photos of paper forms (training checklists, goal sheets)
+- Screenshots of their KPI reports from the booking system
+
+The coach reads the image, pulls out the numbers, shows what it found, and saves them to their progress after they confirm. Images are stored privately — only that person and the owner can see them.
+
 ## What employees see
 
 1. **Coach** — chat that adapts to their level:
@@ -41,5 +53,7 @@ The uploaded outline describes the coaching system but doesn't include the actua
 
 - Tables (RLS + grants; employees see only their own rows, owner sees all): `growth_profiles` (level, start date, training week, current goals), `growth_checkins` (weekly numbers, history), `growth_assignments` (assigned/completed), `growth_notes` (coach-saved progress notes), `growth_level_targets`, `growth_training_weeks`, `growth_knowledge`, `growth_messages`, `growth_gateway_state`.
 - Coach loads the profile, last ~8 check-ins, open assignments and recent notes on every request; it saves progress through tool calls (log check-in, set goal, complete assignment, add note) — server code writes the rows and computes zones, never the assistant.
+- Level is read from `calc_stylists` (linked to the employee's account), not duplicated.
+- Private storage bucket `growth-uploads` with per-user folder policies (owner reads all); images sent to the coach as image inputs; extracted numbers require confirmation before saving.
 - Route `_authenticated/_employee.growth.tsx`, tool card + nav, Admin sections, head metadata. No "AI"/"GPT" wording.
 - Verify: build green; owner Playwright run — check-in saved, reopen shows it remembered and pre-filled, admin view shows history.
