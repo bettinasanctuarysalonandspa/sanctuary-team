@@ -63,7 +63,15 @@ export function monthlyKpis(checkins: { week_start: string; updated_at: string |
       let value: number | undefined;
       if (key === 'service_revenue') value = total('service_revenue');
       else if (key === 'rts_pct') { const both = rows.filter(r => r.metrics.retail_sales != null && r.metrics.service_revenue); value = both.length ? rtsPct(both.reduce((s, r) => s + Number(r.metrics.retail_sales), 0), both.reduce((s, r) => s + Number(r.metrics.service_revenue), 0)) : sorted.find(r => r.metrics.rts_pct != null)?.metrics.rts_pct; }
-      else value = sorted.find(r => r.metrics[key] != null)?.metrics[key];
+      else {
+        // Rebooking: combine the month's weeks, weighted by client visits when known.
+        const wk = rows.filter(r => r.metrics[key] != null);
+        const w = (r: (typeof rows)[number]) => Number(r.metrics.clients_served) || 0;
+        const tw = wk.reduce((s, r) => s + w(r), 0);
+        value = !wk.length ? undefined : tw && wk.every(r => w(r) > 0)
+          ? Math.round(wk.reduce((s, r) => s + Number(r.metrics[key]) * w(r), 0) / tw * 10) / 10
+          : Math.round(wk.reduce((s, r) => s + Number(r.metrics[key]), 0) / wk.length * 10) / 10;
+      }
       const target = targets.find(t => t.metric === key) ?? null;
       return { key, label, value, target, zone: zoneFor(value, target ?? undefined) };
     });
