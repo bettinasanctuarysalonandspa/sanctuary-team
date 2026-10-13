@@ -134,6 +134,13 @@
       "when": 1791932862801,
       "tag": "0018_specialty_proof_on_behalf",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1791932938793,
+      "tag": "0019_is_team_folder_helper",
+      "breakpoints": true
     }
   ]
 }
