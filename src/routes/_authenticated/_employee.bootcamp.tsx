@@ -4,7 +4,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { ArrowLeft, ChevronDown, Printer, Save } from 'lucide-react';
 import { appHead } from '@/lib/app-meta';
-import { getBootcamp, saveBootcampProgress, saveLessonEdit, addBootcampPractice, addReflection, replyReflection } from '@/lib/bootcamp.functions';
+import { getBootcamp, saveBootcampProgress, saveLessonEdit, addBootcampPractice, addReflection, replyReflection, getSpecialty, addSpecialtyEntry } from '@/lib/bootcamp.functions';
 import { LESSONS, SKILLS, STATUSES, RESPONSIBILITIES, TBD, TO_COMPLETE, mergeLesson, type Lesson } from '@/lib/bootcamp/lessons';
 import { HOMEWORK, HOMEWORK_GROUPS } from '@/lib/bootcamp/homework';
 import { Button } from '@/components/ui/button';
@@ -14,12 +14,13 @@ import { Textarea } from '@/components/ui/textarea';
 export const Route = createFileRoute('/_authenticated/_employee/bootcamp')({
   validateSearch: z.object({ costylist: z.string().uuid().optional() }),
   loaderDeps: ({ search }) => ({ costylist: search.costylist ?? null }),
-  loader: ({ deps }) => getBootcamp({ data: { costylist: deps.costylist } }),
+  loader: async ({ deps }) => { const b = await getBootcamp({ data: { costylist: deps.costylist } }); const specialty = await getSpecialty({ data: { costylist: b.target } }); return { ...b, specialty }; },
   head: () => appHead('Shampoo, Blowout & Color-Assistance Bootcamp', 'Associate Program foundational training: lessons, cue cards, practice and approvals.'),
   component: Bootcamp,
 });
 
-type Data = Awaited<ReturnType<typeof getBootcamp>>;
+type Data = Awaited<ReturnType<typeof getBootcamp>> & { specialty: Awaited<ReturnType<typeof getSpecialty>> };
+import { SPECIALTY_TRACKS } from '@/lib/bootcamp/specialty';
 type Progress = Data['progress'][number];
 const statusLabel = (k?: string) => STATUSES.find(s => s.key === k)?.label ?? 'Not started';
 
@@ -31,7 +32,7 @@ function Bootcamp() {
   const data = Route.useLoaderData();
   const navigate = useNavigate({ from: Route.fullPath });
   const lessons = useLessons(data);
-  const tabs = ['Co-stylist', ...(data.educator ? ['Educator'] : []), 'Color Foundations', 'Practice log'] as const;
+  const tabs = ['Co-stylist', ...(data.educator ? ['Educator'] : []), 'Color Foundations', 'Practice log', 'Specialty'] as const;
   const [tab, setTab] = useState<string>('Co-stylist');
   const viewing = data.roster.find(r => r.user_id === data.target)?.display_name;
   return <>
@@ -51,6 +52,7 @@ function Bootcamp() {
     {tab === 'Educator' && data.educator && <Educator lessons={lessons} data={data}/>}
     {tab === 'Color Foundations' && <Homework data={data}/>}
     {tab === 'Practice log' && <PracticeLog data={data}/>}
+    {tab === 'Specialty' && <Specialty data={data}/>}
   </>;
 }
 
@@ -184,5 +186,47 @@ function PracticeLog({ data }: { data: Data }) {
     {data.educator && <form onSubmit={submit} className="glass-panel grid gap-2 p-5 text-sm"><h2 className="eyebrow">Record integrated practice</h2><Input name="assigned_service" required placeholder="Assigned service (e.g. All-over toner followed by a standard blowout)"/>{fields.map(([k, label]) => <Input key={k} name={k} placeholder={label}/>)}<Button size="sm" variant="sanctuary" type="submit" className="justify-self-start">Save practice</Button>{msg && <p className="text-xs">{msg}</p>}</form>}
     {data.practice.length === 0 && <p className="text-sm text-muted-foreground">No practice recorded yet.</p>}
     {data.practice.map(p => <section key={p.id} className="glass-panel grid gap-1 p-4 text-sm"><p className="font-medium">{p.assigned_service}</p><p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</p>{fields.map(([k, label]) => p[k] ? <p key={k}><strong>{label}:</strong> {p[k]}</p> : null)}</section>)}
+  </div>;
+}
+
+function Specialty({ data }: { data: Data }) {
+  const router = useRouter(); const add = useServerFn(addSpecialtyEntry); const [msg, setMsg] = useState<Record<string, string>>({});
+  const { entries, blocked } = data.specialty;
+  async function submit(track: string, e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault(); const form = e.currentTarget; const f = new FormData(form); const s = (k: string) => String(f.get(k) ?? '').trim() || null;
+    const stage = String(f.get('stage')) as 'mannequin' | 'model' | 'final';
+    try { await add({ data: { costylist: data.target, track, stage, approved: f.get('approved') === 'yes', service: s('service'), technique: s('technique'), result: s('result'), feedback: s('feedback'), next_assignment: s('next') } }); form.reset(); setMsg(m => ({ ...m, [track]: 'Saved.' })); await router.invalidate(); } catch (err) { setMsg(m => ({ ...m, [track]: err instanceof Error ? err.message : 'Could not save.' })); }
+  }
+  return <div className="grid gap-4">
+    <p className="text-sm text-muted-foreground">After the first 12 weeks. Only approved mannequin repetitions and signed-off models count. Meeting the counts does not unlock the service — an educator must record final approval. Foundational approvals stay in place.</p>
+    {SPECIALTY_TRACKS.map(tr => {
+      const list = entries.filter(e => e.track === tr.key);
+      const man = list.filter(e => e.stage === 'mannequin' && e.approved).length;
+      const mod = list.filter(e => e.stage === 'model' && e.approved).length;
+      const fin = list.find(e => e.stage === 'final');
+      const latest = list.find(e => e.stage !== 'final');
+      const canSign = data.educator && !blocked.includes(tr.key);
+      return <details key={tr.key} className="glass-panel p-4">
+        <summary className="flex cursor-pointer items-center justify-between gap-2"><span className="font-medium">{tr.label}</span><span className="text-xs text-muted-foreground">{fin?.approved ? 'Approved' : `${Math.min(man, tr.mannequin)}/${tr.mannequin} · ${Math.min(mod, tr.models)}/${tr.models}`}<ChevronDown size={15} className="ml-1 inline"/></span></summary>
+        <div className="mt-3 grid gap-2 text-sm">
+          <p><strong>Approved mannequin repetitions:</strong> {man} / {tr.mannequin}</p>
+          <p><strong>Signed-off live models:</strong> {mod} / {tr.models}</p>
+          <p><strong>Latest feedback:</strong> {latest?.feedback || '—'}</p>
+          <p><strong>Next practice assignment:</strong> {latest?.next_assignment || '—'}</p>
+          <p><strong>Final approval:</strong> {fin?.approved ? `Approved by ${fin.educator_name} on ${new Date(fin.created_at).toLocaleDateString()}` : 'Not yet approved'}</p>
+          {tr.key === 'curly' && <p className="text-xs text-muted-foreground">Curly cutting sign-off: Bettina, Miranda, Ava or Katie only.</p>}
+          {canSign && <form onSubmit={e => void submit(tr.key, e)} className="grid gap-2 rounded-lg border border-input/60 p-3">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <select name="stage" className="rounded-md border border-input bg-card px-3 py-2"><option value="mannequin">Mannequin repetition</option><option value="model" disabled={man < tr.mannequin}>Live model{man < tr.mannequin ? ' (after mannequins)' : ''}</option><option value="final">Final service approval</option></select>
+              <select name="approved" className="rounded-md border border-input bg-card px-3 py-2"><option value="yes">Approved / signed off</option><option value="no">Not yet — practice record</option></select>
+              <Input name="service" placeholder="Service"/><Input name="technique" placeholder="Technique"/>
+            </div>
+            <Input name="result" placeholder="Result"/><Textarea name="feedback" placeholder="Feedback" rows={2}/><Input name="next" placeholder="Next practice assignment"/>
+            <div className="flex items-center gap-3"><Button size="sm" variant="sanctuary" type="submit"><Save size={14}/>Record</Button>{msg[tr.key] && <span className="text-xs">{msg[tr.key]}</span>}</div>
+          </form>}
+          {list.length > 0 && <div className="grid gap-1">{list.map(e => <p key={e.id} className="border-b border-input/60 pb-1 text-xs last:border-0">{new Date(e.created_at).toLocaleDateString()} · {e.stage === 'mannequin' ? 'Mannequin' : e.stage === 'model' ? 'Model' : 'Final'} · {e.approved ? 'Approved' : 'Practice'} · {e.educator_name}{e.technique ? ` · ${e.technique}` : ''}{e.result ? ` · ${e.result}` : ''}{e.feedback ? ` — ${e.feedback}` : ''}</p>)}</div>}
+        </div>
+      </details>;
+    })}
   </div>;
 }
