@@ -60,3 +60,19 @@ export function monthlyKpis(checkins: { week_start: string; updated_at: string |
     return { month, partial: month >= current, updated, kpis };
   });
 }
+
+/** Growth cycle: average of the last 3 COMPLETED months. Advancement readiness requires 3 full months whose average reaches green. */
+export function quarterlyAverage(monthly: ReturnType<typeof monthlyKpis>) {
+  const months = monthly.filter(m => !m.partial).slice(0, 3);
+  if (!months.length) return null;
+  const complete = months.length === 3;
+  const kpis = MONTHLY_KPIS.map(key => {
+    const base = months[0].kpis.find(k => k.key === key)!;
+    const vals = months.map(m => m.kpis.find(k => k.key === key)?.value).filter(v => v != null) as number[];
+    const value = vals.length ? Math.round((vals.reduce((s, v) => s + Number(v), 0) / vals.length) * 100) / 100 : undefined;
+    const label = GROWTH_METRICS.find(m => m.key === key)!.label + (key === 'service_revenue' ? ' (monthly avg)' : ' (avg)');
+    return { key, label, value, monthsCounted: vals.length, target: base.target, zone: zoneFor(value, base.target ?? undefined) };
+  });
+  const allGreen = complete && kpis.every(k => k.monthsCounted === 3 && k.zone === 'green');
+  return { months: months.map(m => m.month).reverse(), complete, kpis, allGreen };
+}
