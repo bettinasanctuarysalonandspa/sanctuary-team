@@ -4,15 +4,24 @@ import { GROWTH_METRICS, formatMetric, zoneFor, monthlyKpis, quarterlyAverages, 
 
 type Db = SupabaseClient<Database>;
 
+const LEVEL_ORDER = ['New Stylist', 'Designer 1', 'Designer 2', 'Advanced 1', 'Advanced 2', 'Master 1', 'Master 2', 'Legacy'];
+
+function nextLevel(level: string | null): string | null {
+  if (!level) return null;
+  const i = LEVEL_ORDER.indexOf(level);
+  return i >= 0 && i < LEVEL_ORDER.length - 1 ? (LEVEL_ORDER[i + 1] ?? null) : null;
+}
+
 /** Loads one person's saved growth record (RLS scopes it to the caller, or the owner). */
 export async function loadGrowth(db: Db, userId: string, level: string | null) {
-  const [profile, checkins, items, targets] = await Promise.all([
+  const [profile, checkins, items, targets, allTicketTargets] = await Promise.all([
     db.from('growth_profiles').select('start_date,training_week,focus').eq('user_id', userId).maybeSingle(),
     db.from('growth_checkins').select('week_start,metrics,source,updated_at').eq('user_id', userId).order('week_start', { ascending: false }).limit(60),
     db.from('growth_items').select('id,kind,content,done,created_at,completed_at,follow_up_date').eq('user_id', userId).order('created_at', { ascending: false }).limit(60),
     level ? db.from('growth_level_targets').select('level,metric,green_min,yellow_min,next_level_requirement').eq('level', level) : Promise.resolve({ data: [] as Target[], error: null }),
+    db.from('growth_level_targets').select('level,metric,green_min').eq('metric', 'avg_bill'),
   ]);
-  if (profile.error || checkins.error || items.error || targets.error) throw new Error('Saved progress could not be loaded.');
+  if (profile.error || checkins.error || items.error || targets.error || allTicketTargets.error) throw new Error('Saved progress could not be loaded.');
   const raw = (checkins.data?.[0]?.metrics ?? {}) as Metrics;
   const rts = rtsPct(raw.retail_sales, raw.service_revenue);
   const latest: Metrics = rts != null ? { ...raw, rts_pct: rts } : raw;
@@ -25,7 +34,9 @@ export async function loadGrowth(db: Db, userId: string, level: string | null) {
   const zones = GROWTH_METRICS.map(m => ({ key: m.key, label: m.label, value: zoneValues[m.key], zone: zoneFor(zoneValues[m.key], t.find(x => x.metric === m.key)), target: t.find(x => x.metric === m.key) ?? null }));
   const monthly = monthlyKpis((checkins.data ?? []).map(c => ({ week_start: c.week_start, updated_at: c.updated_at, metrics: c.metrics as Metrics })), t);
   const quarters = quarterlyAverages(monthly);
-  return { quarters, monthly, level, profile: profile.data, checkins: (checkins.data ?? []).map(c => ({ ...c, metrics: c.metrics as Metrics })), items: items.data ?? [], targets: t, zones };
+  const nl = nextLevel(level);
+  const nextTicketTarget = nl ? (allTicketTargets.data ?? []).find(r => r.level === nl)?.green_min ?? null : null;
+  return { quarters, monthly, level, nextLevel: nl, nextTicketTarget: nextTicketTarget != null ? Number(nextTicketTarget) : null, profile: profile.data, checkins: (checkins.data ?? []).map(c => ({ ...c, metrics: c.metrics as Metrics })), items: items.data ?? [], targets: t, zones };
 }
 
 export function describeGrowth(name: string, g: Awaited<ReturnType<typeof loadGrowth>>) {
@@ -38,8 +49,9 @@ export function describeGrowth(name: string, g: Awaited<ReturnType<typeof loadGr
   lines.push('Quarterly growth cycle (calendar quarters Q1-Q4, each a fresh start; averages of COMPLETED months only, newest first):\n' + g.quarters.map(q => `- ${q.quarter}${q.current ? ' (in progress)' : ''}, ${q.monthsDone} of 3 months finished: ` + q.kpis.map(k => `${k.label} ${formatMetric(k.key, k.value)} → ${k.zone === 'unset' ? 'no rating' : k.zone}`).join('; ') + (q.allGreen ? ' — HELD GREEN ON AVERAGE FOR THE FULL QUARTER: eligible to be considered for advancement (Bettina decides).' : q.complete ? ' — quarter finished, not green on every number.' : '')).join('\n'));
   lines.push('Monthly KPIs (newest month first; rebooking = weeks combined weighted by client visits, RTS = month retail ÷ month service, service revenue = month total, average total ticket = (month service + month retail) ÷ month client visits, tips excluded; "month-to-date" means the month is not finished — never treat it as a final result):\n' + g.monthly.map(m => `- ${m.month}${m.partial ? ' (month-to-date)' : ' (completed month)'}: ` + m.kpis.map(k => {
     const gap = k.key === 'avg_bill' && k.value != null && k.target?.green_min != null ? ` (${k.value >= Number(k.target.green_min) ? 'at or above' : formatMetric(k.key, Math.round((Number(k.target.green_min) - k.value) * 100) / 100) + ' below'} green)` : '';
+    const nextGap = k.key === 'avg_bill' && g.nextTicketTarget != null ? `; next level (${g.nextLevel}) green target ${formatMetric(k.key, g.nextTicketTarget)}${k.value != null ? ` — ${k.value >= g.nextTicketTarget ? 'at or above' : formatMetric(k.key, Math.round((g.nextTicketTarget - k.value) * 100) / 100) + ' below'}` : ''}` : '';
     const missing = k.key === 'avg_bill' && k.value == null ? 'Data needed (or No visits)' : formatMetric(k.key, k.value);
-    return `${k.label} ${missing}${gap} vs target ${k.target?.green_min != null ? formatMetric(k.key, Number(k.target.green_min)) : 'needs to be set'} → ${k.zone === 'unset' ? (k.target?.green_min == null ? 'no rating (target needs to be set)' : 'no number') : k.zone}`;
+    return `${k.label} ${missing}${gap} vs target ${k.target?.green_min != null ? formatMetric(k.key, Number(k.target.green_min)) : 'needs to be set'}${nextGap} → ${k.zone === 'unset' ? (k.target?.green_min == null ? 'no rating (target needs to be set)' : 'no number') : k.zone}`;
   }).join('; ')).join('\n'));
   const reqs = g.targets.filter(t => t.next_level_requirement).map(t => `${t.metric}: ${t.next_level_requirement}`);
   if (reqs.length) lines.push('Next-level requirements: ' + reqs.join('; '));
