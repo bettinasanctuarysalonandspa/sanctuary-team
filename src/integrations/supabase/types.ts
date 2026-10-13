@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      associate_daily_logs: {
+        Row: {
+          better_tomorrow: string | null
+          created_at: string
+          id: number
+          improve: string | null
+          learned: string | null
+          photo_path: string | null
+          practiced: string | null
+          shift_date: string
+          standards: Json
+          user_id: string
+        }
+        Insert: {
+          better_tomorrow?: string | null
+          created_at?: string
+          id?: never
+          improve?: string | null
+          learned?: string | null
+          photo_path?: string | null
+          practiced?: string | null
+          shift_date: string
+          standards?: Json
+          user_id: string
+        }
+        Update: {
+          better_tomorrow?: string | null
+          created_at?: string
+          id?: never
+          improve?: string | null
+          learned?: string | null
+          photo_path?: string | null
+          practiced?: string | null
+          shift_date?: string
+          standards?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       bootcamp_lesson_edits: {
         Row: {
           content: Json
