@@ -398,6 +398,111 @@ export type Database = {
         }
         Relationships: []
       }
+      cj_assignments: {
+        Row: {
+          educator_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          educator_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          educator_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cj_attempts: {
+        Row: {
+          created_at: string
+          current_level: string
+          educator_followup: string | null
+          educator_id: string | null
+          followup_at: string | null
+          followup_by: string | null
+          id: number
+          missed: Json
+          owner_seen_at: string | null
+          pass_percent: number
+          passed: boolean
+          percent: number
+          proposed_level: string | null
+          purpose: string
+          score: number
+          stylist_name: string
+          total: number
+          used_for_promotion_at: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          current_level: string
+          educator_followup?: string | null
+          educator_id?: string | null
+          followup_at?: string | null
+          followup_by?: string | null
+          id?: never
+          missed?: Json
+          owner_seen_at?: string | null
+          pass_percent: number
+          passed: boolean
+          percent: number
+          proposed_level?: string | null
+          purpose: string
+          score: number
+          stylist_name: string
+          total: number
+          used_for_promotion_at?: string | null
+          user_id: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          current_level?: string
+          educator_followup?: string | null
+          educator_id?: string | null
+          followup_at?: string | null
+          followup_by?: string | null
+          id?: never
+          missed?: Json
+          owner_seen_at?: string | null
+          pass_percent?: number
+          passed?: boolean
+          percent?: number
+          proposed_level?: string | null
+          purpose?: string
+          score?: number
+          stylist_name?: string
+          total?: number
+          used_for_promotion_at?: string | null
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      cj_settings: {
+        Row: {
+          id: number
+          pass_percent: number
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          pass_percent?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          pass_percent?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       consultation_messages: {
         Row: {
           content: string
@@ -1065,6 +1170,16 @@ export type Database = {
       accept_sanctuary_invitation: { Args: never; Returns: string }
       can_sign_specialty: { Args: { _track: string }; Returns: boolean }
       can_view_proof: { Args: never; Returns: boolean }
+      cj_followup: {
+        Args: { attempt_id: number; note: string }
+        Returns: undefined
+      }
+      cj_level_rank: { Args: { _level: string }; Returns: number }
+      cj_mark_seen: { Args: never; Returns: undefined }
+      correct_stylist_level: {
+        Args: { new_level: string; stylist_id: number }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1136,6 +1251,11 @@ export type Database = {
           name: string
         }[]
       }
+      promote_associate: {
+        Args: { stylist_name: string; target_user_id: string }
+        Returns: undefined
+      }
+      promote_stylist: { Args: { stylist_id: number }; Returns: string }
       review_specialty_proof: {
         Args: { approve: boolean; note: string; proof_id: number }
         Returns: undefined
