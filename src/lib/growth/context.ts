@@ -29,7 +29,7 @@ export function describeGrowth(name: string, g: Awaited<ReturnType<typeof loadGr
   if (g.profile?.start_date) lines.push(`Start date: ${g.profile.start_date}`);
   lines.push('Weekly check-ins (newest first):');
   lines.push(g.checkins.length ? g.checkins.map(c => `- Week of ${c.week_start}: ` + Object.entries(c.metrics).map(([k, v]) => `${GROWTH_METRICS.find(m => m.key === k)?.label ?? k} ${formatMetric(k, v)}`).join(', ')).join('\n') : '- None yet');
-  lines.push('Current zones (computed from owner targets): ' + g.zones.map(z => `${z.label}: ${z.zone === 'unset' ? 'no target set' : z.zone}`).join('; '));
+  lines.push('Current zones (computed from owner targets; Service revenue zone uses the month-to-date total against the monthly target): ' + g.zones.map(z => `${z.label}: ${z.zone === 'unset' ? 'no target set' : z.zone}`).join('; '));
   const reqs = g.targets.filter(t => t.next_level_requirement).map(t => `${t.metric}: ${t.next_level_requirement}`);
   if (reqs.length) lines.push('Next-level requirements: ' + reqs.join('; '));
   const open = g.items.filter(i => !i.done && i.kind !== 'note');
