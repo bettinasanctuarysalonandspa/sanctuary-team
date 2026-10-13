@@ -41,3 +41,5 @@
 - [x] Color Foundations homework tab: onboarding checklist, topics, stylist questions, after-service reflections; education tracked separately
 - [x] Specialty tracks (balayage, babylights, combo, ombré, platinum 10/1, curly; Kat no curly)
 - [x] Bootcamp: no product brand names
+
+- [ ] Associates upload photo/video proof per specialty mannequin/model (model needs before+after); counts only after educator approval; owner views, educators when granted
