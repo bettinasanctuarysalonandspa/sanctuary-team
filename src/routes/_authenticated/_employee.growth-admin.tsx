@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 export const Route = createFileRoute('/_authenticated/_employee/growth-admin')({ beforeLoad: ({ context }) => { if (!context.access.admin) throw redirect({ to: '/access-pending' }); }, loader: () => getGrowthAdmin(), head: () => appHead('Sanctuary Growth administration', 'Team progress, level targets and approved coaching information.'), component: GrowthAdmin });
 
-const LEVELS = ['Associate', 'New Artist', 'Advanced 1', 'Advanced 2', 'Designer 1', 'Master 1', 'Legacy'];
+const LEVELS = ['Associate', 'New Artist', 'Designer 1', 'Designer 2', 'Advanced 1', 'Advanced 2', 'Master 1', 'Master 2', 'Legacy'];
 function GrowthAdmin() {
   const data = Route.useLoaderData();
   const router = useRouter();
