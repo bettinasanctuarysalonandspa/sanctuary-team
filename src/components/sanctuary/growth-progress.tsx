@@ -41,7 +41,7 @@ export function ZoneList({ growth }: { growth: Growth & { monthly: Month[]; quar
           <p className="font-medium">{k.label}</p>
           <div className="text-right"><p>{formatMetric(k.key, k.value)}</p>{k.target?.green_min != null && k.value != null && <span className={`zone-pill ${zoneClass[k.zone]}`}>{zoneLabel[k.zone]}</span>}</div>
         </div>)}
-        <p className="text-sm font-medium">{q.allGreen ? 'Held green for 3 months — ready to talk with Bettina about advancing.' : q.complete ? 'Not holding green on every number yet — keep going.' : 'Keep going — three full months are needed.'}</p>
+        <p className="text-sm font-medium">{q.allGreen ? '🎉 You held green for 3 months! Let Bettina know you\'re ready so she can review you for advancing.' : q.complete ? 'Not holding green on every number yet — keep going.' : 'Keep going — three full months are needed.'}</p>
       </>}
     </section>
     {prev.length > 0 && <section className="glass-panel overflow-x-auto p-5">
