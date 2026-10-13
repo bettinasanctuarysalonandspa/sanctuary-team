@@ -14,14 +14,35 @@ import { Shimmer } from '@/components/ai-elements/shimmer';
 
 type Recognition = { lang: string; start(): void; stop(): void; onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null };
 
-/** Shrinks a phone photo to a readable JPEG so uploads stay fast. */
+/** Shrinks a phone photo to a readable JPEG so uploads stay fast. Falls back to <img> decoding when createImageBitmap can't read the format (e.g. iPhone HEIC). */
 async function toImagePart(file: File): Promise<FileUIPart> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, 1800 / Math.max(bitmap.width, bitmap.height));
+  let width: number, height: number, draw: (ctx: CanvasRenderingContext2D) => void;
+  try {
+    const bitmap = await createImageBitmap(file);
+    width = bitmap.width; height = bitmap.height;
+    draw = ctx => ctx.drawImage(bitmap, 0, 0);
+  } catch {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const el = new Image();
+        el.onload = () => resolve(el); el.onerror = () => reject(new Error('unreadable image'));
+        el.src = url;
+      });
+      width = img.naturalWidth; height = img.naturalHeight;
+      draw = ctx => ctx.drawImage(img, 0, 0);
+    } finally { URL.revokeObjectURL(url); }
+  }
+  if (!width || !height) throw new Error('unreadable image');
+  const scale = Math.min(1, 1800 / Math.max(width, height));
   const canvas = document.createElement('canvas');
-  canvas.width = Math.round(bitmap.width * scale); canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  return { type: 'file', mediaType: 'image/jpeg', url: canvas.toDataURL('image/jpeg', 0.85), filename: file.name };
+  canvas.width = Math.round(width * scale); canvas.height = Math.round(height * scale);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('canvas unavailable');
+  draw(ctx);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  if (!dataUrl.startsWith('data:image/')) throw new Error('photo too large to process');
+  return { type: 'file', mediaType: 'image/jpeg', url: dataUrl, filename: file.name };
 }
 
 export function GrowthChat({ initialMessages, starters }: { initialMessages: UIMessage[]; starters: string[] }) {
