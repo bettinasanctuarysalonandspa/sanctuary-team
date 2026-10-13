@@ -72,8 +72,10 @@ export function GrowthChat({ initialMessages, starters }: { initialMessages: UIM
   }
   async function addPhotos(files: FileList | null) {
     if (!files) return;
-    try { const parts = await Promise.all(Array.from(files).slice(0, 8).map(toImagePart)); setPhotos(p => [...p, ...parts].slice(0, 8)); }
-    catch { setNotice('That photo could not be opened. Try a screenshot or a JPEG photo.'); }
+    const results = await Promise.allSettled(Array.from(files).slice(0, 8).map(toImagePart));
+    const parts = results.flatMap(r => r.status === 'fulfilled' ? [r.value] : []);
+    if (parts.length) setPhotos(p => [...p, ...parts].slice(0, 8));
+    if (parts.length < results.length) setNotice(parts.length ? 'One photo could not be opened — the others are ready to send.' : 'That photo could not be opened. On iPhone, try sending a screenshot instead of a camera photo.');
     if (fileInput.current) fileInput.current.value = '';
   }
   function send(value: string) {
