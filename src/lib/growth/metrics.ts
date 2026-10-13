@@ -46,6 +46,14 @@ export function weekStart(d = new Date()) {
   return x.toISOString().slice(0, 10);
 }
 
+/** First Monday of a YYYY-MM month — the row key used when a whole month is saved as one total (source 'month'). */
+export function firstMondayOfMonth(month: string) {
+  const d = new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1, 1));
+  const offset = (8 - d.getUTCDay()) % 7;
+  d.setUTCDate(d.getUTCDate() + offset);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Monthly promotion KPIs. Average ticket rolls up like rebooking: weeks combined, weighted by client visits. */
 export const MONTHLY_KPIS = ['rebooking_pct', 'rts_pct', 'service_revenue', 'avg_bill'] as const;
 
