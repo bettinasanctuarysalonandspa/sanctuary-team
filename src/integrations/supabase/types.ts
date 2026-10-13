@@ -844,6 +844,21 @@ export type Database = {
         }
         Relationships: []
       }
+      proof_viewers: {
+        Row: {
+          granted_at: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       specialty_entries: {
         Row: {
           approved: boolean
@@ -885,6 +900,48 @@ export type Database = {
           service?: string | null
           stage?: string
           technique?: string | null
+          track?: string
+        }
+        Relationships: []
+      }
+      specialty_proof: {
+        Row: {
+          costylist_id: string
+          created_at: string
+          files: Json
+          id: number
+          note: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          reviewer_note: string | null
+          stage: string
+          status: string
+          track: string
+        }
+        Insert: {
+          costylist_id: string
+          created_at?: string
+          files?: Json
+          id?: never
+          note?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_note?: string | null
+          stage: string
+          status?: string
+          track: string
+        }
+        Update: {
+          costylist_id?: string
+          created_at?: string
+          files?: Json
+          id?: never
+          note?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_note?: string | null
+          stage?: string
+          status?: string
           track?: string
         }
         Relationships: []
@@ -1004,6 +1061,7 @@ export type Database = {
     Functions: {
       accept_sanctuary_invitation: { Args: never; Returns: string }
       can_sign_specialty: { Args: { _track: string }; Returns: boolean }
+      can_view_proof: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1075,6 +1133,10 @@ export type Database = {
           name: string
         }[]
       }
+      review_specialty_proof: {
+        Args: { approve: boolean; note: string; proof_id: number }
+        Returns: undefined
+      }
       revoke_sanctuary_employee: {
         Args: { target_user_id: string }
         Returns: undefined
@@ -1083,6 +1145,10 @@ export type Database = {
       sanctuary_session_valid: { Args: never; Returns: boolean }
       set_bootcamp_educator: {
         Args: { make_educator: boolean; target_user_id: string }
+        Returns: undefined
+      }
+      set_proof_viewer: {
+        Args: { allow: boolean; target_user_id: string }
         Returns: undefined
       }
     }

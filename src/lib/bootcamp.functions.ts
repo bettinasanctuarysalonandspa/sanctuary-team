@@ -103,3 +103,45 @@ export const addSpecialtyEntry = createServerFn({ method: 'POST' }).middleware([
     if (error) throw new Error('Could not be saved.');
     return { ok: true };
   });
+
+const proofFile = z.object({ path: z.string().min(3).max(300), kind: z.enum(['before', 'after', 'photo', 'video']), media_type: z.string().max(100) });
+export const getProof = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth])
+  .inputValidator(input => z.object({ costylist: z.string().uuid() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const sb = context.supabase;
+    const [{ data: canView }, { data: owner }] = await Promise.all([sb.rpc('can_view_proof'), sb.rpc('is_sanctuary_owner')]);
+    if (data.costylist !== context.userId && !canView) return { canView: false, owner: !!owner, viewers: [] as string[], items: [] };
+    const { data: rows, error } = await sb.from('specialty_proof').select('*').eq('costylist_id', data.costylist).order('created_at', { ascending: false });
+    if (error) throw new Error('Photos and videos could not be loaded.');
+    const paths = (rows ?? []).flatMap(r => (r.files as { path: string }[]).map(f => f.path));
+    const signed = paths.length ? (await sb.storage.from('growth-proof').createSignedUrls(paths, 3600)).data ?? [] : [];
+    const urls = Object.fromEntries(signed.map(s => [s.path, s.signedUrl]));
+    const viewers = owner ? ((await sb.from('proof_viewers').select('user_id')).data ?? []).map(v => v.user_id) : [];
+    return { canView: !!canView, owner: !!owner, viewers, items: (rows ?? []).map(r => ({ ...r, files: (r.files as z.infer<typeof proofFile>[]).map(f => ({ ...f, url: urls[f.path] ?? null })) })) };
+  });
+
+export const submitProof = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+  .inputValidator(input => z.object({ track: z.enum(TRACK_KEYS), stage: z.enum(['mannequin', 'model']), note: z.string().trim().max(2000).nullable(), files: z.array(proofFile).min(1).max(12) }).parse(input))
+  .handler(async ({ context, data }) => {
+    if (data.files.some(f => !f.path.startsWith(`${context.userId}/`))) throw new Error('Invalid upload.');
+    if (data.stage === 'model' && !(data.files.some(f => f.kind === 'before') && data.files.some(f => f.kind === 'after'))) throw new Error('Model work needs a before and an after photo.');
+    const { error } = await context.supabase.from('specialty_proof').insert({ costylist_id: context.userId, ...data });
+    if (error) throw new Error('Could not be sent.');
+    return { ok: true };
+  });
+
+export const reviewProof = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+  .inputValidator(input => z.object({ id: z.number().int(), approve: z.boolean(), note: z.string().trim().max(2000).nullable() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const { error } = await context.supabase.rpc('review_specialty_proof', { proof_id: data.id, approve: data.approve, note: data.note ?? '' });
+    if (error) throw new Error('You are not able to review this one.');
+    return { ok: true };
+  });
+
+export const setProofViewer = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+  .inputValidator(input => z.object({ user: z.string().uuid(), allow: z.boolean() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const { error } = await context.supabase.rpc('set_proof_viewer', { target_user_id: data.user, allow: data.allow });
+    if (error) throw new Error('Could not be changed.');
+    return { ok: true };
+  });
