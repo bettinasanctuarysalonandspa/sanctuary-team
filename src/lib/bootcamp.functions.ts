@@ -28,7 +28,8 @@ export const getBootcamp = createServerFn({ method: 'GET' }).middleware([require
       educator ? sb.rpc('list_bootcamp_roster') : Promise.resolve({ data: [], error: null }),
     ]);
     if (edits.error || progress.error || practice.error || reflections.error) throw new Error('Bootcamp could not be loaded.');
-    return { educator: !!educator, me: context.userId, target, roster: roster.data ?? [], edits: edits.data ?? [], progress: progress.data ?? [], practice: practice.data ?? [], reflections: reflections.data ?? [] };
+    const lc = await context.supabase.rpc('can_change_levels');
+    return { educator: !!educator, canLevel: !!lc.data, me: context.userId, target, roster: roster.data ?? [], edits: edits.data ?? [], progress: progress.data ?? [], practice: practice.data ?? [], reflections: reflections.data ?? [] };
   });
 
 export const saveBootcampProgress = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])

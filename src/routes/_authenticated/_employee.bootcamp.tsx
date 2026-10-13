@@ -48,7 +48,7 @@ function Bootcamp() {
         {viewing && data.target !== data.me && <span className="text-sm text-muted-foreground">Recording for {viewing}</span>}
       </div>}
       <Link to="/client-journey" className="glass-panel mb-4 block p-4"><p className="eyebrow">AFTER THE BLOWOUT LESSONS</p><p className="font-medium">Client Journey test</p><p className="text-sm text-muted-foreground">Take it after Bootcamp, and again before every level move. Review it with your educator before moving forward.</p></Link>
-      {data.educator && <Link to="/client-journey-admin" className="mb-4 inline-block text-sm text-primary underline">Client Journey results & follow-up</Link>}
+      {(data.educator || data.canLevel) && <Link to="/client-journey-admin" className="mb-4 inline-block text-sm text-primary underline">Client Journey results & follow-up</Link>}
       <div role="tablist" className="mb-4 flex flex-wrap gap-2">{tabs.map(t => <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-full border px-4 py-1.5 text-sm ${tab === t ? 'border-primary bg-primary text-primary-foreground' : 'border-input bg-card/60'}`}>{t}</button>)}</div>
     </div>
     {tab === 'Co-stylist' && <CoStylist lessons={lessons} data={data}/>}
