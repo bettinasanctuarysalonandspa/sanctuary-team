@@ -2,5 +2,9 @@
 
 - [x] Fix Growth photo uploads failing on phones (HEIC fallback decode, per-photo errors, verified end-to-end save)
 - [x] Growth coach accepts monthly / multi-month catch-up numbers (save_month), still encourages week-by-week
-- [ ] Bettina will send everyone's starting numbers to pre-load as the quarter baseline (waiting on her)
-- [ ] Publish when Bettina approves
+- [x] Starting numbers pre-loaded as the quarter baseline for all eight active stylists (Jasmine starts with Bootcamp)
+- [x] Published to https://sanctuary-team.lovable.app
+- [x] Verified: Bettina can record specialty mannequin/model/final progress for any stylist (Bootcamp > pick stylist > Specialty)
+- [x] Owner-entered specialty proof: Bettina uploads mannequin-head photos and walkthrough videos for a stylist, with a "how many this covers" field for past work
+- [ ] Re-publish so the specialty changes reach the team's phones
+- [ ] Jasmine's 12-week Bootcamp logging starts next week when she comes in

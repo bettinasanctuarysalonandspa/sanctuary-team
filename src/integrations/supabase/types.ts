@@ -1206,6 +1206,7 @@ export type Database = {
       is_bootcamp_educator: { Args: never; Returns: boolean }
       is_sanctuary_employee: { Args: never; Returns: boolean }
       is_sanctuary_owner: { Args: never; Returns: boolean }
+      is_team_folder: { Args: { folder: string }; Returns: boolean }
       list_bootcamp_roster: {
         Args: never
         Returns: {

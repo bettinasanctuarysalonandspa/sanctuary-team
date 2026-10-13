@@ -94,18 +94,33 @@ export const getSpecialty = createServerFn({ method: 'GET' }).middleware([requir
     return { entries: (entries.data ?? []).map(e => ({ ...e, educator_name: names[e.educator_id] ?? 'Educator' })), blocked: (restr.data ?? []).map(r => r.track) };
   });
 
+const proofFile = z.object({ path: z.string().min(3).max(300), kind: z.enum(['before', 'after', 'photo', 'video']), media_type: z.string().max(100) });
+
 export const addSpecialtyEntry = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
-  .inputValidator(input => z.object({ costylist: z.string().uuid(), track: z.enum(TRACK_KEYS), stage: z.enum(['mannequin', 'model', 'final']), approved: z.boolean(), service: t, technique: t, result: t, feedback: t, next_assignment: t }).parse(input))
+  .inputValidator(input => z.object({ costylist: z.string().uuid(), track: z.enum(TRACK_KEYS), stage: z.enum(['mannequin', 'model', 'final']), approved: z.boolean(), service: t, technique: t, result: t, feedback: t, next_assignment: t, count: z.number().int().min(1).max(20).optional(), files: z.array(proofFile).max(12).optional() }).parse(input))
   .handler(async ({ context, data }) => {
     const { data: ok } = await context.supabase.rpc('can_sign_specialty', { _track: data.track });
     if (!ok) throw new Error('You are not authorized to sign off on this specialty.');
-    const { costylist, ...rest } = data;
-    const { error } = await context.supabase.from('specialty_entries').insert({ costylist_id: costylist, educator_id: context.userId, ...rest });
+    const { costylist, files, count, ...rest } = data;
+    if (files?.length) {
+      if (files.some(f => !f.path.startsWith(`${costylist}/`))) throw new Error('Invalid upload.');
+      if (data.stage === 'final') throw new Error('Photos and videos are kept with mannequin and model records — record the final approval on its own.');
+    }
+    const reps = count ?? 1;
+    const { error } = await context.supabase.from('specialty_entries').insert(
+      Array.from({ length: reps }, () => ({ costylist_id: costylist, educator_id: context.userId, ...rest })),
+    );
     if (error) throw new Error('Could not be saved.');
+    if (files?.length) {
+      const { error: pe } = await context.supabase.from('specialty_proof').insert({
+        costylist_id: costylist, track: data.track, stage: data.stage as 'mannequin' | 'model', note: data.feedback,
+        files, status: 'approved', reviewer_id: context.userId, reviewer_note: data.feedback, reviewed_at: new Date().toISOString(),
+      });
+      if (pe) throw new Error('The progress was saved, but the photos or videos could not be attached.');
+    }
     return { ok: true };
   });
 
-const proofFile = z.object({ path: z.string().min(3).max(300), kind: z.enum(['before', 'after', 'photo', 'video']), media_type: z.string().max(100) });
 export const getProof = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth])
   .inputValidator(input => z.object({ costylist: z.string().uuid() }).parse(input))
   .handler(async ({ context, data }) => {
