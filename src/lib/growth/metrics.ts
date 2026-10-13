@@ -67,7 +67,7 @@ export function quarterlyAverage(monthly: ReturnType<typeof monthlyKpis>) {
   if (!months.length) return null;
   const complete = months.length === 3;
   const kpis = MONTHLY_KPIS.map(key => {
-    const base = months[0].kpis.find(k => k.key === key)!;
+    const base = months[0]!.kpis.find(k => k.key === key)!;
     const vals = months.map(m => m.kpis.find(k => k.key === key)?.value).filter(v => v != null) as number[];
     const value = vals.length ? Math.round((vals.reduce((s, v) => s + Number(v), 0) / vals.length) * 100) / 100 : undefined;
     const label = GROWTH_METRICS.find(m => m.key === key)!.label + (key === 'service_revenue' ? ' (monthly avg)' : ' (avg)');
