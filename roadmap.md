@@ -47,3 +47,4 @@
 - [x] Load Bettina's approved KPI improvement ideas and current Sanctuary references into Growth; verified all four coaching examples in owner chat and nine tests. Corrected typed-message precedence so real questions reach the coach.
 
 - [x] Client Journey test built (in-app results; email alerts not set up).
+- Level changes: owner + Grant only (done)

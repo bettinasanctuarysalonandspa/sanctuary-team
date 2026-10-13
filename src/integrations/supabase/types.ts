@@ -931,6 +931,21 @@ export type Database = {
         }
         Relationships: []
       }
+      level_changers: {
+        Row: {
+          granted_at: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1168,6 +1183,7 @@ export type Database = {
     }
     Functions: {
       accept_sanctuary_invitation: { Args: never; Returns: string }
+      can_change_levels: { Args: never; Returns: boolean }
       can_sign_specialty: { Args: { _track: string }; Returns: boolean }
       can_view_proof: { Args: never; Returns: boolean }
       cj_followup: {

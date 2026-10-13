@@ -39,7 +39,7 @@ function Admin() {
 
   return <>
     <Link to={d.owner ? '/admin' : '/bootcamp'} className="back-link"><ArrowLeft size={15}/>{d.owner ? 'Admin' : 'Bootcamp'}</Link>
-    <div className="page-heading"><p className="eyebrow">{d.owner ? 'OWNER ADMINISTRATION' : 'EDUCATOR'}</p><h1>Client Journey results</h1><p>Every attempt is saved. A fresh passing test is needed for each level move, and only Bettina promotes.</p></div>
+    <div className="page-heading"><p className="eyebrow">{d.owner ? 'OWNER ADMINISTRATION' : 'EDUCATOR'}</p><h1>Client Journey results</h1><p>Every attempt is saved. A fresh passing test is needed for each level move, and only Bettina or Grant can change levels.</p></div>
     {msg && <p className="form-message mb-4" role="status">{msg}</p>}
 
     {d.owner && <section className="glass-panel mb-6 grid gap-3 p-5">
@@ -48,7 +48,7 @@ function Admin() {
         <Button size="sm" onClick={() => void act(() => savePassPercent({ data: { pass } }))}>Save</Button><span className="text-sm text-muted-foreground">90% = 27 of 30</span></div>
     </section>}
 
-    {d.owner && <section className="glass-panel mb-6 grid gap-3 p-5">
+    {d.canLevel && <section className="glass-panel mb-6 grid gap-3 p-5">
       <h2 className="eyebrow">Advancement check</h2>
       <p className="text-sm text-muted-foreground">Promote only unlocks after a fresh passing test for that exact move. All other requirements (KPIs, approvals) still apply — you decide. Use “Correct level” only to fix a level that was entered wrong.</p>
       {[...associates.map(r => ({ key: r.user_id, name: r.display_name || 'Unnamed', user: r.user_id, level: 'Associate', id: null as number | null })),
