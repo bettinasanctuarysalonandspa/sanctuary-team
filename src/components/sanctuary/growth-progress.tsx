@@ -6,7 +6,7 @@ type Growth = {
   profile: { training_week: number | null } | null;
   checkins: { week_start: string; metrics: Metrics; source: string }[];
   items: { id: number; kind: string; content: string; done: boolean; created_at: string }[];
-  zones: { key: string; label: string; value?: number; zone: Zone; target: Target | null }[];
+  zones: { key: string; label: string; value?: number | undefined; zone: Zone; target: Target | null }[];
 };
 
 const zoneClass: Record<Zone, string> = { green: 'zone-green', yellow: 'zone-yellow', red: 'zone-red', unset: 'zone-unset' };

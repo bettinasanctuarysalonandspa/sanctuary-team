@@ -28,6 +28,7 @@ import { Route as AuthenticatedEmployeeContentKnowledgeRouteImport } from './rou
 import { Route as AuthenticatedEmployeeContentStudioRouteImport } from './routes/_authenticated/_employee.content-studio'
 import { Route as AuthenticatedEmployeeEmergencyHelpRouteImport } from './routes/_authenticated/_employee.emergency-help'
 import { Route as AuthenticatedEmployeeGrowthRouteImport } from './routes/_authenticated/_employee.growth'
+import { Route as AuthenticatedEmployeeGrowthAdminRouteImport } from './routes/_authenticated/_employee.growth-admin'
 import { Route as AuthenticatedEmployeeGuidanceKnowledgeRouteImport } from './routes/_authenticated/_employee.guidance-knowledge'
 import { Route as AuthenticatedEmployeePricingRouteImport } from './routes/_authenticated/_employee.pricing'
 import { Route as AuthenticatedEmployeeSalonAiRouteImport } from './routes/_authenticated/_employee.salon-ai'
@@ -132,6 +133,12 @@ const AuthenticatedEmployeeGrowthRoute =
     path: '/growth',
     getParentRoute: () => AuthenticatedEmployeeRoute,
   } as any)
+const AuthenticatedEmployeeGrowthAdminRoute =
+  AuthenticatedEmployeeGrowthAdminRouteImport.update({
+    id: '/growth-admin',
+    path: '/growth-admin',
+    getParentRoute: () => AuthenticatedEmployeeRoute,
+  } as any)
 const AuthenticatedEmployeeGuidanceKnowledgeRoute =
   AuthenticatedEmployeeGuidanceKnowledgeRouteImport.update({
     id: '/guidance-knowledge',
@@ -175,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/growth': typeof AuthenticatedEmployeeGrowthRoute
+  '/growth-admin': typeof AuthenticatedEmployeeGrowthAdminRoute
   '/guidance-knowledge': typeof AuthenticatedEmployeeGuidanceKnowledgeRoute
   '/pricing': typeof AuthenticatedEmployeePricingRoute
   '/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
@@ -198,6 +206,7 @@ export interface FileRoutesByTo {
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/growth': typeof AuthenticatedEmployeeGrowthRoute
+  '/growth-admin': typeof AuthenticatedEmployeeGrowthAdminRoute
   '/guidance-knowledge': typeof AuthenticatedEmployeeGuidanceKnowledgeRoute
   '/pricing': typeof AuthenticatedEmployeePricingRoute
   '/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
@@ -224,6 +233,7 @@ export interface FileRoutesById {
   '/_authenticated/_employee/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/_authenticated/_employee/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
   '/_authenticated/_employee/growth': typeof AuthenticatedEmployeeGrowthRoute
+  '/_authenticated/_employee/growth-admin': typeof AuthenticatedEmployeeGrowthAdminRoute
   '/_authenticated/_employee/guidance-knowledge': typeof AuthenticatedEmployeeGuidanceKnowledgeRoute
   '/_authenticated/_employee/pricing': typeof AuthenticatedEmployeePricingRoute
   '/_authenticated/_employee/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/content-studio'
     | '/emergency-help'
     | '/growth'
+    | '/growth-admin'
     | '/guidance-knowledge'
     | '/pricing'
     | '/salon-ai'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/content-studio'
     | '/emergency-help'
     | '/growth'
+    | '/growth-admin'
     | '/guidance-knowledge'
     | '/pricing'
     | '/salon-ai'
@@ -297,6 +309,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_employee/content-studio'
     | '/_authenticated/_employee/emergency-help'
     | '/_authenticated/_employee/growth'
+    | '/_authenticated/_employee/growth-admin'
     | '/_authenticated/_employee/guidance-knowledge'
     | '/_authenticated/_employee/pricing'
     | '/_authenticated/_employee/salon-ai'
@@ -452,6 +465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployeeGrowthRouteImport
       parentRoute: typeof AuthenticatedEmployeeRoute
     }
+    '/_authenticated/_employee/growth-admin': {
+      id: '/_authenticated/_employee/growth-admin'
+      path: '/growth-admin'
+      fullPath: '/growth-admin'
+      preLoaderRoute: typeof AuthenticatedEmployeeGrowthAdminRouteImport
+      parentRoute: typeof AuthenticatedEmployeeRoute
+    }
     '/_authenticated/_employee/guidance-knowledge': {
       id: '/_authenticated/_employee/guidance-knowledge'
       path: '/guidance-knowledge'
@@ -490,6 +510,7 @@ interface AuthenticatedEmployeeRouteChildren {
   AuthenticatedEmployeeContentStudioRoute: typeof AuthenticatedEmployeeContentStudioRoute
   AuthenticatedEmployeeEmergencyHelpRoute: typeof AuthenticatedEmployeeEmergencyHelpRoute
   AuthenticatedEmployeeGrowthRoute: typeof AuthenticatedEmployeeGrowthRoute
+  AuthenticatedEmployeeGrowthAdminRoute: typeof AuthenticatedEmployeeGrowthAdminRoute
   AuthenticatedEmployeeGuidanceKnowledgeRoute: typeof AuthenticatedEmployeeGuidanceKnowledgeRoute
   AuthenticatedEmployeePricingRoute: typeof AuthenticatedEmployeePricingRoute
   AuthenticatedEmployeeSalonAiRoute: typeof AuthenticatedEmployeeSalonAiRoute
@@ -507,6 +528,7 @@ const AuthenticatedEmployeeRouteChildren: AuthenticatedEmployeeRouteChildren = {
   AuthenticatedEmployeeEmergencyHelpRoute:
     AuthenticatedEmployeeEmergencyHelpRoute,
   AuthenticatedEmployeeGrowthRoute: AuthenticatedEmployeeGrowthRoute,
+  AuthenticatedEmployeeGrowthAdminRoute: AuthenticatedEmployeeGrowthAdminRoute,
   AuthenticatedEmployeeGuidanceKnowledgeRoute:
     AuthenticatedEmployeeGuidanceKnowledgeRoute,
   AuthenticatedEmployeePricingRoute: AuthenticatedEmployeePricingRoute,

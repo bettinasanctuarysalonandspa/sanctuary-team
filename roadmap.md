@@ -34,3 +34,4 @@
 - [ ] Growth: remember each person's progress over time so they never re-enter info; coach builds on prior history
 - [ ] Growth: starting level per person = calculator stylist level; owner will upload level-requirements form
 - [ ] Growth: employees upload photos/screenshots of forms & KPIs; coach reads them and updates progress
+- [ ] Growth: KPI Quick View targets loaded (rebooking, utilization, RTS, service \$ full/part time); confirm service \$ period + who is part time; New Artist/Legacy have no chart rows
