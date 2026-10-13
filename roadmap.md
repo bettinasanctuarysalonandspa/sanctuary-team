@@ -48,3 +48,4 @@
 
 - [x] Client Journey test built (in-app results; email alerts not set up).
 - Level changes: owner + Grant only (done)
+- [x] Growth numbers match Phorest My Numbers; RTS auto-calculated (retail ÷ service, SalonScale included as-is); utilization owner-tracked outside app
