@@ -58,7 +58,12 @@ export async function handleGrowthChat(request: Request) {
     (r.data ?? []).map(record => ({ ...record, title: `${['Sanctuary Support', 'Sanctuary Guidance', 'Content Studio'][i]}: ${record.title}` })));
   let growth;
   try { growth = await loadGrowth(db, userId, me?.[0]?.level ?? null); } catch { return Response.json({ message: 'Your saved progress could not be loaded.' }, { status: 503 }); }
-  const context = describeGrowth(profile?.display_name || me?.[0]?.name || 'Team member', growth) + `\nToday: ${new Date().toISOString().slice(0, 10)} (current week starts ${weekStart()})`;
+  const dailyLogs = (dailyResult.data ?? []).map(l => {
+    const std = (l.standards as { standard: string; note: string }[]).map(s => `${s.standard}: ${s.note}`).join('; ');
+    return `${l.shift_date} — standards: ${std || 'none noted'}; practiced: ${l.practiced ?? '—'}; learned: ${l.learned ?? '—'}; improve: ${l.improve ?? '—'}; tomorrow: ${l.better_tomorrow ?? '—'}`;
+  });
+  const context = describeGrowth(profile?.display_name || me?.[0]?.name || 'Team member', growth) + `\nToday: ${new Date().toISOString().slice(0, 10)} (current week starts ${weekStart()})` +
+    (dailyLogs.length ? `\nDAILY STANDARDS SHEETS (most recent first):\n${dailyLogs.join('\n')}` : '\nDAILY STANDARDS SHEETS: none saved yet.');
 
   // Stored history is text only; photos are read once and never retained.
   const stored = (history ?? []).reverse().map(r => r.message as unknown as UIMessage).filter(m => m.id !== last.id);
@@ -107,6 +112,16 @@ export async function handleGrowthChat(request: Request) {
       add_note: tool({ description: 'Save a short coaching note worth remembering next time.', inputSchema: z.object({ content: z.string().min(1).max(500) }), execute: async ({ content }) => ok((await db.from('growth_items').insert({ user_id: userId, kind: 'note', content })).error) }),
       complete_item: tool({ description: 'Mark a goal or assignment (#id) complete.', inputSchema: z.object({ id: z.number().int() }), execute: async ({ id }) => ok((await db.from('growth_items').update({ done: true, completed_at: new Date().toISOString() }).eq('id', id).eq('user_id', userId)).error) }),
       set_training_week: tool({ description: 'Set an associate\'s current program week (1-12).', inputSchema: z.object({ week: z.number().int().min(1).max(12) }), execute: async ({ week }) => ok((await db.from('growth_profiles').upsert({ user_id: userId, training_week: week, updated_at: new Date().toISOString() })).error) }),
+      save_daily_log: tool({
+        description: 'Save a confirmed Daily Non-Negotiable Standards sheet (associate through Designer 2, one per shift). Only after the person confirms what you read.',
+        inputSchema: z.object({
+          shift_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe('Date written on the sheet, YYYY-MM-DD'),
+          standards: z.array(z.object({ standard: z.string().max(200), note: z.string().max(500) })).max(10).describe('Each standard line and what they wrote'),
+          practiced: z.string().max(1000).nullable(), learned: z.string().max(1000).nullable(),
+          improve: z.string().max(1000).nullable(), better_tomorrow: z.string().max(1000).nullable(),
+        }),
+        execute: async (log) => ok((await db.from('associate_daily_logs').insert({ user_id: userId, ...log })).error),
+      }),
     },
     providerOptions: { openai: { store: false, forceReasoning: true, reasoningEffort: 'low', reasoningSummary: 'auto', include: ['reasoning.encrypted_content'] } },
   });
