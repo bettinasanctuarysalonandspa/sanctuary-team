@@ -39,12 +39,22 @@ export async function handleGrowthChat(request: Request) {
   const { data: state } = await supabaseAdmin.from('growth_gateway_state').select('paused,reason').eq('id', 1).maybeSingle();
   if (state?.paused) return Response.json({ message: state.reason || 'Sanctuary Growth is paused. Please contact the owner.' }, { status: 403 });
 
-  const [{ data: history }, { data: knowledge }, { data: me }, { data: profile }] = await Promise.all([
+  const [historyResult, knowledgeResult, { data: me }, { data: profile }, supportResult, guidanceResult, contentResult] = await Promise.all([
     db.from('growth_messages').select('message').eq('user_id', userId).order('id', { ascending: false }).limit(24),
     db.from('growth_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
     db.rpc('my_stylist_level'),
     db.from('profiles').select('display_name').eq('id', userId).maybeSingle(),
+    db.from('support_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
+    db.from('guidance_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
+    db.from('content_studio_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
   ]);
+  if ([historyResult, knowledgeResult, supportResult, guidanceResult, contentResult].some(r => r.error)) {
+    return Response.json({ message: 'Your approved coaching information could not be loaded. Please try again.' }, { status: 503 });
+  }
+  const history = historyResult.data;
+  const knowledge = knowledgeResult.data;
+  const supportingKnowledge = [supportResult, guidanceResult, contentResult].flatMap((r, i) =>
+    (r.data ?? []).map(record => ({ ...record, title: `${['Sanctuary Support', 'Sanctuary Guidance', 'Content Studio'][i]}: ${record.title}` })));
   let growth;
   try { growth = await loadGrowth(db, userId, me?.[0]?.level ?? null); } catch { return Response.json({ message: 'Your saved progress could not be loaded.' }, { status: 503 }); }
   const context = describeGrowth(profile?.display_name || me?.[0]?.name || 'Team member', growth) + `\nToday: ${new Date().toISOString().slice(0, 10)} (current week starts ${weekStart()})`;
@@ -64,7 +74,7 @@ export async function handleGrowthChat(request: Request) {
   const ok = (error: { message: string } | null) => error ? { saved: false, error: 'Could not save.' } : { saved: true };
   const result = streamText({
     model: provider.responses('openai/gpt-6-astra'),
-    system: growthPrompt(knowledge ?? [], context),
+    system: growthPrompt(knowledge ?? [], context, supportingKnowledge),
     messages: modelMessages,
     maxRetries: 0,
     abortSignal: request.signal,

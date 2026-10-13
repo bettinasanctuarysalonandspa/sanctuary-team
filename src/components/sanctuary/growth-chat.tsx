@@ -58,7 +58,7 @@ export function GrowthChat({ initialMessages, starters }: { initialMessages: UIM
   function send(value: string) {
     if ((!value && !photos.length) || busy) return;
     clearError(); setNotice(''); setText('');
-    void sendMessage({ text: value || photos.length > 1 ? 'Here are photos of my numbers.' : 'Here is a photo of my numbers.', files: photos });
+    void sendMessage({ text: value || (photos.length > 1 ? 'Here are photos of my numbers.' : 'Here is a photo of my numbers.'), files: photos });
     setPhotos([]);
   }
   async function reset() { try { await clear(); setMessages([]); clearError(); } catch (e) { setNotice(e instanceof Error ? e.message : 'Could not start over.'); } }
