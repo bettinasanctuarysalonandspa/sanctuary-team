@@ -122,6 +122,33 @@ export type Database = {
         }
         Relationships: []
       }
+      bootcamp_reflections: {
+        Row: {
+          created_at: string
+          educator_reply: string | null
+          id: number
+          learned: string
+          question: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          educator_reply?: string | null
+          id?: never
+          learned: string
+          question?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          educator_reply?: string | null
+          id?: never
+          learned?: string
+          question?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       calc_aliases: {
         Row: {
           id: number

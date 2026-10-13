@@ -38,3 +38,4 @@
 - [ ] Growth open: service $ time period (weekly/monthly?), who is part time, Heather not on stylist list
 - [ ] Bootcamp (Shampoo, Blowout & Color-Assistance) inside Growth: co-stylist + educator views, printable cue cards, per-skill approvals, editable lessons
 - [ ] Make educators: Ava, Miranda, Katie, Kat, Bettina
+- [ ] Color Foundations homework tab: onboarding checklist, topics, stylist questions, after-service reflections; education tracked separately
