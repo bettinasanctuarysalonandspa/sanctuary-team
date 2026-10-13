@@ -1,15 +1,23 @@
+/** Stylist-reported numbers match what stylists can see on their own Phorest "My Numbers" screen. Utilization is not visible to stylists and is tracked by the owner outside this app. */
 export const GROWTH_METRICS = [
-  { key: 'clients_served', label: 'Clients served', unit: 'count' },
+  { key: 'clients_served', label: 'Client visits', unit: 'count' },
   { key: 'new_clients', label: 'New clients', unit: 'count' },
-  { key: 'service_revenue', label: 'Service revenue', unit: 'dollars' },
+  { key: 'service_revenue', label: 'Service sales', unit: 'dollars' },
   { key: 'retail_sales', label: 'Retail sales', unit: 'dollars' },
   { key: 'rebooking_pct', label: 'Rebooking', unit: 'percent' },
-  { key: 'utilization_pct', label: 'Utilization', unit: 'percent' },
   { key: 'rts_pct', label: 'Retail-to-service', unit: 'percent' },
+  { key: 'tips', label: 'Tips', unit: 'dollars' },
+  { key: 'avg_bill', label: 'Average total bill', unit: 'dollars' },
   { key: 'social_posts', label: 'Social posts', unit: 'count' },
   { key: 'models', label: 'Models / Opportunity Day guests', unit: 'count' },
   { key: 'mannequin_reps', label: 'Mannequin reps', unit: 'count' },
 ] as const;
+
+/** RTS = retail sales ÷ service sales, as a percent rounded to one decimal. Never asked of stylists. */
+export function rtsPct(retail: number | undefined, service: number | undefined) {
+  if (retail == null || !service) return undefined;
+  return Math.round((Number(retail) / Number(service)) * 1000) / 10;
+}
 export type MetricKey = (typeof GROWTH_METRICS)[number]['key'];
 export type Metrics = Partial<Record<MetricKey, number>>;
 export type Zone = 'green' | 'yellow' | 'red' | 'unset';
@@ -39,9 +47,9 @@ export function weekStart(d = new Date()) {
   return x.toISOString().slice(0, 10);
 }
 
-export const MONTHLY_KPIS = ['rebooking_pct', 'utilization_pct', 'rts_pct', 'service_revenue'] as const;
+export const MONTHLY_KPIS = ['rebooking_pct', 'rts_pct', 'service_revenue'] as const;
 
-/** Rolls weekly saves up into calendar months. Percentages = latest reported value in the month; service revenue = month total. */
+/** Rolls weekly saves up into calendar months. Rebooking = latest reported value in the month; service sales = month total; RTS = month retail ÷ month service. */
 export function monthlyKpis(checkins: { week_start: string; updated_at: string | null; metrics: Metrics }[], targets: Target[], today = new Date()) {
   const current = today.toISOString().slice(0, 7);
   const byMonth = new Map<string, typeof checkins>();
@@ -49,10 +57,12 @@ export function monthlyKpis(checkins: { week_start: string; updated_at: string |
   return [...byMonth.entries()].sort((a, b) => b[0].localeCompare(a[0])).map(([month, rows]) => {
     const sorted = [...rows].sort((a, b) => b.week_start.localeCompare(a.week_start));
     const updated = rows.map(r => r.updated_at ?? '').sort().at(-1) || null;
+    const total = (k: MetricKey) => { const vals = rows.map(r => r.metrics[k]).filter(v => v != null) as number[]; return vals.length ? vals.reduce((s, v) => s + Number(v), 0) : undefined; };
     const kpis = MONTHLY_KPIS.map(key => {
       const label = GROWTH_METRICS.find(m => m.key === key)!.label + (key === 'service_revenue' ? ' (monthly)' : '');
       let value: number | undefined;
-      if (key === 'service_revenue') { const vals = rows.map(r => r.metrics[key]).filter(v => v != null) as number[]; value = vals.length ? vals.reduce((s, v) => s + Number(v), 0) : undefined; }
+      if (key === 'service_revenue') value = total('service_revenue');
+      else if (key === 'rts_pct') { const both = rows.filter(r => r.metrics.retail_sales != null && r.metrics.service_revenue); value = both.length ? rtsPct(both.reduce((s, r) => s + Number(r.metrics.retail_sales), 0), both.reduce((s, r) => s + Number(r.metrics.service_revenue), 0)) : sorted.find(r => r.metrics.rts_pct != null)?.metrics.rts_pct; }
       else value = sorted.find(r => r.metrics[key] != null)?.metrics[key];
       const target = targets.find(t => t.metric === key) ?? null;
       return { key, label, value, target, zone: zoneFor(value, target ?? undefined) };
