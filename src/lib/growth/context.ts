@@ -34,7 +34,9 @@ export async function loadGrowth(db: Db, userId: string, level: string | null) {
   const zones = GROWTH_METRICS.map(m => ({ key: m.key, label: m.label, value: zoneValues[m.key], zone: zoneFor(zoneValues[m.key], t.find(x => x.metric === m.key)), target: t.find(x => x.metric === m.key) ?? null }));
   const monthly = monthlyKpis((checkins.data ?? []).map(c => ({ week_start: c.week_start, updated_at: c.updated_at, metrics: c.metrics as Metrics })), t);
   const quarters = quarterlyAverages(monthly);
-  return { quarters, monthly, level, profile: profile.data, checkins: (checkins.data ?? []).map(c => ({ ...c, metrics: c.metrics as Metrics })), items: items.data ?? [], targets: t, zones };
+  const nl = nextLevel(level);
+  const nextTicketTarget = nl ? (allTicketTargets.data ?? []).find(r => r.level === nl)?.green_min ?? null : null;
+  return { quarters, monthly, level, nextLevel: nl, nextTicketTarget: nextTicketTarget != null ? Number(nextTicketTarget) : null, profile: profile.data, checkins: (checkins.data ?? []).map(c => ({ ...c, metrics: c.metrics as Metrics })), items: items.data ?? [], targets: t, zones };
 }
 
 export function describeGrowth(name: string, g: Awaited<ReturnType<typeof loadGrowth>>) {
