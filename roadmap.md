@@ -8,4 +8,4 @@
 - [x] Owner-entered specialty proof: Bettina uploads mannequin-head photos and walkthrough videos for a stylist, with a "how many this covers" field for past work
 - [ ] Re-publish so the specialty changes reach the team's phones
 - [ ] Jasmine's 12-week Bootcamp logging starts next week when she comes in
-- [ ] Daily Non-Negotiable Standards sheet: associates (Associate–Designer 2) photo it in Growth Coach each shift; coach reads, saves, talks it through
+- [x] Daily Non-Negotiable Standards sheet: associates (Associate–Designer 2) photo it in Growth Coach each shift; coach reads, confirms, saves, talks it through
