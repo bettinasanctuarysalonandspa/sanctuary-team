@@ -1,4 +1,4 @@
-/** Stylist-reported numbers match what stylists can see on their own Phorest "My Numbers" screen. Utilization is not visible to stylists and is tracked by the owner outside this app. */
+/** Stylist-reported numbers match what stylists can see on their own Phorest "My Numbers" screen. Utilization and tips are not tracked here: utilization is owner-only outside this app, and tips is informational for stylists to read on their own screen. */
 export const GROWTH_METRICS = [
   { key: 'clients_served', label: 'Client visits', unit: 'count' },
   { key: 'new_clients', label: 'New clients', unit: 'count' },
@@ -6,7 +6,6 @@ export const GROWTH_METRICS = [
   { key: 'retail_sales', label: 'Retail sales', unit: 'dollars' },
   { key: 'rebooking_pct', label: 'Rebooking', unit: 'percent' },
   { key: 'rts_pct', label: 'Retail-to-service', unit: 'percent' },
-  { key: 'tips', label: 'Tips', unit: 'dollars' },
   { key: 'avg_bill', label: 'Average total bill', unit: 'dollars' },
   { key: 'social_posts', label: 'Social posts', unit: 'count' },
   { key: 'models', label: 'Models / Opportunity Day guests', unit: 'count' },
