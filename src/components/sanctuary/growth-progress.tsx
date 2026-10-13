@@ -15,9 +15,9 @@ const zoneLabel: Record<Zone, string> = { green: 'Green', yellow: 'Yellow', red:
 type Month = { month: string; partial: boolean; updated: string | null; kpis: { key: string; label: string; value?: number | undefined; zone: Zone; target: Target | null }[] };
 const monthName = (m: string) => new Date(m + '-15T12:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-type Quarter = { months: string[]; complete: boolean; allGreen: boolean; kpis: { key: string; label: string; value?: number | undefined; monthsCounted: number; zone: Zone; target: Target | null }[] } | null;
-export function ZoneList({ growth }: { growth: Growth & { monthly: Month[]; quarter?: Quarter } }) {
-  const q = growth.quarter;
+type Quarter = { quarter: string; current: boolean; monthsDone: number; complete: boolean; allGreen: boolean; kpis: { key: string; label: string; value?: number | undefined; monthsCounted: number; zone: Zone; target: Target | null }[] };
+export function ZoneList({ growth }: { growth: Growth & { monthly: Month[]; quarters?: Quarter[] } }) {
+  const quarters = growth.quarters ?? [];
   const [now, ...prev] = growth.monthly;
   if (!now) return <section className="glass-panel p-5"><p className="text-sm text-muted-foreground">No numbers saved yet — send a screenshot of your numbers to the Coach to start.</p></section>;
   return <div className="grid gap-4">
@@ -33,16 +33,16 @@ export function ZoneList({ growth }: { growth: Growth & { monthly: Month[]; quar
       </div>; })}
     </section>
     <section className="glass-panel grid gap-3 p-5">
-      <div><h2 className="eyebrow">3-month growth cycle · average</h2>
-        <p className="text-xs text-muted-foreground">To advance, your average must stay green for at least three full months.</p></div>
-      {!q ? <p className="text-sm text-muted-foreground">Starts after your first full month.</p> : <>
-        <p className="text-xs text-muted-foreground">{q.months.map(monthName).join(' · ')}{q.complete ? '' : ` — ${q.months.length} of 3 months so far`}</p>
-        {q.kpis.map(k => <div key={k.key} className="flex items-center justify-between gap-3 border-b border-input/60 pb-2 last:border-0">
-          <p className="font-medium">{k.label}</p>
-          <div className="text-right"><p>{formatMetric(k.key, k.value)}</p>{k.target?.green_min != null && k.value != null && <span className={`zone-pill ${zoneClass[k.zone]}`}>{zoneLabel[k.zone]}</span>}</div>
+      <div><h2 className="eyebrow">Quarterly growth cycle</h2>
+        <p className="text-xs text-muted-foreground">Q1 Jan–Mar · Q2 Apr–Jun · Q3 Jul–Sep · Q4 Oct–Dec. Each quarter is a fresh start. To advance, your average must stay green for a full quarter.</p></div>
+      {quarters.map(q => <div key={q.quarter} className="grid gap-2 border-t border-input/60 pt-3 first:border-0 first:pt-0">
+        <p className="font-medium">{q.quarter}{q.current ? ' · In progress' : ''} <span className="text-xs text-muted-foreground">({q.monthsDone} of 3 months finished)</span></p>
+        {q.monthsDone > 0 && q.kpis.map(k => <div key={k.key} className="flex items-center justify-between gap-3 text-sm">
+          <span>{k.label}</span>
+          <span className="text-right">{formatMetric(k.key, k.value)} {k.target?.green_min != null && k.value != null && <span className={`zone-pill ${zoneClass[k.zone]}`}>{zoneLabel[k.zone]}</span>}</span>
         </div>)}
-        <p className="text-sm font-medium">{q.allGreen ? '🎉 You held green for 3 months! Let Bettina know you\'re ready so she can review you for advancing.' : q.complete ? 'Not holding green on every number yet — keep going.' : 'Keep going — three full months are needed.'}</p>
-      </>}
+        <p className="text-sm font-medium">{q.allGreen ? "🎉 You held green for the whole quarter! Let Bettina know you're ready so she can review you for advancing." : q.complete ? 'Quarter finished — not green on every number. New quarter, fresh start.' : q.current ? 'Keep going — the quarter average counts once all 3 months are finished.' : 'Quarter not fully tracked.'}</p>
+      </div>)}
     </section>
     {prev.length > 0 && <section className="glass-panel overflow-x-auto p-5">
       <h2 className="eyebrow mb-3">Previous months</h2>
