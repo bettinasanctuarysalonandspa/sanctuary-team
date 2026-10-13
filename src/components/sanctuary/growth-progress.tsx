@@ -15,7 +15,9 @@ const zoneLabel: Record<Zone, string> = { green: 'Green', yellow: 'Yellow', red:
 type Month = { month: string; partial: boolean; updated: string | null; kpis: { key: string; label: string; value?: number | undefined; zone: Zone; target: Target | null }[] };
 const monthName = (m: string) => new Date(m + '-15T12:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-export function ZoneList({ growth }: { growth: Growth & { monthly: Month[] } }) {
+type Quarter = { months: string[]; complete: boolean; allGreen: boolean; kpis: { key: string; label: string; value?: number | undefined; monthsCounted: number; zone: Zone; target: Target | null }[] } | null;
+export function ZoneList({ growth }: { growth: Growth & { monthly: Month[]; quarter?: Quarter } }) {
+  const q = growth.quarter;
   const [now, ...prev] = growth.monthly;
   if (!now) return <section className="glass-panel p-5"><p className="text-sm text-muted-foreground">No numbers saved yet — send a screenshot of your numbers to the Coach to start.</p></section>;
   return <div className="grid gap-4">
@@ -29,6 +31,18 @@ export function ZoneList({ growth }: { growth: Growth & { monthly: Month[] } }) 
           {k.target?.next_level_requirement && <p className="text-xs text-muted-foreground">Next level: {k.target.next_level_requirement}</p>}</div>
         <div className="text-right"><p>{formatMetric(k.key, k.value)}</p>{hasTarget && k.value != null && <span className={`zone-pill ${zoneClass[k.zone]}`}>{zoneLabel[k.zone]}</span>}</div>
       </div>; })}
+    </section>
+    <section className="glass-panel grid gap-3 p-5">
+      <div><h2 className="eyebrow">3-month growth cycle · average</h2>
+        <p className="text-xs text-muted-foreground">To advance, your average must stay green for at least three full months.</p></div>
+      {!q ? <p className="text-sm text-muted-foreground">Starts after your first full month.</p> : <>
+        <p className="text-xs text-muted-foreground">{q.months.map(monthName).join(' · ')}{q.complete ? '' : ` — ${q.months.length} of 3 months so far`}</p>
+        {q.kpis.map(k => <div key={k.key} className="flex items-center justify-between gap-3 border-b border-input/60 pb-2 last:border-0">
+          <p className="font-medium">{k.label}</p>
+          <div className="text-right"><p>{formatMetric(k.key, k.value)}</p>{k.target?.green_min != null && k.value != null && <span className={`zone-pill ${zoneClass[k.zone]}`}>{zoneLabel[k.zone]}</span>}</div>
+        </div>)}
+        <p className="text-sm font-medium">{q.allGreen ? '🎉 You held green for 3 months! Let Bettina know you\'re ready so she can review you for advancing.' : q.complete ? 'Not holding green on every number yet — keep going.' : 'Keep going — three full months are needed.'}</p>
+      </>}
     </section>
     {prev.length > 0 && <section className="glass-panel overflow-x-auto p-5">
       <h2 className="eyebrow mb-3">Previous months</h2>

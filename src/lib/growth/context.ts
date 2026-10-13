@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
-import { GROWTH_METRICS, formatMetric, zoneFor, monthlyKpis, type Metrics, type Target } from './metrics';
+import { GROWTH_METRICS, formatMetric, zoneFor, monthlyKpis, quarterlyAverage, type Metrics, type Target } from './metrics';
 
 type Db = SupabaseClient<Database>;
 
@@ -22,7 +22,8 @@ export async function loadGrowth(db: Db, userId: string, level: string | null) {
   const zoneValues: Metrics = { ...latest, ...(serviceValue != null ? { service_revenue: serviceValue } : {}) };
   const zones = GROWTH_METRICS.map(m => ({ key: m.key, label: m.label, value: zoneValues[m.key], zone: zoneFor(zoneValues[m.key], t.find(x => x.metric === m.key)), target: t.find(x => x.metric === m.key) ?? null }));
   const monthly = monthlyKpis((checkins.data ?? []).map(c => ({ week_start: c.week_start, updated_at: c.updated_at, metrics: c.metrics as Metrics })), t);
-  return { monthly, level, profile: profile.data, checkins: (checkins.data ?? []).map(c => ({ ...c, metrics: c.metrics as Metrics })), items: items.data ?? [], targets: t, zones };
+  const quarter = quarterlyAverage(monthly);
+  return { quarter, monthly, level, profile: profile.data, checkins: (checkins.data ?? []).map(c => ({ ...c, metrics: c.metrics as Metrics })), items: items.data ?? [], targets: t, zones };
 }
 
 export function describeGrowth(name: string, g: Awaited<ReturnType<typeof loadGrowth>>) {
@@ -32,6 +33,7 @@ export function describeGrowth(name: string, g: Awaited<ReturnType<typeof loadGr
   lines.push('Weekly check-ins (newest first):');
   lines.push(g.checkins.length ? g.checkins.map(c => `- Week of ${c.week_start}: ` + Object.entries(c.metrics).map(([k, v]) => `${GROWTH_METRICS.find(m => m.key === k)?.label ?? k} ${formatMetric(k, v)}`).join(', ')).join('\n') : '- None yet');
   lines.push('Current zones (computed from owner targets; Service revenue zone uses the month-to-date total against the monthly target): ' + g.zones.map(z => `${z.label}: ${z.zone === 'unset' ? 'no target set' : z.zone}`).join('; '));
+  lines.push(g.quarter ? `3-month growth cycle average (completed months ${g.quarter.months.join(', ')}${g.quarter.complete ? '' : ` — only ${g.quarter.months.length} of 3 completed months so far`}): ` + g.quarter.kpis.map(k => `${k.label} ${formatMetric(k.key, k.value)} → ${k.zone === 'unset' ? 'no rating' : k.zone}`).join('; ') + (g.quarter.allGreen ? ' — HELD GREEN ON AVERAGE FOR 3 MONTHS: eligible to be considered for advancement (Bettina decides).' : ' — not yet holding green for 3 months.') : '3-month growth cycle average: no completed months yet.');
   lines.push('Monthly KPIs (newest month first; percentages = latest reported in month, service revenue = month total; "month-to-date" means the month is not finished — never treat it as a final result):\n' + g.monthly.map(m => `- ${m.month}${m.partial ? ' (month-to-date)' : ' (completed month)'}: ` + m.kpis.map(k => `${k.label} ${formatMetric(k.key, k.value)} vs target ${k.target?.green_min != null ? formatMetric(k.key, Number(k.target.green_min)) : 'needs to be set'} → ${k.zone === 'unset' ? (k.target?.green_min == null ? 'no rating (target needs to be set)' : 'no number') : k.zone}`).join('; ')).join('\n'));
   const reqs = g.targets.filter(t => t.next_level_requirement).map(t => `${t.metric}: ${t.next_level_requirement}`);
   if (reqs.length) lines.push('Next-level requirements: ' + reqs.join('; '));
