@@ -245,7 +245,7 @@ export const LESSONS: Lesson[] = [
     ask: ['What is the next step in this treatment’s sequence?', 'Does this treatment rinse out or remain in the hair?'],
     practice: 'Complete the Emergency Treatment and blow-dry Part B into the hair.',
     checkoff: ['Part A applied and processed 10 minutes.', 'Rinsed with warm water.', 'Part B left in and blow-dried in.'],
-    missing: ['Exact product names', 'Amounts', 'Lamp settings and positioning'] },
+    missing: ['Amounts', 'Lamp settings and positioning'] },
   { id: 'd2-9', day: 2, n: 9, title: 'Integrated practice', skill: null,
     goal: 'Combine services into full client sequences under educator assignment.',
     say: 'Now we put it together the way a real client day flows.',
