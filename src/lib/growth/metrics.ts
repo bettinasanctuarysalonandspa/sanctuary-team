@@ -1,4 +1,4 @@
-/** Stylist-reported numbers match what stylists can see on their own Phorest "My Numbers" screen. Utilization and tips are not tracked here: utilization is owner-only outside this app, and tips is informational for stylists to read on their own screen. */
+/** Stylist-reported numbers match what stylists can see on their own Phorest "My Numbers" screen. Utilization and tips are not tracked here: utilization is owner-only outside this app, and tips is informational for stylists to read on their own screen. Expert recommendations is not tracked either: there is no online store yet, so it cannot be used until Bettina re-enables it. */
 export const GROWTH_METRICS = [
   { key: 'clients_served', label: 'Client visits', unit: 'count' },
   { key: 'new_clients', label: 'New clients', unit: 'count' },
