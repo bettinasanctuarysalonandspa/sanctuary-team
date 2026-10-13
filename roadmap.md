@@ -29,3 +29,5 @@
 - [x] Make Sanctuary Team installable from a phone home screen (web app manifest + icon); no offline mode requested.
 
 - [ ] Calculator rules: standard shampoo default (liter/travel only when stated), never ask SalonScale estimate, home care products separate from services; test in Kaitlyn's app.
+
+- [ ] Sanctuary Growth — Coach & KPI Tracker (5th section): coach chat, Associate 12-week training, New Stylist builder, Designer performance coach, weekly accountability + zones; waiting on owner content (12-week sequence, thresholds, Growth Coach instructions)
