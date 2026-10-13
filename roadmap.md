@@ -1,51 +1,6 @@
-# Sanctuary Team
-- [x] Rename Sanctuary Handbook to Sanctuary Guidance with the approved description; record handbook/Code of Honor priority and leadership escalation requirements. Activation awaits official owner uploads; other sections unchanged.
-- [x] Connect complete approved Content Studio knowledge, owner-only editing, private chat and supported voice; verified Head Spa and Butterfly Weft posts, caption-only follow-up and reload persistence; 17 tests passed.
-- [x] Separate extension hair from retail products in consultation quote line items and subtotals; preserve checkout math.
-- [x] Show charges included in service, retail product, and extension hair quote totals rather than separate charge lines; preserve listed catalog prices and approved tax rules.
-- [x] Secure first owner setup: self-registration disabled; Bettina's verified Google account (confirmed email) granted admin.
-- [x] Sanctuary Guidance active with handbook, Guidance knowledge file and source-of-truth summary; owner editor at Admin.
-- [x] Sanctuary Support active with owner emergency operations file; quick emergency buttons; owner editor. Missing contacts/locations pending owner.
-- [x] Build accurate Consultation pricing calculations (deterministic 3% + 8.25% retail-only math, tested).
-- [x] Enforce secure persistent sessions with a 30-day maximum and sign-in after expiry/revocation.
-- [x] Add owner-only employee revocation, active-session invalidation, and automatic sign-out.
-- [x] Verify session observer restoration, manual sign-out, expiry, revocation, and offline safeguards with six automated tests.
-- [x] Replace generated spa photography with an elegant placeholder; no replacement photography selected.
-- [x] Build frosted-sage dashboard and shared mobile navigation.
-- [x] Create four empty tool destinations with approved-content-only states.
-- [x] Add employee sign-in, profile foundation, and restricted owner area without seed records.
-- [x] Verify public navigation, signed-out restrictions, and phone/desktop layout.
-- [x] Verify owner Admin dashboard opens with verified account — fixed session check to fall back to token issue-time when no server session row exists. Employee flows and revocation test still pending an employee account.
-- [ ] Add authentic Sanctuary photography — requires owner uploads.
-- [x] Provision owner access — Bettina's verified account granted admin; employee accounts still require owner approval.
-- [x] Consultation Calculator: chat with voice, owner price editor (/pricing), approved knowledge base loaded.
-- [x] Import L'ANZA products using the owner's L'ANZA 2026 wholesale workbook (not manufacturer retail): wholesale x2 rounded up; flag only products whose wholesale cost is genuinely missing; admin-editable wholesale + retail 
-- [x] Rebrand to Sanctuary Team: rename four sections, new welcome line, remove AI/GPT/Suite from employee-facing wording (wording only).
-- [x] Owner-only team invitations: invite by name and email from Admin, invitation email, set-your-password page, employee access granted on acceptance, resend/withdraw; verified end to end and test data removed.
-- [x] Sent invitations to 11 team members (all pending, emails verified against the staff photo; Hana Lail's corrected to hanalillylail@gmail.com). Bottom two staff excluded by owner: one on maternity leave, one no longer with the salon.
-- [x] Re-sent all 11 invitations from the live sanctuary-team address so every link opens the real site; invitation links now always point at the published address, never a preview host.
-- [ ] Invite new hires as they join — owner will supply each name and email when hired.
-- [x] HVAC rule update: Brian Ferguson (704-657-7923) is the only HVAC contact; if he can't do the job he tells the team who to use (as before); backup HVAC company list removed from both Support records.
-- [x] Make Sanctuary Team installable from a phone home screen (web app manifest + icon); no offline mode requested.
+# Roadmap
 
-- [ ] Calculator rules: standard shampoo default (liter/travel only when stated), never ask SalonScale estimate, home care products separate from services; test in Kaitlyn's app.
-
-- [x] Sanctuary Growth — Coach & KPI Tracker (5th section): coach chat, Associate 12-week training, New Stylist builder, Designer performance coach, weekly accountability + zones; waiting on owner content (12-week sequence, thresholds, Growth Coach instructions)
-- [x] Growth: remember each person's progress over time so they never re-enter info; coach builds on prior history
-- [x] Growth: starting level per person = calculator stylist level; owner will upload level-requirements form
-- [x] Growth: employees upload photos/screenshots of forms & KPIs; coach reads them and updates progress
-- [x] Growth: KPI Quick View targets loaded (rebooking, utilization, RTS, service \$ full/part time); confirm service \$ period + who is part time; New Artist/Legacy have no chart rows
-- [ ] Growth open: service $ time period (weekly/monthly?), who is part time, Heather not on stylist list
-- [x] Bootcamp (Shampoo, Blowout & Color-Assistance) inside Growth: co-stylist + educator views, printable cue cards, per-skill approvals, editable lessons
-- [x] Make educators: Ava, Miranda, Katie, Kat, Bettina
-- [x] Color Foundations homework tab: onboarding checklist, topics, stylist questions, after-service reflections; education tracked separately
-- [x] Specialty tracks (balayage, babylights, combo, ombré, platinum 10/1, curly; Kat no curly)
-- [x] Bootcamp: no product brand names
-
-- [x] Associates upload photo/video proof per specialty mannequin/model (model needs before+after); counts only after educator approval; owner views, educators when granted
-- [x] Growth: 3-month average growth cycle + 'tell Bettina you're ready' prompt
-- [x] Load Bettina's approved KPI improvement ideas and current Sanctuary references into Growth; verified all four coaching examples in owner chat and nine tests. Corrected typed-message precedence so real questions reach the coach.
-
-- [x] Client Journey test built (in-app results; email alerts not set up).
-- Level changes: owner + Grant only (done)
-- [x] Growth numbers match Phorest My Numbers; RTS auto-calculated (retail ÷ service, SalonScale included as-is); utilization owner-tracked outside app
+- [ ] Fix Growth photo uploads failing on phones (HEIC/large photos fail to convert, coach never sees them)
+- [ ] Growth coach accepts monthly / multi-month catch-up numbers (save_month), still encourages week-by-week
+- [ ] Bettina will send everyone's starting numbers to pre-load as the quarter baseline (waiting on her)
+- [ ] Publish when Bettina approves
