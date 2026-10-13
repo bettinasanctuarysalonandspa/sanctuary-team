@@ -14,7 +14,7 @@ function nextLevel(level: string | null): string | null {
 
 /** Loads one person's saved growth record (RLS scopes it to the caller, or the owner). */
 export async function loadGrowth(db: Db, userId: string, level: string | null) {
-  const [profile, checkins, items, targets] = await Promise.all([
+  const [profile, checkins, items, targets, allTicketTargets] = await Promise.all([
     db.from('growth_profiles').select('start_date,training_week,focus').eq('user_id', userId).maybeSingle(),
     db.from('growth_checkins').select('week_start,metrics,source,updated_at').eq('user_id', userId).order('week_start', { ascending: false }).limit(60),
     db.from('growth_items').select('id,kind,content,done,created_at,completed_at,follow_up_date').eq('user_id', userId).order('created_at', { ascending: false }).limit(60),
