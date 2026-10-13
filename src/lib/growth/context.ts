@@ -19,7 +19,7 @@ export async function loadGrowth(db: Db, userId: string, level: string | null) {
     db.from('growth_checkins').select('week_start,metrics,source,updated_at').eq('user_id', userId).order('week_start', { ascending: false }).limit(60),
     db.from('growth_items').select('id,kind,content,done,created_at,completed_at,follow_up_date').eq('user_id', userId).order('created_at', { ascending: false }).limit(60),
     level ? db.from('growth_level_targets').select('level,metric,green_min,yellow_min,next_level_requirement').eq('level', level) : Promise.resolve({ data: [] as Target[], error: null }),
-    db.from('growth_level_targets').select('level,metric,green_min').eq('metric', 'avg_ticket'),
+    db.from('growth_level_targets').select('level,metric,green_min').eq('metric', 'avg_bill'),
   ]);
   if (profile.error || checkins.error || items.error || targets.error || allTicketTargets.error) throw new Error('Saved progress could not be loaded.');
   const raw = (checkins.data?.[0]?.metrics ?? {}) as Metrics;
