@@ -101,6 +101,7 @@ function AdminEmployees() {
         <Button variant="glass" asChild><Link to="/guidance-knowledge">Sanctuary Guidance</Link></Button>
         <Button variant="glass" asChild><Link to="/content-knowledge">Content Studio</Link></Button>
         <Button variant="glass" asChild><Link to="/growth-admin">Sanctuary Growth</Link></Button>
+        <Button variant="glass" asChild><Link to="/client-journey-admin">Client Journey & levels</Link></Button>
       </div>
       <section className="glass-panel p-5">
         <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-primary"><UserPlus size={15} /> Invite someone to the team</h2>

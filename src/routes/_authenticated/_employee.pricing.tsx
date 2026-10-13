@@ -47,7 +47,8 @@ function Stylists() {
   return <section>
     <ul className="divide-y divide-input">{q.data?.map(s => <li key={s.id} className="flex flex-wrap items-center gap-3 py-3">
       <span className="min-w-40 flex-1 font-medium">{s.name}</span>
-      <select className={input} defaultValue={s.level} aria-label={`${s.name} level`} onChange={e => void run(() => must(supabase.from('calc_stylists').update({ level: e.target.value, updated_at: new Date().toISOString() }).eq('id', s.id)))}>{LEVELS.map(l => <option key={l}>{l}</option>)}</select>
+      <span className="text-sm">{s.level}</span>
+      <Link to="/client-journey-admin" className="text-sm text-primary underline">Promote or correct</Link>
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" defaultChecked={s.active} onChange={e => void run(() => must(supabase.from('calc_stylists').update({ active: e.target.checked }).eq('id', s.id)))}/>Active</label>
     </li>)}</ul>
     <form className="mt-6 flex flex-wrap gap-2" onSubmit={e => { e.preventDefault(); if (!name.trim()) return; void run(() => must(supabase.from('calc_stylists').insert({ name: name.trim(), level })), 'Stylist added.').then(() => setName('')); }}>
