@@ -45,3 +45,5 @@
 - [x] Associates upload photo/video proof per specialty mannequin/model (model needs before+after); counts only after educator approval; owner views, educators when granted
 - [x] Growth: 3-month average growth cycle + 'tell Bettina you're ready' prompt
 - [x] Load Bettina's approved KPI improvement ideas and current Sanctuary references into Growth; verified all four coaching examples in owner chat and nine tests. Corrected typed-message precedence so real questions reach the coach.
+
+- [ ] Client Journey test: after Bootcamp blowout + fresh pass before every level advancement (rules saved). Blocked: waiting on Bettina's test questions/answers and passing score.
