@@ -193,12 +193,27 @@ function PracticeLog({ data }: { data: Data }) {
 }
 
 function Specialty({ data }: { data: Data }) {
-  const router = useRouter(); const add = useServerFn(addSpecialtyEntry); const [msg, setMsg] = useState<Record<string, string>>({});
+  const router = useRouter(); const add = useServerFn(addSpecialtyEntry); const [msg, setMsg] = useState<Record<string, string>>({}); const [busy, setBusy] = useState<Record<string, boolean>>({});
   const { entries, blocked } = data.specialty;
   async function submit(track: string, e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault(); const form = e.currentTarget; const f = new FormData(form); const s = (k: string) => String(f.get(k) ?? '').trim() || null;
     const stage = String(f.get('stage')) as 'mannequin' | 'model' | 'final';
-    try { await add({ data: { costylist: data.target, track, stage, approved: f.get('approved') === 'yes', service: s('service'), technique: s('technique'), result: s('result'), feedback: s('feedback'), next_assignment: s('next') } }); form.reset(); setMsg(m => ({ ...m, [track]: 'Saved.' })); await router.invalidate(); } catch (err) { setMsg(m => ({ ...m, [track]: err instanceof Error ? err.message : 'Could not save.' })); }
+    const picked = (['photo', 'video'] as const).flatMap(k => (f.getAll(k) as File[]).filter(x => x.size > 0).map(x => ({ file: x, kind: k })));
+    const reps = Math.max(1, Math.min(20, Number(f.get('count') ?? 1) || 1));
+    setBusy(b => ({ ...b, [track]: true })); setMsg(m => ({ ...m, [track]: picked.length ? 'Uploading…' : '' }));
+    try {
+      const files: { path: string; kind: 'photo' | 'video'; media_type: string }[] = [];
+      for (const { file, kind } of picked) {
+        const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const path = `${data.target}/${track}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error } = await supabase.storage.from('growth-proof').upload(path, file, file.type ? { contentType: file.type } : {});
+        if (error) throw new Error('A photo or video could not be uploaded. Videos must be under 200MB.');
+        files.push({ path, kind, media_type: file.type || 'application/octet-stream' });
+      }
+      await add({ data: { costylist: data.target, track, stage, approved: f.get('approved') === 'yes', service: s('service'), technique: s('technique'), result: s('result'), feedback: s('feedback'), next_assignment: s('next'), count: reps, files: files.length ? files : undefined } });
+      form.reset(); setMsg(m => ({ ...m, [track]: files.length ? `Saved with ${files.length} photo${files.length > 1 ? 's' : ''} or video${files.length > 1 ? 's' : ''}.` : reps > 1 ? `Saved ${reps} records.` : 'Saved.' })); await router.invalidate();
+    } catch (err) { setMsg(m => ({ ...m, [track]: err instanceof Error ? err.message : 'Could not save.' })); }
+    finally { setBusy(b => ({ ...b, [track]: false })); }
   }
   return <div className="grid gap-4">
     <ProofViewers data={data}/>
@@ -227,7 +242,13 @@ function Specialty({ data }: { data: Data }) {
               <Input name="service" placeholder="Service"/><Input name="technique" placeholder="Technique"/>
             </div>
             <Input name="result" placeholder="Result"/><Textarea name="feedback" placeholder="Feedback" rows={2}/><Input name="next" placeholder="Next practice assignment"/>
-            <div className="flex items-center gap-3"><Button size="sm" variant="sanctuary" type="submit"><Save size={14}/>Record</Button>{msg[tr.key] && <span className="text-xs">{msg[tr.key]}</span>}</div>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <label className="grid gap-1 text-xs font-medium">Photos of the head<input name="photo" type="file" accept="image/*" multiple className="text-xs"/></label>
+              <label className="grid gap-1 text-xs font-medium">Walkthrough video<input name="video" type="file" accept="video/*" multiple className="text-xs"/></label>
+              <label className="grid gap-1 text-xs font-medium">How many this covers<Input name="count" type="number" min="1" max="20" defaultValue="1"/></label>
+            </div>
+            <p className="text-xs text-muted-foreground">A photo of the finished head or a video walkthrough is saved with this record. Set “How many this covers” above 1 to log past work in one go.</p>
+            <div className="flex items-center gap-3"><Button size="sm" variant="sanctuary" type="submit" disabled={busy[tr.key]}><Save size={14}/>{busy[tr.key] ? 'Saving…' : 'Record'}</Button>{msg[tr.key] && <span className="text-xs">{msg[tr.key]}</span>}</div>
           </form>}
           {list.length > 0 && <div className="grid gap-1">{list.map(e => <p key={e.id} className="border-b border-input/60 pb-1 text-xs last:border-0">{new Date(e.created_at).toLocaleDateString()} · {e.stage === 'mannequin' ? 'Mannequin' : e.stage === 'model' ? 'Model' : 'Final'} · {e.approved ? 'Approved' : 'Practice'} · {e.educator_name}{e.technique ? ` · ${e.technique}` : ''}{e.result ? ` · ${e.result}` : ''}{e.feedback ? ` — ${e.feedback}` : ''}</p>)}</div>}
         </div>
