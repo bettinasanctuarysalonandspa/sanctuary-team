@@ -1,44 +1,45 @@
 # Sanctuary Growth — Coach & KPI Tracker
 
-A fifth section on the home dashboard, matching the frosted sage design and the same simple chat experience as the other tools. Built from the owner's outline: one Growth Coach that adapts to each person's level, plus weekly number tracking and a leadership view.
+A fifth section on the home dashboard, same frosted sage design and simple chat as the other tools. One Growth Coach that knows each person, remembers their progress, and builds on it every week.
+
+## The core idea: it remembers each person
+
+Nobody re-enters information. Each team member has a running **growth profile** the coach keeps up to date:
+- Their level, start date, and (for Associates) current training week
+- Goals they've set and whether they hit them
+- Every weekly check-in, kept as history so trends show over time
+- Completed assignments, skills signed off, models and mannequin reps done
+- Short coaching notes from past conversations (what they're working on, what was agreed)
+
+Each time they open the coach, it already knows where they left off: "Last week you were at 62% rebooking and committed to pre-booking every color client. How did that go?"
+
+Weekly check-ins are pre-filled from last week, so they only change what's different.
 
 ## What employees see
 
-One page with three simple tabs:
+1. **Coach** — chat that adapts to their level:
+   - Associates: 12-week training sequence, reps, models, graduation readiness
+   - New Stylists: clientele, rebooking, retail, social content, open times
+   - Designers: rebooking, utilization, retail-to-service, service performance
+   - Ends with a weekly assignment, saved to their profile
+2. **My Progress** — their history at a glance: trend of each number, goals, assignments done, training week checklist.
+3. **My Zone** — red / yellow / green per number against their level, and what's needed for the next level.
 
-1. **Coach** — a conversational assistant. It knows the person's level (from the stylist list) and coaches accordingly:
-   - **Associates:** follows the 12-week training sequence (weekly skills, mannequin reps, model requirements, graduation readiness).
-   - **New Stylists:** business building — growing clientele, rebooking, retail, social content, filling open times.
-   - **Designers:** performance coaching on rebooking, utilization, retail-to-service (RTS), service performance.
-   - Gives a weekly assignment based on level, and points out gaps from their latest numbers.
-2. **My Week** — a short weekly check-in the stylist fills in themselves:
-   - Clients served, new clients, service revenue, retail sales, rebooking %, utilization %
-   - Social posts, models, practice/mannequin reps, goals and completed actions
-   - Associates also see their current training week checklist.
-3. **My Zone** — red / yellow / green for each number against their level's targets, and what's needed to reach the next level.
+## Owner (Admin)
 
-## Owner (Admin) area
-
-- **Leadership dashboard:** every team member's latest week, zones, training week, and who needs support.
-- **Targets editor:** per-level thresholds for red/yellow/green and "next level" requirements.
-- **12-week Associate program editor:** each week's skills, reps, models, checklist.
-- **Coach knowledge:** approved instructions and documents (same pattern as Guidance/Support).
+- Leadership dashboard: each person's progress over time, zones, who needs support
+- Targets editor (per-level red/yellow/green and next-level requirements)
+- 12-week Associate program editor
+- Coach knowledge and instructions
+- Owner can view and correct anyone's progress record
 
 ## No invented content
 
-The outline describes what exists but doesn't include the actual material. Until the owner provides it, these stay empty with an elegant "coming soon" state:
-- The full Sanctuary Growth Coach instructions
-- The 12-week Associate sequence
-- Rebooking, utilization and RTS thresholds per level
-- Social media / client-building accountability standards
-- Any training manuals, consultation scripts, retail standards
-
-The Code of Honor already in Sanctuary Guidance will be reused as approved knowledge.
+The uploaded outline describes the coaching system but doesn't include the actual material. These stay empty ("coming soon") until the owner provides them: the Growth Coach instructions, the 12-week sequence, rebooking/utilization/RTS thresholds, social and client-building standards, any manuals or scripts. The approved Code of Honor from Sanctuary Guidance is reused.
 
 ## Technical details
 
-- Tables (RLS + grants; `is_sanctuary_employee()` / `is_sanctuary_owner()`): `growth_weekly_entries` (own rows only; owner reads all), `growth_level_targets`, `growth_training_weeks` (employees read, owner writes), `growth_knowledge` (approved readable), `growth_messages` (private per user), `growth_gateway_state`.
-- Route `_authenticated/_employee.growth.tsx`; tool card + nav entry; admin sections in Admin; head metadata.
-- Coach uses the existing assistant pattern (Content Studio/Guidance) with server-side zone calculation passed as context — zones computed in code, never by the assistant.
-- Wording avoids "AI"/"GPT"; displayed as "Sanctuary Growth — Coach & KPI Tracker".
-- Verify: build green; owner Playwright check of dashboard card, weekly entry save, zone display, admin editors.
+- Tables (RLS + grants; employees see only their own rows, owner sees all): `growth_profiles` (level, start date, training week, current goals), `growth_checkins` (weekly numbers, history), `growth_assignments` (assigned/completed), `growth_notes` (coach-saved progress notes), `growth_level_targets`, `growth_training_weeks`, `growth_knowledge`, `growth_messages`, `growth_gateway_state`.
+- Coach loads the profile, last ~8 check-ins, open assignments and recent notes on every request; it saves progress through tool calls (log check-in, set goal, complete assignment, add note) — server code writes the rows and computes zones, never the assistant.
+- Route `_authenticated/_employee.growth.tsx`, tool card + nav, Admin sections, head metadata. No "AI"/"GPT" wording.
+- Verify: build green; owner Playwright run — check-in saved, reopen shows it remembered and pre-filled, admin view shows history.
