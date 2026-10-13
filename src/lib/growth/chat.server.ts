@@ -39,7 +39,7 @@ export async function handleGrowthChat(request: Request) {
   const { data: state } = await supabaseAdmin.from('growth_gateway_state').select('paused,reason').eq('id', 1).maybeSingle();
   if (state?.paused) return Response.json({ message: state.reason || 'Sanctuary Growth is paused. Please contact the owner.' }, { status: 403 });
 
-  const [historyResult, knowledgeResult, { data: me }, { data: profile }, supportResult, guidanceResult, contentResult] = await Promise.all([
+  const [historyResult, knowledgeResult, { data: me }, { data: profile }, supportResult, guidanceResult, contentResult, dailyResult] = await Promise.all([
     db.from('growth_messages').select('message').eq('user_id', userId).order('id', { ascending: false }).limit(24),
     db.from('growth_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
     db.rpc('my_stylist_level'),
@@ -47,6 +47,7 @@ export async function handleGrowthChat(request: Request) {
     db.from('support_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
     db.from('guidance_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
     db.from('content_studio_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
+    db.from('associate_daily_logs').select('shift_date,standards,practiced,learned,improve,better_tomorrow').eq('user_id', userId).order('shift_date', { ascending: false }).limit(14),
   ]);
   if ([historyResult, knowledgeResult, supportResult, guidanceResult, contentResult].some(r => r.error)) {
     return Response.json({ message: 'Your approved coaching information could not be loaded. Please try again.' }, { status: 503 });
