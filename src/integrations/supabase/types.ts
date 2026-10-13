@@ -616,6 +616,7 @@ export type Database = {
           content: string
           created_at: string
           done: boolean
+          follow_up_date: string | null
           id: number
           kind: string
           user_id: string
@@ -625,6 +626,7 @@ export type Database = {
           content: string
           created_at?: string
           done?: boolean
+          follow_up_date?: string | null
           id?: never
           kind: string
           user_id: string
@@ -634,6 +636,7 @@ export type Database = {
           content?: string
           created_at?: string
           done?: boolean
+          follow_up_date?: string | null
           id?: never
           kind?: string
           user_id?: string

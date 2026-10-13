@@ -38,3 +38,25 @@ export function weekStart(d = new Date()) {
   x.setUTCDate(x.getUTCDate() - day);
   return x.toISOString().slice(0, 10);
 }
+
+export const MONTHLY_KPIS = ['rebooking_pct', 'utilization_pct', 'rts_pct', 'service_revenue'] as const;
+
+/** Rolls weekly saves up into calendar months. Percentages = latest reported value in the month; service revenue = month total. */
+export function monthlyKpis(checkins: { week_start: string; updated_at: string | null; metrics: Metrics }[], targets: Target[], today = new Date()) {
+  const current = today.toISOString().slice(0, 7);
+  const byMonth = new Map<string, typeof checkins>();
+  for (const c of checkins) { const m = String(c.week_start).slice(0, 7); byMonth.set(m, [...(byMonth.get(m) ?? []), c]); }
+  return [...byMonth.entries()].sort((a, b) => b[0].localeCompare(a[0])).map(([month, rows]) => {
+    const sorted = [...rows].sort((a, b) => b.week_start.localeCompare(a.week_start));
+    const updated = rows.map(r => r.updated_at ?? '').sort().at(-1) || null;
+    const kpis = MONTHLY_KPIS.map(key => {
+      const label = GROWTH_METRICS.find(m => m.key === key)!.label + (key === 'service_revenue' ? ' (monthly)' : '');
+      let value: number | undefined;
+      if (key === 'service_revenue') { const vals = rows.map(r => r.metrics[key]).filter(v => v != null) as number[]; value = vals.length ? vals.reduce((s, v) => s + Number(v), 0) : undefined; }
+      else value = sorted.find(r => r.metrics[key] != null)?.metrics[key];
+      const target = targets.find(t => t.metric === key) ?? null;
+      return { key, label, value, target, zone: zoneFor(value, target ?? undefined) };
+    });
+    return { month, partial: month >= current, updated, kpis };
+  });
+}

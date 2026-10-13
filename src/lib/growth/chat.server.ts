@@ -80,7 +80,7 @@ export async function handleGrowthChat(request: Request) {
           return ok(error);
         },
       }),
-      set_goal: tool({ description: 'Save a goal the person committed to.', inputSchema: z.object({ content: z.string().min(1).max(500) }), execute: async ({ content }) => ok((await db.from('growth_items').insert({ user_id: userId, kind: 'goal', content })).error) }),
+      set_goal: tool({ description: 'Save a goal the person committed to. For a red/yellow KPI, include the specific actions in content and a follow-up date.', inputSchema: z.object({ content: z.string().min(1).max(800), follow_up_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().describe('YYYY-MM-DD or null') }), execute: async ({ content, follow_up_date }) => ok((await db.from('growth_items').insert({ user_id: userId, kind: 'goal', content, follow_up_date })).error) }),
       give_assignment: tool({ description: 'Save this week\'s agreed assignment.', inputSchema: z.object({ content: z.string().min(1).max(500) }), execute: async ({ content }) => ok((await db.from('growth_items').insert({ user_id: userId, kind: 'assignment', content })).error) }),
       add_note: tool({ description: 'Save a short coaching note worth remembering next time.', inputSchema: z.object({ content: z.string().min(1).max(500) }), execute: async ({ content }) => ok((await db.from('growth_items').insert({ user_id: userId, kind: 'note', content })).error) }),
       complete_item: tool({ description: 'Mark a goal or assignment (#id) complete.', inputSchema: z.object({ id: z.number().int() }), execute: async ({ id }) => ok((await db.from('growth_items').update({ done: true, completed_at: new Date().toISOString() }).eq('id', id).eq('user_id', userId)).error) }),
