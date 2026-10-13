@@ -41,7 +41,7 @@ function Bootcamp() {
       {data.educator && <div className="glass-panel mb-4 flex flex-wrap items-center gap-3 p-4">
         <label className="text-sm font-medium" htmlFor="cs">Co-stylist</label>
         <select id="cs" className="rounded-md border border-input bg-card px-3 py-2 text-sm" value={data.target} onChange={e => void navigate({ search: { costylist: e.target.value === data.me ? undefined : e.target.value } })}>
-          {data.roster.map(r => <option key={r.user_id} value={r.user_id}>{r.display_name || 'Unnamed'}{r.user_id === data.me ? ' (me)' : ''}</option>)}
+          {data.roster.map(r => <option key={r.user_id} value={r.user_id}>{r.user_id === data.me ? 'Me' : (r.display_name || 'Unnamed')}</option>)}
         </select>
         {viewing && data.target !== data.me && <span className="text-sm text-muted-foreground">Recording for {viewing}</span>}
       </div>}

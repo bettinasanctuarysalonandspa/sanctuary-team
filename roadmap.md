@@ -36,6 +36,6 @@
 - [x] Growth: employees upload photos/screenshots of forms & KPIs; coach reads them and updates progress
 - [x] Growth: KPI Quick View targets loaded (rebooking, utilization, RTS, service \$ full/part time); confirm service \$ period + who is part time; New Artist/Legacy have no chart rows
 - [ ] Growth open: service $ time period (weekly/monthly?), who is part time, Heather not on stylist list
-- [ ] Bootcamp (Shampoo, Blowout & Color-Assistance) inside Growth: co-stylist + educator views, printable cue cards, per-skill approvals, editable lessons
-- [ ] Make educators: Ava, Miranda, Katie, Kat, Bettina
-- [ ] Color Foundations homework tab: onboarding checklist, topics, stylist questions, after-service reflections; education tracked separately
+- [x] Bootcamp (Shampoo, Blowout & Color-Assistance) inside Growth: co-stylist + educator views, printable cue cards, per-skill approvals, editable lessons
+- [x] Make educators: Ava, Miranda, Katie, Kat, Bettina
+- [x] Color Foundations homework tab: onboarding checklist, topics, stylist questions, after-service reflections; education tracked separately
