@@ -6,7 +6,7 @@ import { convertToModelMessages, stepCountIs, streamText, tool, type UIMessage }
 import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayRunId, withLovableAiGatewayRunIdHeader } from '../content-studio/run-id.server.ts';
 import { growthPrompt } from './prompt';
 import { describeGrowth, loadGrowth } from './context';
-import { GROWTH_METRICS, weekStart } from './metrics';
+import { GROWTH_METRICS, firstMondayOfMonth, weekStart } from './metrics';
 
 const part = z.union([
   z.object({ type: z.literal('text'), text: z.string().max(4000) }),
@@ -87,6 +87,17 @@ export async function handleGrowthChat(request: Request) {
           const { data: prev } = await db.from('growth_checkins').select('metrics').eq('user_id', userId).eq('week_start', week_start).maybeSingle();
           const merged = { ...((prev?.metrics as object) ?? {}), ...Object.fromEntries(Object.entries(metrics).filter(([, v]) => v != null)) };
           const { error } = await db.from('growth_checkins').upsert({ user_id: userId, week_start, metrics: merged, source: from_photo ? 'photo' : 'chat', updated_at: new Date().toISOString() }, { onConflict: 'user_id,week_start' });
+          return ok(error);
+        },
+      }),
+      save_month: tool({
+        description: 'Save a confirmed whole-MONTH total (catch-up when weekly numbers are unavailable). One call per month. Refuses if weekly numbers already exist for that month — then ask which to keep.',
+        inputSchema: z.object({ month: z.string().regex(/^\d{4}-\d{2}$/).describe('YYYY-MM'), metrics: z.object(metricShape) }),
+        execute: async ({ month, metrics }) => {
+          const { data: existing } = await db.from('growth_checkins').select('week_start,source').eq('user_id', userId).gte('week_start', `${month}-01`).lte('week_start', `${month}-31`);
+          const weekly = (existing ?? []).filter(r => r.source !== 'month');
+          if (weekly.length) return { saved: false, error: `Week-by-week numbers already exist for ${month}. Ask whether to replace them with the month total.` };
+          const { error } = await db.from('growth_checkins').upsert({ user_id: userId, week_start: firstMondayOfMonth(month), metrics: Object.fromEntries(Object.entries(metrics).filter(([, v]) => v != null)), source: 'month', updated_at: new Date().toISOString() }, { onConflict: 'user_id,week_start' });
           return ok(error);
         },
       }),
