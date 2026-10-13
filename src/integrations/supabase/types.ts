@@ -14,6 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
+      bootcamp_lesson_edits: {
+        Row: {
+          content: Json
+          lesson_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          content: Json
+          lesson_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          content?: Json
+          lesson_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      bootcamp_practice: {
+        Row: {
+          application_time: string | null
+          assigned_service: string
+          costylist_id: string
+          created_at: string
+          educator_id: string
+          feedback: string | null
+          finishing_time: string | null
+          id: number
+          next_assignment: string | null
+          processing_time: string | null
+          result: string | null
+          stylist_instructions: string | null
+        }
+        Insert: {
+          application_time?: string | null
+          assigned_service: string
+          costylist_id: string
+          created_at?: string
+          educator_id: string
+          feedback?: string | null
+          finishing_time?: string | null
+          id?: never
+          next_assignment?: string | null
+          processing_time?: string | null
+          result?: string | null
+          stylist_instructions?: string | null
+        }
+        Update: {
+          application_time?: string | null
+          assigned_service?: string
+          costylist_id?: string
+          created_at?: string
+          educator_id?: string
+          feedback?: string | null
+          finishing_time?: string | null
+          id?: never
+          next_assignment?: string | null
+          processing_time?: string | null
+          result?: string | null
+          stylist_instructions?: string | null
+        }
+        Relationships: []
+      }
+      bootcamp_progress: {
+        Row: {
+          assessment_date: string | null
+          costylist_id: string
+          educator_id: string | null
+          id: number
+          notes: string | null
+          practice_assignment: string | null
+          signed_off_at: string | null
+          skill: string
+          status: string
+          timing_observed: string | null
+          updated_at: string
+        }
+        Insert: {
+          assessment_date?: string | null
+          costylist_id: string
+          educator_id?: string | null
+          id?: never
+          notes?: string | null
+          practice_assignment?: string | null
+          signed_off_at?: string | null
+          skill: string
+          status?: string
+          timing_observed?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assessment_date?: string | null
+          costylist_id?: string
+          educator_id?: string | null
+          id?: never
+          notes?: string | null
+          practice_assignment?: string | null
+          signed_off_at?: string | null
+          skill?: string
+          status?: string
+          timing_observed?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       calc_aliases: {
         Row: {
           id: number
@@ -815,8 +923,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_bootcamp_educator: { Args: never; Returns: boolean }
       is_sanctuary_employee: { Args: never; Returns: boolean }
       is_sanctuary_owner: { Args: never; Returns: boolean }
+      list_bootcamp_roster: {
+        Args: never
+        Returns: {
+          display_name: string
+          educator: boolean
+          user_id: string
+        }[]
+      }
       list_calculator_usage: {
         Args: never
         Returns: {
@@ -876,9 +993,13 @@ export type Database = {
       }
       sanctuary_session_status: { Args: never; Returns: Json }
       sanctuary_session_valid: { Args: never; Returns: boolean }
+      set_bootcamp_educator: {
+        Args: { make_educator: boolean; target_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      app_role: "admin" | "employee"
+      app_role: "admin" | "employee" | "educator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1006,7 +1127,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "employee"],
+      app_role: ["admin", "employee", "educator"],
     },
   },
 } as const

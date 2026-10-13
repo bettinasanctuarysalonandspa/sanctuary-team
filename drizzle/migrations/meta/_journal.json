@@ -78,6 +78,13 @@
       "when": 1791908327324,
       "tag": "0010_sanctuary_growth",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791916415760,
+      "tag": "0011_associate_bootcamp",
+      "breakpoints": true
     }
   ]
 }
