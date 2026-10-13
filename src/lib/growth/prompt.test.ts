@@ -18,7 +18,7 @@ describe('Sanctuary Growth coaching sources', () => {
     expect(prompt).toContain('do not adopt another assistant');
     expect(prompt).toContain('latest explicit corrections take priority');
     expect(prompt).toContain('Use no private transcripts or calculator pricing');
-    expect(prompt).toContain('Average-ticket suggestions support service performance; they are not a new promotion metric');
+    expect(prompt).toContain('Average ticket counts toward the red/yellow/green zones and quarter-green readiness');
   });
   it('preserves calendar-quarter advancement and empty approved knowledge behavior', () => {
     const prompt = growthPrompt([], '');
