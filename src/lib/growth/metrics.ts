@@ -46,7 +46,8 @@ export function weekStart(d = new Date()) {
   return x.toISOString().slice(0, 10);
 }
 
-export const MONTHLY_KPIS = ['rebooking_pct', 'rts_pct', 'service_revenue'] as const;
+/** Monthly promotion KPIs. Average ticket rolls up like rebooking: weeks combined, weighted by client visits. */
+export const MONTHLY_KPIS = ['rebooking_pct', 'rts_pct', 'service_revenue', 'avg_bill'] as const;
 
 /** Rolls weekly saves up into calendar months. Rebooking = latest reported value in the month; service sales = month total; RTS = month retail ÷ month service. */
 export function monthlyKpis(checkins: { week_start: string; updated_at: string | null; metrics: Metrics }[], targets: Target[], today = new Date()) {
