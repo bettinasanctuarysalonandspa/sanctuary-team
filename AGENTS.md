@@ -26,3 +26,4 @@
 - Growth coach: per-person progress lives in growth_* tables; zones computed in code from growth_level_targets, levels read from calc_stylists.user_id — single source of level truth.
 - Growth loads approved Support, Guidance and Content Studio knowledge as labeled procedural/marketing references on each request; never share their transcripts or calculator prices, so coaching uses current approved systems without crossing private conversation boundaries.
 - Bootcamp lessons live in code (src/lib/bootcamp) as the single source for co-stylist and educator views; educator edits are stored as per-lesson overrides, and approvals require the educator role in user_roles.
+- Stylist level changes go only through owner RPCs (promote_stylist requires an unused fresh passing Client Journey attempt; correct_stylist_level for fixes), enforced by a calc_stylists trigger; the answer key stays server-only and grading happens on the server so scores can't be faked.
