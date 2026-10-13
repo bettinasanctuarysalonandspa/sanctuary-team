@@ -53,7 +53,9 @@ export const submitClientJourney = createServerFn({ method: 'POST' }).middleware
 export const getClientJourneyAdmin = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   const sb = context.supabase;
   const f = await flags(sb);
-  if (!f.owner && !f.educator) throw new Error('Educator access is required.');
+  const lc = await sb.rpc('can_change_levels');
+  const canLevel = !!lc.data;
+  if (!f.owner && !f.educator && !canLevel) throw new Error('Educator access is required.');
   const [settings, attempts, stylists, assignments, roster] = await Promise.all([
     sb.from('cj_settings').select('pass_percent').eq('id', 1).maybeSingle(),
     sb.from('cj_attempts').select('*').order('created_at', { ascending: false }).limit(300),
@@ -62,7 +64,7 @@ export const getClientJourneyAdmin = createServerFn({ method: 'GET' }).middlewar
     sb.rpc('list_bootcamp_roster'),
   ]);
   if (attempts.error) throw new Error('Results could not be loaded.');
-  return { owner: f.owner, me: context.userId, passPercent: settings.data?.pass_percent ?? 90, attempts: attempts.data ?? [], stylists: stylists.data ?? [], assignments: assignments.data ?? [], roster: roster.data ?? [] };
+  return { owner: f.owner, canLevel, me: context.userId, passPercent: settings.data?.pass_percent ?? 90, attempts: attempts.data ?? [], stylists: stylists.data ?? [], assignments: assignments.data ?? [], roster: roster.data ?? [] };
 });
 
 export const saveFollowup = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
