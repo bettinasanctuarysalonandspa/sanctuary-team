@@ -71,6 +71,13 @@
       "when": 1791494372103,
       "tag": "0009_invitation_tracker",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791908327324,
+      "tag": "0010_sanctuary_growth",
+      "breakpoints": true
     }
   ]
 }

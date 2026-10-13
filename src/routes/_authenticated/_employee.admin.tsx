@@ -95,11 +95,12 @@ function AdminEmployees() {
         <h1 className="page-heading">Employee access</h1>
         <p className="mt-2 text-sm text-muted-foreground">Invite people to the team, and remove access the moment it ends.</p>
       </div>
-      <div className="grid gap-2 sm:grid-cols-4">
+      <div className="grid gap-2 sm:grid-cols-5">
         <Button variant="glass" asChild><Link to="/pricing">Service and product prices</Link></Button>
         <Button variant="glass" asChild><Link to="/support-knowledge">Sanctuary Support</Link></Button>
         <Button variant="glass" asChild><Link to="/guidance-knowledge">Sanctuary Guidance</Link></Button>
         <Button variant="glass" asChild><Link to="/content-knowledge">Content Studio</Link></Button>
+        <Button variant="glass" asChild><Link to="/growth-admin">Sanctuary Growth</Link></Button>
       </div>
       <section className="glass-panel p-5">
         <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-primary"><UserPlus size={15} /> Invite someone to the team</h2>

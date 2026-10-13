@@ -19,6 +19,7 @@ import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as AuthenticatedEmployeeRouteImport } from './routes/_authenticated/_employee'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as ApiContentStudioRouteImport } from './routes/api/content-studio'
+import { Route as ApiGrowthRouteImport } from './routes/api/growth'
 import { Route as ApiGuidanceRouteImport } from './routes/api/guidance'
 import { Route as ApiSupportRouteImport } from './routes/api/support'
 import { Route as AuthenticatedEmployeeAdminRouteImport } from './routes/_authenticated/_employee.admin'
@@ -26,6 +27,8 @@ import { Route as AuthenticatedEmployeeConsultationRouteImport } from './routes/
 import { Route as AuthenticatedEmployeeContentKnowledgeRouteImport } from './routes/_authenticated/_employee.content-knowledge'
 import { Route as AuthenticatedEmployeeContentStudioRouteImport } from './routes/_authenticated/_employee.content-studio'
 import { Route as AuthenticatedEmployeeEmergencyHelpRouteImport } from './routes/_authenticated/_employee.emergency-help'
+import { Route as AuthenticatedEmployeeGrowthRouteImport } from './routes/_authenticated/_employee.growth'
+import { Route as AuthenticatedEmployeeGrowthAdminRouteImport } from './routes/_authenticated/_employee.growth-admin'
 import { Route as AuthenticatedEmployeeGuidanceKnowledgeRouteImport } from './routes/_authenticated/_employee.guidance-knowledge'
 import { Route as AuthenticatedEmployeePricingRouteImport } from './routes/_authenticated/_employee.pricing'
 import { Route as AuthenticatedEmployeeSalonAiRouteImport } from './routes/_authenticated/_employee.salon-ai'
@@ -79,6 +82,11 @@ const ApiContentStudioRoute = ApiContentStudioRouteImport.update({
   path: '/api/content-studio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGrowthRoute = ApiGrowthRouteImport.update({
+  id: '/api/growth',
+  path: '/api/growth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiGuidanceRoute = ApiGuidanceRouteImport.update({
   id: '/api/guidance',
   path: '/api/guidance',
@@ -119,6 +127,18 @@ const AuthenticatedEmployeeEmergencyHelpRoute =
     path: '/emergency-help',
     getParentRoute: () => AuthenticatedEmployeeRoute,
   } as any)
+const AuthenticatedEmployeeGrowthRoute =
+  AuthenticatedEmployeeGrowthRouteImport.update({
+    id: '/growth',
+    path: '/growth',
+    getParentRoute: () => AuthenticatedEmployeeRoute,
+  } as any)
+const AuthenticatedEmployeeGrowthAdminRoute =
+  AuthenticatedEmployeeGrowthAdminRouteImport.update({
+    id: '/growth-admin',
+    path: '/growth-admin',
+    getParentRoute: () => AuthenticatedEmployeeRoute,
+  } as any)
 const AuthenticatedEmployeeGuidanceKnowledgeRoute =
   AuthenticatedEmployeeGuidanceKnowledgeRouteImport.update({
     id: '/guidance-knowledge',
@@ -153,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/tools': typeof ToolsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/content-studio': typeof ApiContentStudioRoute
+  '/api/growth': typeof ApiGrowthRoute
   '/api/guidance': typeof ApiGuidanceRoute
   '/api/support': typeof ApiSupportRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
@@ -160,6 +181,8 @@ export interface FileRoutesByFullPath {
   '/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
+  '/growth': typeof AuthenticatedEmployeeGrowthRoute
+  '/growth-admin': typeof AuthenticatedEmployeeGrowthAdminRoute
   '/guidance-knowledge': typeof AuthenticatedEmployeeGuidanceKnowledgeRoute
   '/pricing': typeof AuthenticatedEmployeePricingRoute
   '/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
@@ -174,6 +197,7 @@ export interface FileRoutesByTo {
   '/tools': typeof ToolsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/content-studio': typeof ApiContentStudioRoute
+  '/api/growth': typeof ApiGrowthRoute
   '/api/guidance': typeof ApiGuidanceRoute
   '/api/support': typeof ApiSupportRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
@@ -181,6 +205,8 @@ export interface FileRoutesByTo {
   '/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
+  '/growth': typeof AuthenticatedEmployeeGrowthRoute
+  '/growth-admin': typeof AuthenticatedEmployeeGrowthAdminRoute
   '/guidance-knowledge': typeof AuthenticatedEmployeeGuidanceKnowledgeRoute
   '/pricing': typeof AuthenticatedEmployeePricingRoute
   '/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
@@ -198,6 +224,7 @@ export interface FileRoutesById {
   '/_authenticated/_employee': typeof AuthenticatedEmployeeRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/content-studio': typeof ApiContentStudioRoute
+  '/api/growth': typeof ApiGrowthRoute
   '/api/guidance': typeof ApiGuidanceRoute
   '/api/support': typeof ApiSupportRoute
   '/_authenticated/_employee/admin': typeof AuthenticatedEmployeeAdminRoute
@@ -205,6 +232,8 @@ export interface FileRoutesById {
   '/_authenticated/_employee/content-knowledge': typeof AuthenticatedEmployeeContentKnowledgeRoute
   '/_authenticated/_employee/content-studio': typeof AuthenticatedEmployeeContentStudioRoute
   '/_authenticated/_employee/emergency-help': typeof AuthenticatedEmployeeEmergencyHelpRoute
+  '/_authenticated/_employee/growth': typeof AuthenticatedEmployeeGrowthRoute
+  '/_authenticated/_employee/growth-admin': typeof AuthenticatedEmployeeGrowthAdminRoute
   '/_authenticated/_employee/guidance-knowledge': typeof AuthenticatedEmployeeGuidanceKnowledgeRoute
   '/_authenticated/_employee/pricing': typeof AuthenticatedEmployeePricingRoute
   '/_authenticated/_employee/salon-ai': typeof AuthenticatedEmployeeSalonAiRoute
@@ -221,6 +250,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/profile'
     | '/api/content-studio'
+    | '/api/growth'
     | '/api/guidance'
     | '/api/support'
     | '/admin'
@@ -228,6 +258,8 @@ export interface FileRouteTypes {
     | '/content-knowledge'
     | '/content-studio'
     | '/emergency-help'
+    | '/growth'
+    | '/growth-admin'
     | '/guidance-knowledge'
     | '/pricing'
     | '/salon-ai'
@@ -242,6 +274,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/profile'
     | '/api/content-studio'
+    | '/api/growth'
     | '/api/guidance'
     | '/api/support'
     | '/admin'
@@ -249,6 +282,8 @@ export interface FileRouteTypes {
     | '/content-knowledge'
     | '/content-studio'
     | '/emergency-help'
+    | '/growth'
+    | '/growth-admin'
     | '/guidance-knowledge'
     | '/pricing'
     | '/salon-ai'
@@ -265,6 +300,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_employee'
     | '/_authenticated/profile'
     | '/api/content-studio'
+    | '/api/growth'
     | '/api/guidance'
     | '/api/support'
     | '/_authenticated/_employee/admin'
@@ -272,6 +308,8 @@ export interface FileRouteTypes {
     | '/_authenticated/_employee/content-knowledge'
     | '/_authenticated/_employee/content-studio'
     | '/_authenticated/_employee/emergency-help'
+    | '/_authenticated/_employee/growth'
+    | '/_authenticated/_employee/growth-admin'
     | '/_authenticated/_employee/guidance-knowledge'
     | '/_authenticated/_employee/pricing'
     | '/_authenticated/_employee/salon-ai'
@@ -287,6 +325,7 @@ export interface RootRouteChildren {
   SetPasswordRoute: typeof SetPasswordRoute
   ToolsRoute: typeof ToolsRoute
   ApiContentStudioRoute: typeof ApiContentStudioRoute
+  ApiGrowthRoute: typeof ApiGrowthRoute
   ApiGuidanceRoute: typeof ApiGuidanceRoute
   ApiSupportRoute: typeof ApiSupportRoute
 }
@@ -363,6 +402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiContentStudioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/growth': {
+      id: '/api/growth'
+      path: '/api/growth'
+      fullPath: '/api/growth'
+      preLoaderRoute: typeof ApiGrowthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/guidance': {
       id: '/api/guidance'
       path: '/api/guidance'
@@ -412,6 +458,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployeeEmergencyHelpRouteImport
       parentRoute: typeof AuthenticatedEmployeeRoute
     }
+    '/_authenticated/_employee/growth': {
+      id: '/_authenticated/_employee/growth'
+      path: '/growth'
+      fullPath: '/growth'
+      preLoaderRoute: typeof AuthenticatedEmployeeGrowthRouteImport
+      parentRoute: typeof AuthenticatedEmployeeRoute
+    }
+    '/_authenticated/_employee/growth-admin': {
+      id: '/_authenticated/_employee/growth-admin'
+      path: '/growth-admin'
+      fullPath: '/growth-admin'
+      preLoaderRoute: typeof AuthenticatedEmployeeGrowthAdminRouteImport
+      parentRoute: typeof AuthenticatedEmployeeRoute
+    }
     '/_authenticated/_employee/guidance-knowledge': {
       id: '/_authenticated/_employee/guidance-knowledge'
       path: '/guidance-knowledge'
@@ -449,6 +509,8 @@ interface AuthenticatedEmployeeRouteChildren {
   AuthenticatedEmployeeContentKnowledgeRoute: typeof AuthenticatedEmployeeContentKnowledgeRoute
   AuthenticatedEmployeeContentStudioRoute: typeof AuthenticatedEmployeeContentStudioRoute
   AuthenticatedEmployeeEmergencyHelpRoute: typeof AuthenticatedEmployeeEmergencyHelpRoute
+  AuthenticatedEmployeeGrowthRoute: typeof AuthenticatedEmployeeGrowthRoute
+  AuthenticatedEmployeeGrowthAdminRoute: typeof AuthenticatedEmployeeGrowthAdminRoute
   AuthenticatedEmployeeGuidanceKnowledgeRoute: typeof AuthenticatedEmployeeGuidanceKnowledgeRoute
   AuthenticatedEmployeePricingRoute: typeof AuthenticatedEmployeePricingRoute
   AuthenticatedEmployeeSalonAiRoute: typeof AuthenticatedEmployeeSalonAiRoute
@@ -465,6 +527,8 @@ const AuthenticatedEmployeeRouteChildren: AuthenticatedEmployeeRouteChildren = {
     AuthenticatedEmployeeContentStudioRoute,
   AuthenticatedEmployeeEmergencyHelpRoute:
     AuthenticatedEmployeeEmergencyHelpRoute,
+  AuthenticatedEmployeeGrowthRoute: AuthenticatedEmployeeGrowthRoute,
+  AuthenticatedEmployeeGrowthAdminRoute: AuthenticatedEmployeeGrowthAdminRoute,
   AuthenticatedEmployeeGuidanceKnowledgeRoute:
     AuthenticatedEmployeeGuidanceKnowledgeRoute,
   AuthenticatedEmployeePricingRoute: AuthenticatedEmployeePricingRoute,
@@ -500,6 +564,7 @@ const rootRouteChildren: RootRouteChildren = {
   SetPasswordRoute: SetPasswordRoute,
   ToolsRoute: ToolsRoute,
   ApiContentStudioRoute: ApiContentStudioRoute,
+  ApiGrowthRoute: ApiGrowthRoute,
   ApiGuidanceRoute: ApiGuidanceRoute,
   ApiSupportRoute: ApiSupportRoute,
 }

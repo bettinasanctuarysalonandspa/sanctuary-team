@@ -243,6 +243,7 @@ export type Database = {
           level: string
           name: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           active?: boolean
@@ -250,6 +251,7 @@ export type Database = {
           level: string
           name: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           active?: boolean
@@ -257,6 +259,7 @@ export type Database = {
           level?: string
           name?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -418,6 +421,195 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      growth_checkins: {
+        Row: {
+          created_at: string
+          id: number
+          metrics: Json
+          source: string
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          metrics?: Json
+          source?: string
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          metrics?: Json
+          source?: string
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
+      growth_gateway_state: {
+        Row: {
+          id: number
+          paused: boolean
+          reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          paused?: boolean
+          reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          paused?: boolean
+          reason?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      growth_items: {
+        Row: {
+          completed_at: string | null
+          content: string
+          created_at: string
+          done: boolean
+          id: number
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          content: string
+          created_at?: string
+          done?: boolean
+          id?: never
+          kind: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          content?: string
+          created_at?: string
+          done?: boolean
+          id?: never
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      growth_knowledge: {
+        Row: {
+          approved: boolean
+          content: string
+          id: string
+          source: string
+          source_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean
+          content: string
+          id?: string
+          source: string
+          source_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean
+          content?: string
+          id?: string
+          source?: string
+          source_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      growth_level_targets: {
+        Row: {
+          green_min: number | null
+          id: number
+          level: string
+          metric: string
+          next_level_requirement: string | null
+          updated_at: string
+          yellow_min: number | null
+        }
+        Insert: {
+          green_min?: number | null
+          id?: never
+          level: string
+          metric: string
+          next_level_requirement?: string | null
+          updated_at?: string
+          yellow_min?: number | null
+        }
+        Update: {
+          green_min?: number | null
+          id?: never
+          level?: string
+          metric?: string
+          next_level_requirement?: string | null
+          updated_at?: string
+          yellow_min?: number | null
+        }
+        Relationships: []
+      }
+      growth_messages: {
+        Row: {
+          created_at: string
+          id: number
+          message: Json
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          message: Json
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          message?: Json
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      growth_profiles: {
+        Row: {
+          focus: string | null
+          start_date: string | null
+          training_week: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          focus?: string | null
+          start_date?: string | null
+          training_week?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          focus?: string | null
+          start_date?: string | null
+          training_week?: number | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -635,6 +827,14 @@ export type Database = {
           user_id: string
         }[]
       }
+      list_growth_roster: {
+        Args: never
+        Returns: {
+          display_name: string
+          level: string
+          user_id: string
+        }[]
+      }
       list_invitation_tracker: {
         Args: never
         Returns: {
@@ -661,6 +861,13 @@ export type Database = {
           email: string
           id: string
           status: string
+        }[]
+      }
+      my_stylist_level: {
+        Args: never
+        Returns: {
+          level: string
+          name: string
         }[]
       }
       revoke_sanctuary_employee: {
