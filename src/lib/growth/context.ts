@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
-import { GROWTH_METRICS, formatMetric, zoneFor, monthlyKpis, quarterlyAverages, type Metrics, type Target } from './metrics';
+import { GROWTH_METRICS, formatMetric, zoneFor, monthlyKpis, quarterlyAverages, rtsPct, type Metrics, type Target } from './metrics';
 
 type Db = SupabaseClient<Database>;
 
@@ -13,7 +13,8 @@ export async function loadGrowth(db: Db, userId: string, level: string | null) {
     level ? db.from('growth_level_targets').select('level,metric,green_min,yellow_min,next_level_requirement').eq('level', level) : Promise.resolve({ data: [] as Target[], error: null }),
   ]);
   if (profile.error || checkins.error || items.error || targets.error) throw new Error('Saved progress could not be loaded.');
-  const latest = (checkins.data?.[0]?.metrics ?? {}) as Metrics;
+  const raw = (checkins.data?.[0]?.metrics ?? {}) as Metrics;
+  const latest: Metrics = { ...raw, ...(rtsPct(raw.retail_sales, raw.service_revenue) != null ? { rts_pct: rtsPct(raw.retail_sales, raw.service_revenue) } : {}) };
   const t = (targets.data ?? []) as Target[];
   // Service dollar targets are monthly: zone off the month-to-date total, not one week.
   const monthPrefix = new Date().toISOString().slice(0, 7);
