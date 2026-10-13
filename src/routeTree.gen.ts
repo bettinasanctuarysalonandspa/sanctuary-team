@@ -19,6 +19,7 @@ import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as AuthenticatedEmployeeRouteImport } from './routes/_authenticated/_employee'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as ApiContentStudioRouteImport } from './routes/api/content-studio'
+import { Route as ApiGrowthRouteImport } from './routes/api/growth'
 import { Route as ApiGuidanceRouteImport } from './routes/api/guidance'
 import { Route as ApiSupportRouteImport } from './routes/api/support'
 import { Route as AuthenticatedEmployeeAdminRouteImport } from './routes/_authenticated/_employee.admin'
@@ -77,6 +78,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
 const ApiContentStudioRoute = ApiContentStudioRouteImport.update({
   id: '/api/content-studio',
   path: '/api/content-studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGrowthRoute = ApiGrowthRouteImport.update({
+  id: '/api/growth',
+  path: '/api/growth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiGuidanceRoute = ApiGuidanceRouteImport.update({
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/tools': typeof ToolsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/content-studio': typeof ApiContentStudioRoute
+  '/api/growth': typeof ApiGrowthRoute
   '/api/guidance': typeof ApiGuidanceRoute
   '/api/support': typeof ApiSupportRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/tools': typeof ToolsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/content-studio': typeof ApiContentStudioRoute
+  '/api/growth': typeof ApiGrowthRoute
   '/api/guidance': typeof ApiGuidanceRoute
   '/api/support': typeof ApiSupportRoute
   '/admin': typeof AuthenticatedEmployeeAdminRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/_authenticated/_employee': typeof AuthenticatedEmployeeRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/content-studio': typeof ApiContentStudioRoute
+  '/api/growth': typeof ApiGrowthRoute
   '/api/guidance': typeof ApiGuidanceRoute
   '/api/support': typeof ApiSupportRoute
   '/_authenticated/_employee/admin': typeof AuthenticatedEmployeeAdminRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/profile'
     | '/api/content-studio'
+    | '/api/growth'
     | '/api/guidance'
     | '/api/support'
     | '/admin'
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/profile'
     | '/api/content-studio'
+    | '/api/growth'
     | '/api/guidance'
     | '/api/support'
     | '/admin'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_employee'
     | '/_authenticated/profile'
     | '/api/content-studio'
+    | '/api/growth'
     | '/api/guidance'
     | '/api/support'
     | '/_authenticated/_employee/admin'
@@ -287,6 +299,7 @@ export interface RootRouteChildren {
   SetPasswordRoute: typeof SetPasswordRoute
   ToolsRoute: typeof ToolsRoute
   ApiContentStudioRoute: typeof ApiContentStudioRoute
+  ApiGrowthRoute: typeof ApiGrowthRoute
   ApiGuidanceRoute: typeof ApiGuidanceRoute
   ApiSupportRoute: typeof ApiSupportRoute
 }
@@ -361,6 +374,13 @@ declare module '@tanstack/react-router' {
       path: '/api/content-studio'
       fullPath: '/api/content-studio'
       preLoaderRoute: typeof ApiContentStudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/growth': {
+      id: '/api/growth'
+      path: '/api/growth'
+      fullPath: '/api/growth'
+      preLoaderRoute: typeof ApiGrowthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/guidance': {
@@ -500,6 +520,7 @@ const rootRouteChildren: RootRouteChildren = {
   SetPasswordRoute: SetPasswordRoute,
   ToolsRoute: ToolsRoute,
   ApiContentStudioRoute: ApiContentStudioRoute,
+  ApiGrowthRoute: ApiGrowthRoute,
   ApiGuidanceRoute: ApiGuidanceRoute,
   ApiSupportRoute: ApiSupportRoute,
 }

@@ -1,9 +1,10 @@
-import { Calculator, LifeBuoy, Sparkles, PenLine, ArrowUpRight } from 'lucide-react';
+import { Calculator, LifeBuoy, Sparkles, PenLine, Sprout, ArrowUpRight } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 export const tools = [
  { title: 'Consultation Calculator', description: 'Service pricing, product prescriptions, and client investment.', path: '/consultation', icon: Calculator, tone: 'consultation', empty: 'Approved pricing is on its way', detail: 'No service prices, stylist levels, products, taxes, or amenity charges have been added yet.' },
  { title: 'Sanctuary Support', description: 'Help with client situations, salon procedures, and problem-solving.', path: '/emergency-help', icon: LifeBuoy, tone: 'emergency', empty: 'Ready to help', detail: 'Step-by-step help for urgent salon situations.' },
  { title: 'Sanctuary Guidance', description: 'Your resource for policies, procedures, communication, and professional growth.', path: '/salon-ai', icon: Sparkles, tone: 'education', empty: 'Ready for your questions', detail: 'Answers come from the Employee Handbook, approved Sanctuary policies, and our Code of Honor.' },
+ { title: 'Sanctuary Growth', description: 'Your coach and KPI tracker — weekly coaching, progress, and level zones.', path: '/growth', icon: Sprout, tone: 'growth', empty: 'Ready to coach you', detail: 'Remembers your progress and builds on it every week.' },
  { title: 'Content Studio', description: 'Social media, marketing, video scripts, and creative content.', path: '/content-studio', icon: PenLine, tone: 'studio', empty: 'A space for your salon’s voice', detail: 'Approved brand guidance and product information have not been added. This tool is not active yet.' },
 ] as const;
 export function ToolGrid() { return <div className="tool-grid">{tools.map(tool => <Link key={tool.path} to={tool.path} className="tool-card"><span className={`tool-icon ${tool.tone}`}><tool.icon size={19} strokeWidth={1.5}/></span><ArrowUpRight className="card-arrow" size={17} strokeWidth={1.3}/><h3>{tool.title}</h3><p>{tool.description}</p></Link>)}</div>; }

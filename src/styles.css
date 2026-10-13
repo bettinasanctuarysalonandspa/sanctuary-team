@@ -101,3 +101,10 @@
 @media(max-width:600px) { .photo-placeholder { width:85px; height:85px; border-radius:15px; } .photo-placeholder .brand-mark { width:44px; height:44px; font-size:27px; } }
 .brand-logo{width:2.5rem;height:2.5rem;border-radius:9999px;background:var(--card,#fff);object-fit:contain}
 .placeholder-logo{width:min(9rem,60%);height:auto;border-radius:9999px;opacity:.92}
+
+.zone-pill { display:inline-block; margin-top:.2rem; padding:.1rem .55rem; border-radius:999px; font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; }
+.zone-green { background: color-mix(in oklab, oklch(0.62 0.12 150) 22%, transparent); color: oklch(0.42 0.1 150); }
+.zone-yellow { background: color-mix(in oklab, oklch(0.8 0.13 85) 30%, transparent); color: oklch(0.48 0.1 75); }
+.zone-red { background: color-mix(in oklab, var(--destructive) 18%, transparent); color: var(--destructive); }
+.zone-unset { background: var(--muted); color: var(--muted-foreground); }
+.tool-icon.growth { background: color-mix(in oklab,var(--primary) 16%,transparent); color: var(--primary); }
