@@ -51,14 +51,14 @@ export function GrowthChat({ initialMessages, starters }: { initialMessages: UIM
   }
   async function addPhotos(files: FileList | null) {
     if (!files) return;
-    try { const parts = await Promise.all(Array.from(files).slice(0, 4).map(toImagePart)); setPhotos(p => [...p, ...parts].slice(0, 4)); }
+    try { const parts = await Promise.all(Array.from(files).slice(0, 8).map(toImagePart)); setPhotos(p => [...p, ...parts].slice(0, 8)); }
     catch { setNotice('That photo could not be opened. Try a screenshot or a JPEG photo.'); }
     if (fileInput.current) fileInput.current.value = '';
   }
   function send(value: string) {
     if ((!value && !photos.length) || busy) return;
     clearError(); setNotice(''); setText('');
-    void sendMessage({ text: value || 'Here is a photo of my form / numbers.', files: photos });
+    void sendMessage({ text: value || photos.length > 1 ? 'Here are photos of my numbers.' : 'Here is a photo of my numbers.', files: photos });
     setPhotos([]);
   }
   async function reset() { try { await clear(); setMessages([]); clearError(); } catch (e) { setNotice(e instanceof Error ? e.message : 'Could not start over.'); } }
@@ -81,7 +81,7 @@ export function GrowthChat({ initialMessages, starters }: { initialMessages: UIM
     <PromptInput onSubmit={() => send(text.trim())}>
       <PromptInputTextarea value={text} onChange={e => setText(e.target.value)} maxLength={4000} placeholder="Share your week, ask for coaching, or send a photo of your numbers…" aria-label="Your message" className="min-h-24 text-base"/>
       <PromptInputFooter className="justify-end gap-2">
-        <Button variant="glass" size="icon-sm" type="button" title="Send a photo or screenshot" aria-label="Send a photo or screenshot" onClick={() => fileInput.current?.click()}><Camera/></Button>
+        <Button variant="glass" size="icon-sm" type="button" title="Send a photo or screenshot" aria-label="Send a photo or screenshot" onClick={() => fileInput.current?.click()} disabled={photos.length >= 8}><Camera/></Button>
         {voice && <Button variant="glass" size="icon-sm" type="button" aria-label={listening ? 'Stop voice input' : 'Speak'} aria-pressed={listening} onClick={toggleVoice}>{listening ? <MicOff/> : <Mic/>}</Button>}
         <PromptInputSubmit status={status} onStop={() => void stop()} disabled={!busy && !text.trim() && !photos.length}/>
       </PromptInputFooter>

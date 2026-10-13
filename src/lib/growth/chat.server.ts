@@ -12,7 +12,7 @@ const part = z.union([
   z.object({ type: z.literal('text'), text: z.string().max(4000) }),
   z.object({ type: z.literal('file'), mediaType: z.string().regex(/^image\/(png|jpe?g|webp|gif|heic|heif)$/), url: z.string().startsWith('data:image/').max(7_000_000), filename: z.string().max(200).optional() }),
 ]);
-const inputSchema = z.object({ messages: z.array(z.object({ id: z.string().min(1).max(200), role: z.enum(['user', 'assistant']), parts: z.array(part).min(1).max(5) })).min(1).max(100) });
+const inputSchema = z.object({ messages: z.array(z.object({ id: z.string().min(1).max(200), role: z.enum(['user', 'assistant']), parts: z.array(part).min(1).max(10) })).min(1).max(100) });
 const metricShape = Object.fromEntries(GROWTH_METRICS.map(m => [m.key, z.number().nullable()])) as Record<string, z.ZodNullable<z.ZodNumber>>;
 
 export async function handleGrowthChat(request: Request) {
@@ -31,7 +31,7 @@ export async function handleGrowthChat(request: Request) {
   const { data: employee } = await db.rpc('is_sanctuary_employee');
   if (!employee) return Response.json({ message: 'Approved employee access is required.' }, { status: 403 });
   const parsed = inputSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return Response.json({ message: 'Please send a message or a photo (up to 5MB).' }, { status: 400 });
+  if (!parsed.success) return Response.json({ message: 'Please send a message or up to 8 photos at a time.' }, { status: 400 });
   const last = parsed.data.messages.at(-1) as UIMessage | undefined;
   if (!last || last.role !== 'user') return Response.json({ message: 'A new request is required.' }, { status: 400 });
 
