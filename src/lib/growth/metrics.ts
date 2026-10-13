@@ -63,6 +63,12 @@ export function monthlyKpis(checkins: { week_start: string; updated_at: string |
       let value: number | undefined;
       if (key === 'service_revenue') value = total('service_revenue');
       else if (key === 'rts_pct') { const both = rows.filter(r => r.metrics.retail_sales != null && r.metrics.service_revenue); value = both.length ? rtsPct(both.reduce((s, r) => s + Number(r.metrics.retail_sales), 0), both.reduce((s, r) => s + Number(r.metrics.service_revenue), 0)) : sorted.find(r => r.metrics.rts_pct != null)?.metrics.rts_pct; }
+      else if (key === 'avg_bill') {
+        // Average total ticket = (month service + month retail) ÷ month client visits; tips excluded. Zero visits → no value.
+        const full = rows.filter(r => r.metrics.service_revenue != null && r.metrics.retail_sales != null && r.metrics.clients_served != null);
+        const visits = full.reduce((s, r) => s + Number(r.metrics.clients_served), 0);
+        value = full.length && visits > 0 ? Math.round(full.reduce((s, r) => s + Number(r.metrics.service_revenue) + Number(r.metrics.retail_sales), 0) / visits * 100) / 100 : undefined;
+      }
       else {
         // Rebooking: combine the month's weeks, weighted by client visits when known.
         const wk = rows.filter(r => r.metrics[key] != null);
