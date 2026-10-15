@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { useServerFn } from '@tanstack/react-start';
-import { Copy, Mic, MicOff, RotateCcw } from 'lucide-react';
+import { CircleAlert, Copy, Mic, MicOff, RotateCcw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { clearSupportMessages } from '@/lib/support.functions';
 import { Button } from '@/components/ui/button';
@@ -51,6 +51,13 @@ export function SupportChat({ initialMessages }: { initialMessages: UIMessage[] 
       </ConversationContent><ConversationScrollButton/>
     </Conversation>
     {(errorText || notice) && <p role="alert" className="form-message">{errorText || notice}</p>}
+    <div className="flex flex-wrap gap-2">
+      <Button type="button" variant="glass" size="sm" disabled={busy || clearing} onClick={() => {
+        const draft = 'I need help with this emergency: ';
+        setText(draft);
+        requestAnimationFrame(() => { input.current?.focus(); input.current?.setSelectionRange(draft.length, draft.length); });
+      }}><CircleAlert size={15}/>What is the emergency?</Button>
+    </div>
     <PromptInput onSubmit={() => { const value = text.trim(); if (!value || busy || clearing) return; clearError(); setNotice(''); setText(''); void sendMessage({ text: value }); input.current?.focus(); }}>
       <PromptInputTextarea ref={input} value={text} onChange={e => setText(e.target.value)} maxLength={4000} placeholder="Describe what is happening right now…" aria-label="What is happening" className="min-h-24 text-base"/>
       <PromptInputFooter className="justify-end gap-2">{voice && <Button variant="glass" size="icon-sm" type="button" title={listening ? 'Stop voice input' : 'Speak your question'} aria-label={listening ? 'Stop voice input' : 'Speak your question'} aria-pressed={listening} onClick={toggleVoice}>{listening ? <MicOff/> : <Mic/>}</Button>}<PromptInputSubmit status={status} onStop={() => void stop()} disabled={clearing || (!busy && !text.trim())} title={busy ? 'Stop writing' : 'Send question'} aria-label={busy ? 'Stop writing' : 'Send request'}/></PromptInputFooter>
