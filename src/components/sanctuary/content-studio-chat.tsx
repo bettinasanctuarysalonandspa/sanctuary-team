@@ -120,7 +120,7 @@ export function ContentStudioChat({ initialMessages }: { initialMessages: UIMess
     if (ok.length < results.length) {
       const tooLong = kind === 'video' && results.some(r => r.status === 'rejected' && r.reason instanceof Error && r.reason.message === 'too long');
       setNotice(kind === 'video'
-        ? (tooLong ? 'That video is longer than 3 minutes — please trim it and try again.' : 'That video could not be opened on this phone. Please try choosing it again — if it still will not open, tell Bettina which video it was.')
+        ? (tooLong ? 'That video is longer than 3 minutes — please trim it and try again.' : 'This phone would not let me look inside that video. Just tell me in a sentence what it shows and I will write it up for you.')
         : 'A photo could not be opened — try a screenshot of it instead.');
     }
     setLoadingMedia(false);
