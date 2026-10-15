@@ -28,7 +28,7 @@ function canvasPart(src: CanvasImageSource, w: number, h: number, name: string):
   ctx.drawImage(src, 0, 0, c.width, c.height);
   return { type: 'file', mediaType: 'image/jpeg', url: c.toDataURL('image/jpeg', 0.8), filename: name };
 }
-async function photoPart(file: File): Promise<FileUIPart> {
+export async function photoPart(file: File): Promise<FileUIPart> {
   const url = URL.createObjectURL(file);
   try {
     const img = await new Promise<HTMLImageElement>((res, rej) => { const el = new Image(); el.onload = () => res(el); el.onerror = () => rej(new Error('unreadable')); el.src = url; });

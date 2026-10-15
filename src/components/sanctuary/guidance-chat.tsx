@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, type UIMessage } from 'ai';
+import { DefaultChatTransport, type FileUIPart, type UIMessage } from 'ai';
+import { photoPart } from './content-studio-chat';
 import { useServerFn } from '@tanstack/react-start';
-import { Copy, Mic, MicOff, RotateCcw } from 'lucide-react';
+import { Camera, Copy, Mic, MicOff, RotateCcw, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { clearGuidanceMessages } from '@/lib/guidance.functions';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,7 @@ import { Shimmer } from '@/components/ai-elements/shimmer';
 
 type Recognition = { lang: string; start(): void; stop(): void; onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null };
 export function GuidanceChat({ initialMessages }: { initialMessages: UIMessage[] }) {
-  const transport = useMemo(() => new DefaultChatTransport({ api: '/api/guidance', headers: async () => { const { data } = await supabase.auth.getSession(); return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {}; }, prepareSendMessagesRequest: ({ messages, headers }) => ({ ...(headers ? { headers } : {}), body: { messages: messages.slice(-1).map(m => ({ id: m.id, role: m.role, parts: m.parts.filter(p => p.type === 'text') })) } }) }), []);
+  const transport = useMemo(() => new DefaultChatTransport({ api: '/api/guidance', headers: async () => { const { data } = await supabase.auth.getSession(); return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {}; }, prepareSendMessagesRequest: ({ messages, headers }) => ({ ...(headers ? { headers } : {}), body: { messages: messages.slice(-1).map(m => ({ id: m.id, role: m.role, parts: m.parts.filter(p => p.type === 'text' || p.type === 'file') })) } }) }), []);
   const { messages, sendMessage, status, error, stop, setMessages, clearError } = useChat({ messages: initialMessages, transport });
   const clear = useServerFn(clearGuidanceMessages);
   const [text, setText] = useState('');
@@ -21,6 +22,16 @@ export function GuidanceChat({ initialMessages }: { initialMessages: UIMessage[]
   const [listening, setListening] = useState(false);
   const [notice, setNotice] = useState('');
   const [clearing, setClearing] = useState(false);
+  const [photos, setPhotos] = useState<FileUIPart[]>([]);
+  const fileInput = useRef<HTMLInputElement>(null);
+  async function addPhotos(files: FileList | null) {
+    const list = Array.from(files ?? []).slice(0, 4 - photos.length);
+    const results = await Promise.allSettled(list.map(photoPart));
+    const ok = results.flatMap(r => r.status === 'fulfilled' ? [r.value] : []);
+    if (ok.length < list.length) setNotice('One photo could not be opened. Please try a screenshot or retake it.');
+    setPhotos(prev => [...prev, ...ok].slice(0, 4));
+    if (fileInput.current) fileInput.current.value = '';
+  }
   const rec = useRef<Recognition | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const busy = status === 'submitted' || status === 'streaming';
@@ -45,14 +56,15 @@ export function GuidanceChat({ initialMessages }: { initialMessages: UIMessage[]
     <Conversation className="h-[52vh] min-h-80 flex-none rounded-lg border border-input bg-card/60 backdrop-blur">
       <ConversationContent className="gap-5">
         {messages.length === 0 && <ConversationEmptyState><span className="brand-mark" aria-hidden="true">S</span></ConversationEmptyState>}
-        {messages.map(m => <Message key={m.id} from={m.role}><MessageContent className={m.role === 'user' ? 'group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground break-words' : 'break-words'}>{m.parts.map((p, i) => p.type === 'text' ? <MessageResponse key={i}>{p.text}</MessageResponse> : null)}</MessageContent>{m.role === 'assistant' && !busy && <MessageAction tooltip="Copy answer" label="Copy answer" onClick={() => void navigator.clipboard.writeText(m.parts.filter(p => p.type === 'text').map(p => p.text).join('\n')).catch(() => setNotice('Answer could not be copied.'))}><Copy size={15}/></MessageAction>}</Message>)}
+        {messages.map(m => <Message key={m.id} from={m.role}><MessageContent className={m.role === 'user' ? 'group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground break-words' : 'break-words'}>{m.parts.map((p, i) => p.type === 'text' ? <MessageResponse key={i}>{p.text}</MessageResponse> : p.type === 'file' ? <img key={i} src={p.url} alt="Shared photo" className="max-h-48 rounded-md"/> : null)}</MessageContent>{m.role === 'assistant' && !busy && <MessageAction tooltip="Copy answer" label="Copy answer" onClick={() => void navigator.clipboard.writeText(m.parts.filter(p => p.type === 'text').map(p => p.text).join('\n')).catch(() => setNotice('Answer could not be copied.'))}><Copy size={15}/></MessageAction>}</Message>)}
         {busy && <Shimmer>Thinking…</Shimmer>}
       </ConversationContent><ConversationScrollButton/>
     </Conversation>
     {(errorText || notice) && <p role="alert" className="form-message">{errorText || notice}</p>}
-    <PromptInput onSubmit={() => { const value = text.trim(); if (!value || busy || clearing) return; clearError(); setNotice(''); setText(''); void sendMessage({ text: value }); input.current?.focus(); }}>
-      <PromptInputTextarea ref={input} value={text} onChange={e => setText(e.target.value)} maxLength={4000} placeholder="Ask about a policy, client situation, or message…" aria-label="Your question" className="min-h-24 text-base"/>
-      <PromptInputFooter className="justify-end gap-2">{voice && <Button variant="glass" size="icon-sm" type="button" title={listening ? 'Stop voice input' : 'Speak your question'} aria-label={listening ? 'Stop voice input' : 'Speak your question'} aria-pressed={listening} onClick={toggleVoice}>{listening ? <MicOff/> : <Mic/>}</Button>}<PromptInputSubmit status={status} onStop={() => void stop()} disabled={clearing || (!busy && !text.trim())} title={busy ? 'Stop writing' : 'Send question'} aria-label={busy ? 'Stop writing' : 'Send request'}/></PromptInputFooter>
+    <PromptInput onSubmit={() => { const value = text.trim() || (photos.length ? 'Please look at this photo.' : ''); if (!value || busy || clearing) return; clearError(); setNotice(''); setText(''); const files = photos; setPhotos([]); void sendMessage({ text: value, files }); input.current?.focus(); }}>
+      <PromptInputTextarea ref={input} value={text} onChange={e => setText(e.target.value)} maxLength={4000} placeholder="Ask a question, or add a photo of your outfit, a review, or an email…" aria-label="Your question" className="min-h-24 text-base"/>
+      {photos.length > 0 && <div className="flex flex-wrap gap-2 p-2">{photos.map((p, i) => <div key={i} className="relative"><img src={p.url} alt="Photo to send" className="h-16 w-16 rounded-md object-cover"/><button type="button" aria-label="Remove photo" onClick={() => setPhotos(prev => prev.filter((_, j) => j !== i))} className="absolute -right-1 -top-1 rounded-full bg-background p-0.5 shadow"><X size={12}/></button></div>)}</div>}
+      <PromptInputFooter className="justify-end gap-2"><input ref={fileInput} type="file" accept="image/*" multiple hidden onChange={e => void addPhotos(e.target.files)}/><Button variant="glass" size="sm" type="button" disabled={busy || photos.length >= 4} onClick={() => fileInput.current?.click()} aria-label="Add a photo"><Camera size={15}/>Photo</Button>{voice && <Button variant="glass" size="icon-sm" type="button" title={listening ? 'Stop voice input' : 'Speak your question'} aria-label={listening ? 'Stop voice input' : 'Speak your question'} aria-pressed={listening} onClick={toggleVoice}>{listening ? <MicOff/> : <Mic/>}</Button>}<PromptInputSubmit status={status} onStop={() => void stop()} disabled={clearing || (!busy && !text.trim() && !photos.length)} title={busy ? 'Stop writing' : 'Send question'} aria-label={busy ? 'Stop writing' : 'Send request'}/></PromptInputFooter>
     </PromptInput>
   </section>;
 }

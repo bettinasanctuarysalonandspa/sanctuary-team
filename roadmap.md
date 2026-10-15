@@ -10,3 +10,6 @@
 - [ ] Publish so the Head Spa booking wording, "Sanctuary Emergency Support" and "Sanctuary Handbook and Guidance" names reach the team's phones
 - [ ] Jasmine's 12-week Bootcamp logging starts next week when she comes in
 - [x] Daily Non-Negotiable Standards sheet: associates (Associate–Designer 2) photo it in Growth Coach each shift; coach reads, confirms, saves, talks it through
+
+- [x] Handbook and Guidance: outfit photo dress code check
+- [x] Handbook and Guidance: photo of review/email -> salon-voice de-escalating reply

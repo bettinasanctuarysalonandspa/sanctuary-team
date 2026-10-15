@@ -6,7 +6,7 @@ import { createResponsesCall } from '../content-studio/responses.server.ts';
 import { guidancePrompt } from './prompt';
 import { withLovableAiGatewayRunIdHeader } from '../content-studio/run-id.server.ts';
 
-const inputSchema = z.object({ messages: z.array(z.object({ id: z.string().min(1).max(200), role: z.enum(['user', 'assistant']), parts: z.array(z.object({ type: z.literal('text'), text: z.string().max(4000) })).min(1) })).min(1).max(100) });
+const inputSchema = z.object({ messages: z.array(z.object({ id: z.string().min(1).max(200), role: z.enum(['user', 'assistant']), parts: z.array(z.union([z.object({ type: z.literal('text'), text: z.string().max(4000) }), z.object({ type: z.literal('file'), mediaType: z.string().regex(/^image\/(png|jpe?g|webp)$/), url: z.string().startsWith('data:image/').max(3_000_000), filename: z.string().max(200).optional() })])).min(1).max(5) })).min(1).max(100) });
 
 export async function handleGuidanceChat(request: Request) {
   const url = process.env['SUPABASE_URL'];
@@ -41,10 +41,13 @@ export async function handleGuidanceChat(request: Request) {
   let failureMessage = 'Sanctuary Handbook and Guidance could not answer. Please try again.';
   const gatewayRequest = new Request(request.url, { signal: request.signal });
   const messages = (history ?? []).reverse().map(r => r.message as unknown as UIMessage).filter(m => m.id !== last.id);
-  messages.push(last);
-  const { error: saveError } = await db.from('guidance_messages').upsert({ user_id: userId, message_id: last.id, message: last }, { onConflict: 'user_id,message_id' });
+  // Outfit photos are only sent to the model for this turn; history stores text only.
+  const hasPhoto = last.parts.some(p => p.type === 'file');
+  const savedLast = { ...last, parts: [...last.parts.filter(p => p.type === 'text'), ...(hasPhoto ? [{ type: 'text' as const, text: '📷 (outfit photo shared)' }] : [])] };
+  messages.push(savedLast as UIMessage);
+  const { error: saveError } = await db.from('guidance_messages').upsert({ user_id: userId, message_id: last.id, message: savedLast }, { onConflict: 'user_id,message_id' });
   if (saveError) return Response.json({ message: 'Your request could not be saved.' }, { status: 503 });
-  const modelMessages = convertToModelMessages(messages.map(m => ({ ...m, parts: m.parts.filter(p => p.type === 'text') })));
+  const modelMessages = await convertToModelMessages([...messages.slice(0, -1).map(m => ({ ...m, parts: m.parts.filter(p => p.type === 'text') })), last as UIMessage]);
   const call = createResponsesCall(gatewayRequest, { baseURL: 'https://ai.gateway.lovable.dev/v1', apiKey, model: 'openai/gpt-6-astra' }, modelMessages, guidancePrompt(knowledge));
   // Provider errors are handled before returning a stream; never auto-retry.
   const iterator = call.result.fullStream[Symbol.asyncIterator]();
