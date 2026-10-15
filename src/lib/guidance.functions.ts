@@ -36,6 +36,6 @@ export const resumeGuidance = createServerFn({ method: 'POST' }).middleware([req
   const { data: owner } = await context.supabase.rpc('is_sanctuary_owner');
   if (!owner) throw new Error('Owner access is required.');
   const { error } = await context.supabase.from('guidance_gateway_state').upsert({ id: 1, paused: false, reason: null, updated_at: new Date().toISOString() });
-  if (error) throw new Error('Sanctuary Guidance could not be resumed.');
+  if (error) throw new Error('Sanctuary Handbook and Guidance could not be resumed.');
   return { ok: true };
 });
