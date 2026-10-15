@@ -35,18 +35,20 @@ async function photoPart(file: File): Promise<FileUIPart> {
     return canvasPart(img, img.naturalWidth, img.naturalHeight, file.name);
   } finally { URL.revokeObjectURL(url); }
 }
-/** The studio "watches" a video by looking at evenly spaced still frames. */
-async function videoParts(file: File, count = 6): Promise<FileUIPart[]> {
+/** The studio "watches" a video by looking at evenly spaced still frames. Videos up to 3 minutes are accepted. */
+export const MAX_VIDEO_SECONDS = 180;
+async function videoParts(file: File, count = 8): Promise<FileUIPart[]> {
   const url = URL.createObjectURL(file);
   const v = document.createElement('video');
   v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
   try {
-    await new Promise<void>((res, rej) => { v.onloadeddata = () => res(); v.onerror = () => rej(new Error('unreadable video')); setTimeout(() => rej(new Error('timeout')), 15000); });
+    await new Promise<void>((res, rej) => { v.onloadeddata = () => res(); v.onerror = () => rej(new Error('unreadable video')); setTimeout(() => rej(new Error('timeout')), 60000); });
     const d = isFinite(v.duration) && v.duration > 0 ? v.duration : 1;
+    if (d > MAX_VIDEO_SECONDS) throw new Error('too long');
     const out: FileUIPart[] = [];
     for (let i = 0; i < count; i++) {
       v.currentTime = Math.min(d - 0.05, (d * (i + 0.5)) / count);
-      await new Promise<void>(res => { v.onseeked = () => res(); setTimeout(res, 3000); });
+      await new Promise<void>(res => { v.onseeked = () => res(); setTimeout(res, 8000); });
       out.push(canvasPart(v, v.videoWidth, v.videoHeight, `${file.name} frame ${i + 1}`));
     }
     return out;
