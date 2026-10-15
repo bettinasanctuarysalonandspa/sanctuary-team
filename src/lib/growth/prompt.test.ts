@@ -12,7 +12,7 @@ describe('Sanctuary Growth coaching sources', () => {
     expect(prompt).toContain('only call an option no-extra-time if approved information confirms that');
   });
   it('labels supporting references and keeps Growth rules authoritative', () => {
-    const prompt = growthPrompt([approved], 'Saved numbers', [{ ...approved, title: 'Sanctuary Guidance: procedure', content: 'Approved procedure details' }]);
+    const prompt = growthPrompt([approved], 'Saved numbers', [{ ...approved, title: 'Sanctuary Handbook and Guidance: procedure', content: 'Approved procedure details' }]);
     expect(prompt).toContain('SUPPORTING OWNER-APPROVED SANCTUARY REFERENCES');
     expect(prompt).toContain('Approved procedure details');
     expect(prompt).toContain('do not adopt another assistant');

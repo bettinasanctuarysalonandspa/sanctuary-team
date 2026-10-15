@@ -12,7 +12,7 @@ export async function handleGuidanceChat(request: Request) {
   const url = process.env['SUPABASE_URL'];
   const key = process.env['SUPABASE_PUBLISHABLE_KEY'];
   const apiKey = process.env['LOVABLE_API_KEY'];
-  if (!url || !key || !apiKey) return Response.json({ message: 'Sanctuary Guidance is not configured.' }, { status: 503 });
+  if (!url || !key || !apiKey) return Response.json({ message: 'Sanctuary Handbook and Guidance is not configured.' }, { status: 503 });
   const token = request.headers.get('authorization');
   if (!token?.startsWith('Bearer ')) return Response.json({ message: 'Please sign in again.' }, { status: 401 });
   const origin = request.headers.get('origin');
@@ -31,14 +31,14 @@ export async function handleGuidanceChat(request: Request) {
   const { data: history, error: historyError } = await db.from('guidance_messages').select('message').eq('user_id', userId).order('id', { ascending: false }).limit(24);
   const { data: knowledge, error: knowledgeError } = await db.from('guidance_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date');
   if (historyError || knowledgeError) return Response.json({ message: 'Your approved information could not be loaded.' }, { status: 503 });
-  if (!knowledge?.length) return Response.json({ message: 'Sanctuary Guidance is awaiting owner-approved information.' }, { status: 409 });
+  if (!knowledge?.length) return Response.json({ message: 'Sanctuary Handbook and Guidance is awaiting owner-approved information.' }, { status: 409 });
   // Privileged reads only after validated membership; persistent circuit breaker.
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const { data: state, error: stateError } = await supabaseAdmin.from('guidance_gateway_state').select('paused,reason').eq('id', 1).maybeSingle();
-  if (stateError) return Response.json({ message: 'Sanctuary Guidance availability could not be checked.' }, { status: 503 });
-  if (state?.paused) return Response.json({ message: state.reason || 'Sanctuary Guidance is paused. Please contact the owner.' }, { status: 403 });
+  if (stateError) return Response.json({ message: 'Sanctuary Handbook and Guidance availability could not be checked.' }, { status: 503 });
+  if (state?.paused) return Response.json({ message: state.reason || 'Sanctuary Handbook and Guidance is paused. Please contact the owner.' }, { status: 403 });
   let failureStatus = 500;
-  let failureMessage = 'Sanctuary Guidance could not answer. Please try again.';
+  let failureMessage = 'Sanctuary Handbook and Guidance could not answer. Please try again.';
   const gatewayRequest = new Request(request.url, { signal: request.signal });
   const messages = (history ?? []).reverse().map(r => r.message as unknown as UIMessage).filter(m => m.id !== last.id);
   messages.push(last);
@@ -57,7 +57,7 @@ export async function handleGuidanceChat(request: Request) {
     if ([402, 403, 404].includes(failureStatus)) await supabaseAdmin.from('guidance_gateway_state').upsert({ id: 1, paused: true, reason: failureMessage, updated_at: new Date().toISOString() });
     return Response.json({ message: failureMessage }, { status: failureStatus });
   }
-  if (first.done || first.value?.type === 'finish') return Response.json({ message: 'Sanctuary Guidance could not provide this response.' }, { status: 422 });
+  if (first.done || first.value?.type === 'finish') return Response.json({ message: 'Sanctuary Handbook and Guidance could not provide this response.' }, { status: 422 });
   return withLovableAiGatewayRunIdHeader(call.result.toUIMessageStreamResponse({ originalMessages: messages, generateMessageId: () => crypto.randomUUID(), sendReasoning: false,
     onError: () => failureMessage,
     onFinish: async ({ responseMessage, isAborted }) => {

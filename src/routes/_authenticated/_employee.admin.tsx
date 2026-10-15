@@ -22,7 +22,7 @@ export const Route = createFileRoute('/_authenticated/_employee/admin')({
 const information = [
   ['Consultation Calculator', 'Approved service and product prices'],
   ['Sanctuary Emergency Support', 'Client concerns, procedures, escalation'],
-  ['Sanctuary Guidance', 'Employee Handbook and Code of Honor'],
+  ['Sanctuary Handbook and Guidance', 'Employee Handbook and Code of Honor'],
   ['Content Studio', 'Brand voice, services, campaigns'],
 ];
 
@@ -98,7 +98,7 @@ function AdminEmployees() {
       <div className="grid gap-2 sm:grid-cols-5">
         <Button variant="glass" asChild><Link to="/pricing">Service and product prices</Link></Button>
         <Button variant="glass" asChild><Link to="/support-knowledge">Sanctuary Emergency Support</Link></Button>
-        <Button variant="glass" asChild><Link to="/guidance-knowledge">Sanctuary Guidance</Link></Button>
+        <Button variant="glass" asChild><Link to="/guidance-knowledge">Sanctuary Handbook and Guidance</Link></Button>
         <Button variant="glass" asChild><Link to="/content-knowledge">Content Studio</Link></Button>
         <Button variant="glass" asChild><Link to="/growth-admin">Sanctuary Growth</Link></Button>
         <Button variant="glass" asChild><Link to="/client-journey-admin">Client Journey & levels</Link></Button>

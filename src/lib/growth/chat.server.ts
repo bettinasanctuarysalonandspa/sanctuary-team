@@ -55,7 +55,7 @@ export async function handleGrowthChat(request: Request) {
   const history = historyResult.data;
   const knowledge = knowledgeResult.data;
   const supportingKnowledge = [supportResult, guidanceResult, contentResult].flatMap((r, i) =>
-    (r.data ?? []).map(record => ({ ...record, title: `${['Sanctuary Emergency Support', 'Sanctuary Guidance', 'Content Studio'][i]}: ${record.title}` })));
+    (r.data ?? []).map(record => ({ ...record, title: `${['Sanctuary Emergency Support', 'Sanctuary Handbook and Guidance', 'Content Studio'][i]}: ${record.title}` })));
   let growth;
   try { growth = await loadGrowth(db, userId, me?.[0]?.level ?? null); } catch { return Response.json({ message: 'Your saved progress could not be loaded.' }, { status: 503 }); }
   const dailyLogs = (dailyResult.data ?? []).map(l => {
