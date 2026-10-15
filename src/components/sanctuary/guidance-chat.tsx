@@ -3,7 +3,7 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type FileUIPart, type UIMessage } from 'ai';
 import { photoPart } from './content-studio-chat';
 import { useServerFn } from '@tanstack/react-start';
-import { Camera, Copy, Mic, MicOff, RotateCcw, X } from 'lucide-react';
+import { BookOpen, Camera, ClipboardList, Copy, Mail, MessageSquare, Mic, MicOff, RotateCcw, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { clearGuidanceMessages } from '@/lib/guidance.functions';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,13 @@ import { PromptInput, PromptInputTextarea, PromptInputFooter, PromptInputSubmit 
 import { Shimmer } from '@/components/ai-elements/shimmer';
 
 type Recognition = { lang: string; start(): void; stop(): void; onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null };
+const starters = [
+  { label: 'Check my dress code', icon: Camera, text: 'Does my outfit meet our handbook dress code? Please check this photo.', photo: true },
+  { label: 'Find a handbook rule', icon: BookOpen, text: 'What does our handbook say about [topic]?', topic: true },
+  { label: 'Find a policy or procedure', icon: ClipboardList, text: 'What is our policy or procedure for [situation]?', topic: true },
+  { label: 'Reply to an email', icon: Mail, text: 'Write a ready-to-copy reply to this client email in the Sanctuary voice, following our approved policies:\n\n' },
+  { label: 'Reply to a review', icon: MessageSquare, text: 'Write a ready-to-copy reply to this client review in the Sanctuary voice, following our approved policies:\n\n' },
+];
 export function GuidanceChat({ initialMessages }: { initialMessages: UIMessage[] }) {
   const transport = useMemo(() => new DefaultChatTransport({ api: '/api/guidance', headers: async () => { const { data } = await supabase.auth.getSession(); return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {}; }, prepareSendMessagesRequest: ({ messages, headers }) => ({ ...(headers ? { headers } : {}), body: { messages: messages.slice(-1).map(m => ({ id: m.id, role: m.role, parts: m.parts.filter(p => p.type === 'text' || p.type === 'file') })) } }) }), []);
   const { messages, sendMessage, status, error, stop, setMessages, clearError } = useChat({ messages: initialMessages, transport });
@@ -61,6 +68,18 @@ export function GuidanceChat({ initialMessages }: { initialMessages: UIMessage[]
       </ConversationContent><ConversationScrollButton/>
     </Conversation>
     {(errorText || notice) && <p role="alert" className="form-message">{errorText || notice}</p>}
+    <div aria-label="Quick questions" className="flex flex-wrap gap-2">
+      {starters.map(starter => <Button key={starter.label} type="button" variant="glass" size="sm" className="h-auto min-h-9 max-w-full whitespace-normal text-left" disabled={busy || clearing} onClick={() => {
+        setText(starter.text);
+        requestAnimationFrame(() => {
+          input.current?.focus();
+          const start = starter.text.indexOf('[');
+          if ('topic' in starter && start >= 0) input.current?.setSelectionRange(start, starter.text.indexOf(']') + 1);
+          else input.current?.setSelectionRange(starter.text.length, starter.text.length);
+        });
+        if ('photo' in starter && photos.length < 4) fileInput.current?.click();
+      }}><starter.icon size={15} className="shrink-0"/>{starter.label}</Button>)}
+    </div>
     <PromptInput onSubmit={() => { const value = text.trim() || (photos.length ? 'Please look at this photo.' : ''); if (!value || busy || clearing) return; clearError(); setNotice(''); setText(''); const files = photos; setPhotos([]); void sendMessage({ text: value, files }); input.current?.focus(); }}>
       <PromptInputTextarea ref={input} value={text} onChange={e => setText(e.target.value)} maxLength={4000} placeholder="Ask a question, or add a photo of your outfit, a review, or an email…" aria-label="Your question" className="min-h-24 text-base"/>
       {photos.length > 0 && <div className="flex flex-wrap gap-2 p-2">{photos.map((p, i) => <div key={i} className="relative"><img src={p.url} alt="Photo to send" className="h-16 w-16 rounded-md object-cover"/><button type="button" aria-label="Remove photo" onClick={() => setPhotos(prev => prev.filter((_, j) => j !== i))} className="absolute -right-1 -top-1 rounded-full bg-background p-0.5 shadow"><X size={12}/></button></div>)}</div>}
