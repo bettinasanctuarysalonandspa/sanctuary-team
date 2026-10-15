@@ -91,7 +91,12 @@ export function ContentStudioChat({ initialMessages }: { initialMessages: UIMess
     const results = await Promise.allSettled(list.map(f => kind === 'video' ? videoParts(f) : photoPart(f).then(p => [p])));
     const ok = results.flatMap(r => r.status === 'fulfilled' ? [{ kind, parts: r.value }] : []);
     setMedia(m => [...m, ...ok].slice(0, 8));
-    if (ok.length < results.length) setNotice(kind === 'video' ? 'That video could not be opened. Try a shorter clip or a screen recording.' : 'A photo could not be opened — try a screenshot of it instead.');
+    if (ok.length < results.length) {
+      const tooLong = kind === 'video' && results.some(r => r.status === 'rejected' && r.reason instanceof Error && r.reason.message === 'too long');
+      setNotice(kind === 'video'
+        ? (tooLong ? 'That video is longer than 3 minutes — please trim it and try again.' : 'That video could not be opened. If it was shot in HDR, try sending it to yourself in Messages first and save that copy.')
+        : 'A photo could not be opened — try a screenshot of it instead.');
+    }
     setLoadingMedia(false);
     if (photoInput.current) photoInput.current.value = '';
     if (videoInput.current) videoInput.current.value = '';
