@@ -37,22 +37,48 @@ async function photoPart(file: File): Promise<FileUIPart> {
 }
 /** The studio "watches" a video by looking at evenly spaced still frames. Videos up to 3 minutes are accepted. */
 export const MAX_VIDEO_SECONDS = 180;
+function waitFor(v: HTMLVideoElement, event: string, ms: number, failOnError = true): Promise<boolean> {
+  return new Promise((res, rej) => {
+    let done = false;
+    const finish = (ok: boolean, err?: Error) => { if (done) return; done = true; clearTimeout(t); v.removeEventListener(event, onEv); v.removeEventListener('error', onErr); if (err) rej(err); else res(ok); };
+    const onEv = () => finish(true);
+    const onErr = () => failOnError ? finish(false, new Error('unreadable video')) : finish(false);
+    const t = setTimeout(() => finish(false), ms);
+    v.addEventListener(event, onEv); v.addEventListener('error', onErr);
+  });
+}
+const nextFrame = () => new Promise<void>(r => requestAnimationFrame(() => setTimeout(r, 30)));
 async function videoParts(file: File, count = 8): Promise<FileUIPart[]> {
   const url = URL.createObjectURL(file);
   const v = document.createElement('video');
-  v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+  // iPhones only decode video that is on the page, muted and inline, and only after playback is started once.
+  v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = 'auto';
+  v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', '');
+  v.style.cssText = 'position:fixed;left:-9999px;top:0;width:2px;height:2px;opacity:0;pointer-events:none';
+  document.body.appendChild(v);
   try {
-    await new Promise<void>((res, rej) => { v.onloadeddata = () => res(); v.onerror = () => rej(new Error('unreadable video')); setTimeout(() => rej(new Error('timeout')), 60000); });
-    const d = isFinite(v.duration) && v.duration > 0 ? v.duration : 1;
+    const meta = waitFor(v, 'loadedmetadata', 60000);
+    v.src = url; v.load();
+    if (!(await meta) && v.readyState < 1) throw new Error('timeout');
+    let d = v.duration;
+    if (!isFinite(d)) { v.currentTime = 1e7; await waitFor(v, 'seeked', 8000, false); d = v.duration; v.currentTime = 0; }
+    if (!isFinite(d) || d <= 0) d = 1;
     if (d > MAX_VIDEO_SECONDS) throw new Error('too long');
+    try { await v.play(); } catch { /* still try to read frames */ }
+    v.pause();
+    if (v.readyState < 2) await waitFor(v, 'loadeddata', 15000, false);
     const out: FileUIPart[] = [];
     for (let i = 0; i < count; i++) {
-      v.currentTime = Math.min(d - 0.05, (d * (i + 0.5)) / count);
-      await new Promise<void>(res => { v.onseeked = () => res(); setTimeout(res, 8000); });
-      out.push(canvasPart(v, v.videoWidth, v.videoHeight, `${file.name} frame ${i + 1}`));
+      const at = Math.min(Math.max(0, d - 0.1), (d * (i + 0.5)) / count);
+      const seeked = waitFor(v, 'seeked', 8000, false);
+      v.currentTime = at;
+      await seeked; await nextFrame();
+      if (!v.videoWidth || !v.videoHeight) continue;
+      try { out.push(canvasPart(v, v.videoWidth, v.videoHeight, `${file.name} frame ${i + 1}`)); } catch { /* skip this frame */ }
     }
+    if (!out.length) throw new Error('unreadable video');
     return out;
-  } finally { URL.revokeObjectURL(url); }
+  } finally { v.removeAttribute('src'); v.load(); v.remove(); URL.revokeObjectURL(url); }
 }
 
 export function ContentStudioChat({ initialMessages }: { initialMessages: UIMessage[] }) {
