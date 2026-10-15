@@ -41,7 +41,7 @@ export function SupportChat({ initialMessages }: { initialMessages: UIMessage[] 
   async function reset() { setClearing(true); try { await clear(); setMessages([]); clearError(); setNotice(''); } catch (e) { setNotice(e instanceof Error ? e.message : 'The conversation could not be cleared.'); } finally { setClearing(false); input.current?.focus(); } }
   let errorText = error?.message ?? '';
   try { errorText = JSON.parse(errorText).message ?? errorText; } catch { /* plain message */ }
-  return <section aria-label="Sanctuary Support chat" className="flex flex-col gap-4">
+  return <section aria-label="Sanctuary Emergency Support chat" className="flex flex-col gap-4">
     <div className="flex min-h-9 justify-end">{messages.length > 0 && <Button variant="glass" size="sm" onClick={() => void reset()} disabled={busy || clearing}><RotateCcw size={15}/>New conversation</Button>}</div>
     <Conversation className="h-[52vh] min-h-80 flex-none rounded-lg border border-input bg-card/60 backdrop-blur">
       <ConversationContent className="gap-5">
