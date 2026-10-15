@@ -15,4 +15,4 @@
 - [x] Handbook and Guidance: outfit photo dress code check
 - [x] Handbook and Guidance: photo of review/email -> salon-voice de-escalating reply
 - [x] Handbook and Guidance: quick prompts above the question box
-- [ ] Emergency Support: add “What is the emergency?” prompt above the question box
+- [x] Emergency Support: add “What is the emergency?” prompt above the question box
