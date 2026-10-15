@@ -35,18 +35,20 @@ async function photoPart(file: File): Promise<FileUIPart> {
     return canvasPart(img, img.naturalWidth, img.naturalHeight, file.name);
   } finally { URL.revokeObjectURL(url); }
 }
-/** The studio "watches" a video by looking at evenly spaced still frames. */
-async function videoParts(file: File, count = 6): Promise<FileUIPart[]> {
+/** The studio "watches" a video by looking at evenly spaced still frames. Videos up to 3 minutes are accepted. */
+export const MAX_VIDEO_SECONDS = 180;
+async function videoParts(file: File, count = 8): Promise<FileUIPart[]> {
   const url = URL.createObjectURL(file);
   const v = document.createElement('video');
   v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
   try {
-    await new Promise<void>((res, rej) => { v.onloadeddata = () => res(); v.onerror = () => rej(new Error('unreadable video')); setTimeout(() => rej(new Error('timeout')), 15000); });
+    await new Promise<void>((res, rej) => { v.onloadeddata = () => res(); v.onerror = () => rej(new Error('unreadable video')); setTimeout(() => rej(new Error('timeout')), 60000); });
     const d = isFinite(v.duration) && v.duration > 0 ? v.duration : 1;
+    if (d > MAX_VIDEO_SECONDS) throw new Error('too long');
     const out: FileUIPart[] = [];
     for (let i = 0; i < count; i++) {
       v.currentTime = Math.min(d - 0.05, (d * (i + 0.5)) / count);
-      await new Promise<void>(res => { v.onseeked = () => res(); setTimeout(res, 3000); });
+      await new Promise<void>(res => { v.onseeked = () => res(); setTimeout(res, 8000); });
       out.push(canvasPart(v, v.videoWidth, v.videoHeight, `${file.name} frame ${i + 1}`));
     }
     return out;
@@ -89,7 +91,12 @@ export function ContentStudioChat({ initialMessages }: { initialMessages: UIMess
     const results = await Promise.allSettled(list.map(f => kind === 'video' ? videoParts(f) : photoPart(f).then(p => [p])));
     const ok = results.flatMap(r => r.status === 'fulfilled' ? [{ kind, parts: r.value }] : []);
     setMedia(m => [...m, ...ok].slice(0, 8));
-    if (ok.length < results.length) setNotice(kind === 'video' ? 'That video could not be opened. Try a shorter clip or a screen recording.' : 'A photo could not be opened — try a screenshot of it instead.');
+    if (ok.length < results.length) {
+      const tooLong = kind === 'video' && results.some(r => r.status === 'rejected' && r.reason instanceof Error && r.reason.message === 'too long');
+      setNotice(kind === 'video'
+        ? (tooLong ? 'That video is longer than 3 minutes — please trim it and try again.' : 'That video could not be opened. If it was shot in HDR, try sending it to yourself in Messages first and save that copy.')
+        : 'A photo could not be opened — try a screenshot of it instead.');
+    }
     setLoadingMedia(false);
     if (photoInput.current) photoInput.current.value = '';
     if (videoInput.current) videoInput.current.value = '';
