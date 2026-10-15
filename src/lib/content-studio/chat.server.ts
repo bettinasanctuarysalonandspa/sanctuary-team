@@ -6,7 +6,7 @@ import { createResponsesCall } from './responses.server.ts';
 import { studioPrompt } from './prompt';
 import { withLovableAiGatewayRunIdHeader } from './run-id.server.ts';
 
-const inputSchema = z.object({ messages: z.array(z.object({ id: z.string().min(1).max(200), role: z.enum(['user', 'assistant']), parts: z.array(z.object({ type: z.literal('text'), text: z.string().max(4000) })).min(1) })).min(1).max(100) });
+const inputSchema = z.object({ messages: z.array(z.object({ id: z.string().min(1).max(200), role: z.enum(['user', 'assistant']), parts: z.array(z.union([z.object({ type: z.literal('text'), text: z.string().max(4000) }), z.object({ type: z.literal('file'), mediaType: z.string().regex(/^image\/(png|jpe?g|webp)$/), url: z.string().startsWith('data:image/').max(3_000_000), filename: z.string().max(200).optional() })])).min(1).max(14) })).min(1).max(100) });
 
 export async function handleStudioChat(request: Request) {
   const url = process.env['SUPABASE_URL'];
@@ -24,7 +24,7 @@ export async function handleStudioChat(request: Request) {
   const { data: employee } = await db.rpc('is_sanctuary_employee');
   if (!employee) return Response.json({ message: 'Approved employee access is required.' }, { status: 403 });
   const parsed = inputSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return Response.json({ message: 'Please send a text request of up to 4,000 characters.' }, { status: 400 });
+  if (!parsed.success) return Response.json({ message: 'Please send a request with up to 8 photos or one short video.' }, { status: 400 });
   const last = parsed.data.messages.at(-1);
   if (!last || last.role !== 'user') return Response.json({ message: 'A new request is required.' }, { status: 400 });
   // The browser supplies the latest input, never authority over stored history.
@@ -41,10 +41,13 @@ export async function handleStudioChat(request: Request) {
   let failureMessage = 'Content Studio could not answer. Please try again.';
   const gatewayRequest = new Request(request.url, { signal: request.signal });
   const messages = (history ?? []).reverse().map(r => r.message as unknown as UIMessage).filter(m => m.id !== last.id);
-  messages.push(last);
-  const { error: saveError } = await db.from('content_studio_messages').upsert({ user_id: userId, message_id: last.id, message: last }, { onConflict: 'user_id,message_id' });
+  // Photos/video frames are viewed once and never stored; history keeps text only.
+  const hasMedia = last.parts.some(p => p.type === 'file');
+  const savedLast = { ...last, parts: [...last.parts.filter(p => p.type === 'text'), ...(hasMedia ? [{ type: 'text' as const, text: '📷 (media shared)' }] : [])] };
+  const { error: saveError } = await db.from('content_studio_messages').upsert({ user_id: userId, message_id: last.id, message: savedLast as never }, { onConflict: 'user_id,message_id' });
   if (saveError) return Response.json({ message: 'Your request could not be saved.' }, { status: 503 });
-  const modelMessages = convertToModelMessages(messages.map(m => ({ ...m, parts: m.parts.filter(p => p.type === 'text') })));
+  const modelMessages = await convertToModelMessages([...messages.map(m => ({ ...m, parts: m.parts.filter(p => p.type === 'text') })), last as UIMessage]);
+  messages.push(savedLast as UIMessage);
   const call = createResponsesCall(gatewayRequest, { baseURL: 'https://ai.gateway.lovable.dev/v1', apiKey, model: 'openai/gpt-6-astra' }, modelMessages, studioPrompt(knowledge));
   // Provider errors are handled before returning a stream; never auto-retry.
   const iterator = call.result.fullStream[Symbol.asyncIterator]();
