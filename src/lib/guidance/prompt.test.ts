@@ -6,4 +6,10 @@ describe('Sanctuary Handbook and Guidance approved knowledge', () => {
     expect(p).toContain('RULE TEXT'); expect(p).toContain('1) the official Sanctuary Employee Handbook');
     expect(p).toContain('Never invent policy'); expect(p).toContain('recommend asking leadership');
   });
+  it('follows the approved review and email response structure', () => {
+    const p = guidancePrompt([]);
+    expect(p).toContain('ACKNOWLEDGE'); expect(p).toContain('PERSONALIZE'); expect(p).toContain('ELEVATE'); expect(p).toContain('GUIDE');
+    expect(p).toContain('original stylist first'); expect(p).toContain('Never lead with refunds');
+    expect(p).toContain('safe, heard and cared for'); expect(p).toContain('Thank you for sharing this with us');
+  });
 });
