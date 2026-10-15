@@ -36,6 +36,6 @@ export const resumeSupport = createServerFn({ method: 'POST' }).middleware([requ
   const { data: owner } = await context.supabase.rpc('is_sanctuary_owner');
   if (!owner) throw new Error('Owner access is required.');
   const { error } = await context.supabase.from('support_gateway_state').upsert({ id: 1, paused: false, reason: null, updated_at: new Date().toISOString() });
-  if (error) throw new Error('Sanctuary Support could not be resumed.');
+  if (error) throw new Error('Sanctuary Emergency Support could not be resumed.');
   return { ok: true };
 });
