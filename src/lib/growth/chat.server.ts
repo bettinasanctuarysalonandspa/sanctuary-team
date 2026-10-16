@@ -40,7 +40,7 @@ export async function handleGrowthChat(request: Request) {
   if (state?.paused) return Response.json({ message: state.reason || 'Sanctuary Growth is paused. Please contact the owner.' }, { status: 403 });
 
   const [historyResult, knowledgeResult, { data: me }, { data: profile }, supportResult, guidanceResult, contentResult, dailyResult] = await Promise.all([
-    db.from('growth_messages').select('message').eq('user_id', userId).order('id', { ascending: false }).limit(24),
+    db.from('growth_messages').select('message').eq('user_id', userId).order('id', { ascending: false }).limit(12),
     db.from('growth_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date'),
     db.rpc('my_stylist_level'),
     db.from('profiles').select('display_name').eq('id', userId).maybeSingle(),
@@ -80,7 +80,7 @@ export async function handleGrowthChat(request: Request) {
   const ok = (error: { message: string } | null) => error ? { saved: false, error: 'Could not save.' } : { saved: true };
   const result = streamText({
     model: provider.responses('openai/gpt-6-astra'),
-    system: growthPrompt(knowledge ?? [], context, supportingKnowledge),
+    system: growthPrompt(knowledge ?? [], context),
     messages: modelMessages,
     maxRetries: 0,
     abortSignal: request.signal,
@@ -123,7 +123,7 @@ export async function handleGrowthChat(request: Request) {
         execute: async (log) => ok((await db.from('associate_daily_logs').insert({ user_id: userId, ...log })).error),
       }),
     },
-    providerOptions: { openai: { store: false, forceReasoning: true, reasoningEffort: 'low', reasoningSummary: 'auto', include: ['reasoning.encrypted_content'] } },
+    providerOptions: { openai: { store: false, promptCacheKey: 'sanctuary-growth', forceReasoning: true, reasoningEffort: 'low', reasoningSummary: 'auto', include: ['reasoning.encrypted_content'] } },
   });
   const iterator = result.fullStream[Symbol.asyncIterator]();
   let first = await iterator.next();

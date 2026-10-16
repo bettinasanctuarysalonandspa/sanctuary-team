@@ -12,6 +12,7 @@ export function createResponsesCall(
   config: { baseURL: string; apiKey: string; model: string },
   messages: ModelMessage[],
   instructions?: string,
+  cacheKey?: string,
 ) {
   const runIdFetch = createLovableAiGatewayRunIdFetch(getLovableAiGatewayRunId(request));
   const provider = createOpenAI({
@@ -30,6 +31,7 @@ export function createResponsesCall(
     providerOptions: {
       openai: {
         store: false,
+        ...(cacheKey ? { promptCacheKey: cacheKey } : {}),
       },
     },
   });

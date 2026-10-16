@@ -37,6 +37,8 @@ Zones (red/yellow/green) come ONLY from the owner targets provided below, alread
 type K = { title: string; content: string; source: string; source_date: string };
 export function growthPrompt(knowledge: K[], context: string, supportingKnowledge: K[] = []) {
   const format = (records: K[]) => records.map(r => `SOURCE: ${r.title}\nOrigin: ${r.source}\nApproved: ${r.source_date}\n${r.content}`).join('\n\n');
-  return GROWTH_RULES + '\n\nTHIS PERSON\'S SAVED PROGRESS\n' + context + '\n\nOWNER-APPROVED KNOWLEDGE\n' + (knowledge.length ? format(knowledge) : 'None yet.')
-    + (supportingKnowledge.length ? '\n\nSUPPORTING OWNER-APPROVED SANCTUARY REFERENCES (procedures and marketing only)\n' + format(supportingKnowledge) : '');
+  // Stable approved material first so repeated questions reuse the cached prefix; per-person details last.
+  return GROWTH_RULES + '\n\nOWNER-APPROVED KNOWLEDGE\n' + (knowledge.length ? format(knowledge) : 'None yet.')
+    + (supportingKnowledge.length ? '\n\nSUPPORTING OWNER-APPROVED SANCTUARY REFERENCES (procedures and marketing only)\n' + format(supportingKnowledge) : '')
+    + '\n\nTHIS PERSON\'S SAVED PROGRESS\n' + context;
 }
