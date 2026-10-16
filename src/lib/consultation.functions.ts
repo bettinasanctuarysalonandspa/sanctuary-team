@@ -17,7 +17,7 @@ export const sendConsultationMessage = createServerFn({ method: 'POST' })
     const db = context.supabase;
     const { error } = await db.from('consultation_messages').insert({ user_id: context.userId, role: 'user', content: data.text });
     if (error) throw new Error('Employee access is required.');
-    const { data: rows, error: histError } = await db.from('consultation_messages').select('role,content').eq('user_id', context.userId).order('id', { ascending: false }).limit(40);
+    const { data: rows, error: histError } = await db.from('consultation_messages').select('role,content').eq('user_id', context.userId).order('id', { ascending: false }).limit(12);
     if (histError) throw new Error('Your conversation could not be loaded.');
     const { runConsultation } = await import('./consultation.server');
     const reply = await runConsultation(db, rows.reverse().map(r => ({ role: r.role as 'user' | 'assistant', content: r.content })));

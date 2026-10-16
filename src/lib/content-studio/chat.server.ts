@@ -28,7 +28,7 @@ export async function handleStudioChat(request: Request) {
   const last = parsed.data.messages.at(-1);
   if (!last || last.role !== 'user') return Response.json({ message: 'A new request is required.' }, { status: 400 });
   // The browser supplies the latest input, never authority over stored history.
-  const { data: history, error: historyError } = await db.from('content_studio_messages').select('message').eq('user_id', userId).order('id', { ascending: false }).limit(24);
+  const { data: history, error: historyError } = await db.from('content_studio_messages').select('message').eq('user_id', userId).order('id', { ascending: false }).limit(12);
   const { data: knowledge, error: knowledgeError } = await db.from('content_studio_knowledge').select('title,content,source,source_date').eq('approved', true).order('source_date');
   if (historyError || knowledgeError) return Response.json({ message: 'Your approved information could not be loaded.' }, { status: 503 });
   if (!knowledge?.length) return Response.json({ message: 'Content Studio is awaiting owner-approved information.' }, { status: 409 });
@@ -48,7 +48,7 @@ export async function handleStudioChat(request: Request) {
   if (saveError) return Response.json({ message: 'Your request could not be saved.' }, { status: 503 });
   const modelMessages = await convertToModelMessages([...messages.map(m => ({ ...m, parts: m.parts.filter(p => p.type === 'text') })), last as UIMessage]);
   messages.push(savedLast as UIMessage);
-  const call = createResponsesCall(gatewayRequest, { baseURL: 'https://ai.gateway.lovable.dev/v1', apiKey, model: 'openai/gpt-6-astra' }, modelMessages, studioPrompt(knowledge));
+  const call = createResponsesCall(gatewayRequest, { baseURL: 'https://ai.gateway.lovable.dev/v1', apiKey, model: 'openai/gpt-6-astra' }, modelMessages, studioPrompt(knowledge), 'sanctuary-content-studio');
   // Provider errors are handled before returning a stream; never auto-retry.
   const iterator = call.result.fullStream[Symbol.asyncIterator]();
   let first = await iterator.next();

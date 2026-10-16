@@ -131,7 +131,7 @@ export async function runConsultation(db: Db, history: ModelMessage[]) {
         execute: async input => calculateQuote(catalog, input),
       }),
     },
-    providerOptions: { openai: { store: false, forceReasoning: true, reasoningEffort: 'low', reasoningSummary: 'auto', include: ['reasoning.encrypted_content'] } },
+    providerOptions: { openai: { store: false, promptCacheKey: 'sanctuary-calculator', forceReasoning: true, reasoningEffort: 'low', reasoningSummary: 'auto', include: ['reasoning.encrypted_content'] } },
   });
   let failure: unknown;
   for await (const part of result.fullStream) if (part.type === 'error') failure = part.error;
