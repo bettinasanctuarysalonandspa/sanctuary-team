@@ -99,7 +99,7 @@ export function GrowthChat({ initialMessages, starters }: { initialMessages: UIM
       </ConversationContent><ConversationScrollButton/>
     </Conversation>
     {(errorText || notice) && <p role="alert" className="form-message">{errorText || notice}</p>}
-    {photos.length > 0 && <div className="flex flex-wrap gap-2">{photos.map((p, i) => <div key={i} className="relative"><img src={p.url} alt="Photo to send" className="h-16 w-16 rounded-md object-cover"/><button type="button" aria-label="Remove photo" className="absolute -right-2 -top-2 rounded-full bg-card p-0.5 shadow" onClick={() => setPhotos(ps => ps.filter((_, j) => j !== i))}><X size={13}/></button></div>)}</div>}
+    {photos.length > 0 && <div className="flex flex-wrap gap-2">{photos.map((p, i) => <div key={i} className="relative"><img src={p.url} alt="Photo to send" className="h-20 w-20 rounded-md bg-muted object-contain"/><button type="button" aria-label="Remove photo" className="absolute -right-2 -top-2 rounded-full bg-card p-0.5 shadow" onClick={() => setPhotos(ps => ps.filter((_, j) => j !== i))}><X size={13}/></button></div>)}</div>}
     <input ref={fileInput} type="file" accept="image/*" multiple className="hidden" onChange={e => void addPhotos(e.target.files)}/>
     <PromptInput onSubmit={() => send(text.trim())}>
       <PromptInputTextarea value={text} onChange={e => setText(e.target.value)} maxLength={4000} placeholder="Share your week, ask for coaching, or send a photo of your numbers…" aria-label="Your message" className="min-h-24 text-base"/>
