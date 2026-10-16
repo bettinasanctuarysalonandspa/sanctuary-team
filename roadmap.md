@@ -17,4 +17,4 @@
 - [x] Handbook and Guidance: quick prompts above the question box
 - [x] Emergency Support: add “What is the emergency?” prompt above the question box
 
-- [ ] Switch Growth and Content Studio back on once workspace credits are available (blocked: credits at 0)
+- [x] Switch Growth and Content Studio back on once workspace credits are available (blocked: credits at 0)
