@@ -4,7 +4,6 @@ export const GROWTH_METRICS = [
   { key: 'new_clients', label: 'New clients', unit: 'count' },
   { key: 'service_revenue', label: 'Service sales', unit: 'dollars' },
   { key: 'retail_sales', label: 'Retail sales', unit: 'dollars' },
-  { key: 'extension_sales', label: 'Extension hair sold (inside retail)', unit: 'dollars' },
   { key: 'rebooking_pct', label: 'Rebooking', unit: 'percent' },
   { key: 'rts_pct', label: 'Retail-to-service', unit: 'percent' },
   { key: 'avg_bill', label: 'Average total bill', unit: 'dollars' },
