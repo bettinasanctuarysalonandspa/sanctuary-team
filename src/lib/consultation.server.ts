@@ -33,7 +33,7 @@ WORKFLOW
 - Shampoo and conditioner sizes: always assume the standard retail size. Only use a liter or travel size when the stylist explicitly says "liter" or "travel". Never ask which size.
 - Quote only the retail products the stylist names. Do not ask for product recommendations and do not add suggestions unless the stylist asks for them (then at most 3, labeled "Suggested"). Label named products "Stylist prescribed".
 - When the stylist adds or removes items later, re-run calculate_quote right away with the full updated list.
-- Butterfly Weft: hair and installation labor are separate. Quote hair by 1/3 sections. 1 section = half row, 2 = full row. Planning guide only: medium density ~5 sections, thick ~6-7, fine/small head ~4-5; the stylist decides. If a length is not listed below, say "I cannot confirm this" and ask for the current hair price.
+- Butterfly Weft: hair and installation labor are separate. Hair is sold in pre-cut 1/3 sections. 1 section = half row, 2 = full row. Planning guide only: medium density ~5 sections, thick ~6-7, fine/small head ~4-5; the stylist decides. Match the EXACT approved hair name/color AND length, then pass its hair_id, exact hair_name and length_in to calculate_quote. Same-length colors can have different prices; NEVER select by length alone or substitute a different color. Ask which color/name if missing. Generic "Butterfly Weft" entries without a color cannot confirm color-specific pricing. If the exact variant is missing, say the price needs owner review; a chat-supplied price is not automatically saved to the catalog.
 - SalonScale: NEVER ask for a SalonScale estimate and never include one in the total. The stylist writes that out themselves. Only if the stylist volunteers a dollar amount, pass it through and show it as its own separate line, noting it may change based on color used. SalonScale does not apply to extension installation.
 - When you have enough to quote, ALWAYS call calculate_quote. Never do arithmetic yourself and never state a price that did not come from the tool. Show services (including installation labor), home care products, and extension hair as THREE separate category line items using ONLY the charge-inclusive category totals returned by the tool, plus the estimated total. Label the retail category "Home care products" — keep it clearly separate from services. List the selected item names and quantities underneath their category, without separate base prices. Never combine extension hair with home care products. Do NOT show separate tax or amenity/service-charge lines. Briefly label these totals "Includes applicable charges and tax." Services include the 3% amenity charge only; home care products and extension hair include the 3% amenity charge and 8.25% sales tax. Never tax services or the amenity charge. These are checkout estimates, not changes to listed catalog prices.
 - If an item is unavailable or needs review, say the price is not confirmed and do not invent one.
@@ -52,15 +52,15 @@ ${c.services.map(s => `${s.id}: ${s.name}${s.kind === 'level' ? ' [price by styl
 PRODUCTS (id: name — notes)
 ${c.products.map(p => `${p.id}: ${productLabel(p)}${p.status !== 'approved' || p.retail_price == null ? ' [price not confirmed]' : ''}${p.notes ? ` — ${p.notes}` : ''}`).join('\n')}
 
-EXTENSION HAIR LENGTHS AVAILABLE
-${c.hair.map(h => `${h.name} ${h.length_in}"`).join('\n')}`;
+EXTENSION HAIR VARIANTS (id: exact name — length; priced per pre-cut 1/3 section)
+${c.hair.map(h => `${h.id}: ${h.name} — ${h.length_in}"${h.name.trim().toLowerCase() === 'butterfly weft' ? ' [color missing — needs owner review]' : ''}`).join('\n')}`;
 }
 
 const quoteInput = z.object({
   stylist_name: z.string().nullable().describe('Stylist name exactly as listed, or null if unknown'),
   services: z.array(z.object({ service_id: z.number().int(), quantity: z.number().int().min(1) })),
   products: z.array(z.object({ product_id: z.number().int(), quantity: z.number().int().min(1), source: z.enum(['stylist', 'assistant']) })),
-  extension_hair: z.array(z.object({ length_in: z.number().int(), sections: z.number().int().min(1) })),
+  extension_hair: z.array(z.object({ hair_id: z.number().int().describe('Exact approved hair variant ID; never choose by length alone'), hair_name: z.string().describe('Exact catalog name including color'), length_in: z.number().int(), sections: z.number().int().min(1) })),
   salonscale_estimate: z.number().nullable().describe('SalonScale estimate in dollars ONLY if the stylist volunteered one; otherwise null. Never ask for it.'),
 });
 
@@ -91,8 +91,8 @@ export function calculateQuote(c: Catalog, q: z.infer<typeof quoteInput>) {
     lines.push({ group: item.source === 'stylist' ? 'Product (stylist prescribed)' : 'Product (assistant suggested)', label: productLabel(p), quantity: item.quantity, unit: money(unit), amount: money(unit * item.quantity) });
   }
   for (const item of q.extension_hair) {
-    const h = c.hair.find(x => x.length_in === item.length_in);
-    if (!h) { problems.push(`${item.length_in}" extension hair: I cannot confirm this price. Ask for the current hair price.`); continue; }
+    const h = c.hair.find(x => x.id === item.hair_id && x.name.toLowerCase().trim() === item.hair_name.toLowerCase().trim() && x.length_in === item.length_in);
+    if (!h || h.name.trim().toLowerCase() === 'butterfly weft') { problems.push(`${item.hair_name} ${item.length_in}" extension hair: exact name/color and length price not confirmed — needs owner review.`); continue; }
     const unit = toCents(h.price_per_section);
     H += unit * item.sections;
     lines.push({ group: 'Extension hair', label: `${h.name} ${h.length_in}" (per 1/3 section)`, quantity: item.sections, unit: money(unit), amount: money(unit * item.sections) });

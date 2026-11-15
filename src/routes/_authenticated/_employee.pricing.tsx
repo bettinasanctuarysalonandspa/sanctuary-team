@@ -106,15 +106,18 @@ function Products() {
 function Extensions() {
   const q = useQuery({ queryKey: ['private', 'pricing', 'hair'], queryFn: () => must(supabase.from('calc_extension_hair').select('id,name,length_in,price_per_section').order('length_in')) });
   const { msg, run } = useSave();
-  const [len, setLen] = useState(''); const [price, setPrice] = useState('');
+  const [name, setName] = useState(''); const [len, setLen] = useState(''); const [price, setPrice] = useState('');
   return <section>
     <p className="mb-3 text-sm text-muted-foreground">Client price per 1/3 Butterfly Weft section. Installation prices are under Services.</p>
-    <ul className="divide-y divide-input">{q.data?.map(h => <li key={h.id} className="flex items-center gap-3 py-3"><span className="flex-1 font-medium">{h.name} {h.length_in}"</span>
-      <PriceField value={h.price_per_section} label={`${h.length_in} inch price`} onSave={v => run(() => must(supabase.from('calc_extension_hair').update({ price_per_section: v ?? 0 }).eq('id', h.id)))}/></li>)}</ul>
-    <form className="mt-6 flex flex-wrap gap-2" onSubmit={e => { e.preventDefault(); const l = parseInt(len, 10), p = Number(price); if (!l || !(p >= 0)) return; void run(() => must(supabase.from('calc_extension_hair').insert({ name: 'Butterfly Weft', length_in: l, price_per_section: p })), 'Length added.').then(() => { setLen(''); setPrice(''); }); }}>
+    <ul className="divide-y divide-input">{q.data?.map(h => <li key={h.id} className="flex flex-wrap items-center gap-3 py-3">
+      <input className={`${input} min-w-0 flex-1`} aria-label={`${h.length_in} inch hair name and color`} defaultValue={h.name} onBlur={e => { const name = e.target.value.trim(); if (name && name !== h.name) void run(() => must(supabase.from('calc_extension_hair').update({ name, updated_at: new Date().toISOString() }).eq('id', h.id))); }}/>
+      <span>{h.length_in}"</span>
+      <PriceField value={h.price_per_section} label={`${h.name} ${h.length_in} inch price`} onSave={v => run(() => must(supabase.from('calc_extension_hair').update({ price_per_section: v ?? 0 }).eq('id', h.id)))}/></li>)}</ul>
+    <form className="mt-6 flex flex-wrap gap-2" onSubmit={e => { e.preventDefault(); const l = parseInt(len, 10), p = Number(price); if (!name.trim() || !l || !price.trim() || !(p >= 0)) return; void run(() => must(supabase.from('calc_extension_hair').insert({ name: name.trim(), length_in: l, price_per_section: p })), 'Hair variant added.'); }}>
+      <input className={`${input} min-w-0 flex-1`} required placeholder="Hair name and color" value={name} onChange={e => setName(e.target.value)} aria-label="Hair name and color"/>
       <input className={input} inputMode="numeric" placeholder='Length (inches)' value={len} onChange={e => setLen(e.target.value)} aria-label="Length in inches"/>
       <input className={input} inputMode="decimal" placeholder="Price per section" value={price} onChange={e => setPrice(e.target.value)} aria-label="Price per section"/>
-      <Button type="submit"><Plus size={16}/>Add length</Button>
+      <Button type="submit"><Plus size={16}/>Add hair variant</Button>
     </form>
     {msg && <p className="form-message mt-4" role="status">{msg}</p>}
   </section>;
