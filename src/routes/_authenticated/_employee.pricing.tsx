@@ -110,7 +110,7 @@ function Extensions() {
   return <section>
     <p className="mb-3 text-sm text-muted-foreground">Client price per 1/3 Butterfly Weft section. Installation prices are under Services.</p>
     <ul className="divide-y divide-input">{q.data?.map(h => <li key={h.id} className="flex flex-wrap items-center gap-3 py-3">
-      <input className={`${input} min-w-0 flex-1`} aria-label={`${h.length_in} inch hair name and color`} defaultValue={h.name} onBlur={e => { const name = e.target.value.trim(); if (name && name !== h.name) void run(() => must(supabase.from('calc_extension_hair').update({ name, updated_at: new Date().toISOString() }).eq('id', h.id))); }}/>
+      <input className={`${input} min-w-0 flex-1`} aria-label={`${h.length_in} inch hair name and color`} defaultValue={h.name} onBlur={e => { const name = e.target.value.trim(); if (name && name !== h.name) void run(() => must(supabase.from('calc_extension_hair').update({ name }).eq('id', h.id))); }}/>
       <span>{h.length_in}"</span>
       <PriceField value={h.price_per_section} label={`${h.name} ${h.length_in} inch price`} onSave={v => run(() => must(supabase.from('calc_extension_hair').update({ price_per_section: v ?? 0 }).eq('id', h.id)))}/></li>)}</ul>
     <form className="mt-6 flex flex-wrap gap-2" onSubmit={e => { e.preventDefault(); const l = parseInt(len, 10), p = Number(price); if (!name.trim() || !l || !price.trim() || !(p >= 0)) return; void run(() => must(supabase.from('calc_extension_hair').insert({ name: name.trim(), length_in: l, price_per_section: p })), 'Hair variant added.'); }}>

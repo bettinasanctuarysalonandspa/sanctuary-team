@@ -5,16 +5,20 @@ describe('consultation quote presentation', () => {
   it('prices 24-inch Butterfly Weft at $220 per pre-cut third', () => {
     const catalog = {
       stylists: [], services: [], levelPrices: [], aliases: [], products: [],
-      hair: [{ id: 3, name: 'Butterfly Weft', length_in: 24, price_per_section: 220 }],
+      hair: [{ id: 3, name: 'Butterfly Weft — Chocolate', length_in: 24, price_per_section: 220 }],
     };
     const input = {
       stylist_name: null, services: [], products: [],
-      extension_hair: [{ length_in: 24, sections: 1 }], salonscale_estimate: null,
+      extension_hair: [{ hair_id: 3, hair_name: 'Butterfly Weft — Chocolate', length_in: 24, sections: 1 }], salonscale_estimate: null,
     };
     const quote = calculateQuote(catalog, input);
     expect(quote.problems).toEqual([]);
     expect(quote.extension_hair_including_charges_and_tax).toBe('$244.75');
-    expect(calculateQuote(catalog, { ...input, extension_hair: [{ length_in: 24, sections: 3 }] }).estimated_total).toBe('$734.25');
+    expect(calculateQuote(catalog, { ...input, extension_hair: [{ ...input.extension_hair[0], sections: 3 }] }).estimated_total).toBe('$734.25');
+    const mismatch = calculateQuote(catalog, { ...input, extension_hair: [{ ...input.extension_hair[0], hair_name: 'Different color' }] });
+    expect(mismatch.extension_hair_including_charges_and_tax).toBe('$0.00');
+    expect(mismatch.problems).toHaveLength(1);
+    expect(calculateQuote(catalog, { ...input, extension_hair: [{ ...input.extension_hair[0], length_in: 16 }] }).problems).toHaveLength(1);
   });
   it('returns separate extension hair and retail product subtotals', () => {
     const quote = calculateQuote({
@@ -24,7 +28,7 @@ describe('consultation quote presentation', () => {
     }, {
       stylist_name: null, services: [],
       products: [{ product_id: 1, quantity: 1, source: 'stylist' }],
-      extension_hair: [{ length_in: 14, sections: 2 }], salonscale_estimate: null,
+      extension_hair: [{ hair_id: 1, hair_name: 'Test hair', length_in: 14, sections: 2 }], salonscale_estimate: null,
     });
     expect(quote.retail_products_including_charges_and_tax).toBe('$50.06');
     expect(quote.extension_hair_including_charges_and_tax).toBe('$233.63');
