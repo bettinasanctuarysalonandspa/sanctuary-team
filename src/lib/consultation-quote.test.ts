@@ -2,6 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { calculateQuote } from './consultation.server';
 
 describe('consultation quote presentation', () => {
+  it('prices 24-inch Butterfly Weft at $220 per pre-cut third', () => {
+    const catalog = {
+      stylists: [], services: [], levelPrices: [], aliases: [], products: [],
+      hair: [{ id: 3, name: 'Butterfly Weft', length_in: 24, price_per_section: 220 }],
+    };
+    const input = {
+      stylist_name: null, services: [], products: [],
+      extension_hair: [{ length_in: 24, sections: 1 }], salonscale_estimate: null,
+    };
+    const quote = calculateQuote(catalog, input);
+    expect(quote.problems).toEqual([]);
+    expect(quote.extension_hair_including_charges_and_tax).toBe('$244.75');
+    expect(calculateQuote(catalog, { ...input, extension_hair: [{ length_in: 24, sections: 3 }] }).estimated_total).toBe('$734.25');
+  });
   it('returns separate extension hair and retail product subtotals', () => {
     const quote = calculateQuote({
       stylists: [], services: [], levelPrices: [], aliases: [],

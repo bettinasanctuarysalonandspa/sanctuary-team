@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Save and verify 24-inch Butterfly Weft at $220 per pre-cut third in the Consultation Calculator.
+
 - [x] Fix Growth photo uploads failing on phones (HEIC fallback decode, per-photo errors, verified end-to-end save)
 - [x] Growth coach accepts monthly / multi-month catch-up numbers (save_month), still encourages week-by-week
 - [x] Starting numbers pre-loaded as the quarter baseline for all eight active stylists (Jasmine starts with Bootcamp)
