@@ -1,6 +1,7 @@
 # Roadmap
 
 - [ ] Save and verify 24-inch Chocolate Butterfly Weft at $220 per pre-cut third; match exact name/color and length, including owner editing.
+- [ ] Trace owner-supplied extension sources; never guess missing colors or prices.
 
 - [x] Fix Growth photo uploads failing on phones (HEIC fallback decode, per-photo errors, verified end-to-end save)
 - [x] Growth coach accepts monthly / multi-month catch-up numbers (save_month), still encourages week-by-week
