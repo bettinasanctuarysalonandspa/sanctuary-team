@@ -20,6 +20,7 @@ export async function loadCatalog(db: Db) {
   return { stylists: stylists.data ?? [], services: services.data ?? [], levelPrices: levelPrices.data ?? [], products: products.data ?? [], hair: hair.data ?? [], aliases: aliases.data ?? [] };
 }
 type Catalog = Awaited<ReturnType<typeof loadCatalog>>;
+const normalizeHairName = (name: string) => name.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 
 const productLabel = (p: Catalog['products'][number]) => [p.brand, p.line, p.name, p.size && `(${p.size})`].filter(Boolean).join(' ');
 
@@ -91,7 +92,7 @@ export function calculateQuote(c: Catalog, q: z.infer<typeof quoteInput>) {
     lines.push({ group: item.source === 'stylist' ? 'Product (stylist prescribed)' : 'Product (assistant suggested)', label: productLabel(p), quantity: item.quantity, unit: money(unit), amount: money(unit * item.quantity) });
   }
   for (const item of q.extension_hair) {
-    const h = c.hair.find(x => x.id === item.hair_id && x.name.toLowerCase().trim() === item.hair_name.toLowerCase().trim() && x.length_in === item.length_in);
+    const h = c.hair.find(x => x.id === item.hair_id && normalizeHairName(x.name) === normalizeHairName(item.hair_name) && x.length_in === item.length_in);
     if (!h || h.name.trim().toLowerCase() === 'butterfly weft') { problems.push(`${item.hair_name} ${item.length_in}" extension hair: exact name/color and length price not confirmed — needs owner review.`); continue; }
     const unit = toCents(h.price_per_section);
     H += unit * item.sections;

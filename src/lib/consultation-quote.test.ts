@@ -7,18 +7,23 @@ describe('consultation quote presentation', () => {
       stylists: [], services: [], levelPrices: [], aliases: [], products: [],
       hair: [{ id: 3, name: 'Butterfly Weft — Chocolate', length_in: 24, price_per_section: 220 }],
     };
+    const hairItem = { hair_id: 3, hair_name: 'Butterfly Weft — Chocolate', length_in: 24, sections: 1 };
     const input = {
       stylist_name: null, services: [], products: [],
-      extension_hair: [{ hair_id: 3, hair_name: 'Butterfly Weft — Chocolate', length_in: 24, sections: 1 }], salonscale_estimate: null,
+      extension_hair: [hairItem], salonscale_estimate: null,
     };
     const quote = calculateQuote(catalog, input);
     expect(quote.problems).toEqual([]);
     expect(quote.extension_hair_including_charges_and_tax).toBe('$244.75');
-    expect(calculateQuote(catalog, { ...input, extension_hair: [{ ...input.extension_hair[0], sections: 3 }] }).estimated_total).toBe('$734.25');
-    const mismatch = calculateQuote(catalog, { ...input, extension_hair: [{ ...input.extension_hair[0], hair_name: 'Different color' }] });
+    expect(calculateQuote(catalog, { ...input, extension_hair: [{ ...hairItem, sections: 3 }] }).estimated_total).toBe('$734.25');
+    const mismatch = calculateQuote(catalog, { ...input, extension_hair: [{ ...hairItem, hair_name: 'Different color' }] });
     expect(mismatch.extension_hair_including_charges_and_tax).toBe('$0.00');
     expect(mismatch.problems).toHaveLength(1);
-    expect(calculateQuote(catalog, { ...input, extension_hair: [{ ...input.extension_hair[0], length_in: 16 }] }).problems).toHaveLength(1);
+    expect(calculateQuote(catalog, { ...input, extension_hair: [{ ...hairItem, length_in: 16 }] }).problems).toHaveLength(1);
+    const installed = calculateQuote({ ...catalog, services: [{ id: 43, name: 'Butterfly Weft Half Row', kind: 'flat', flat_price: 88, unit: null }] }, { ...input, services: [{ service_id: 43, quantity: 1 }] });
+    expect(installed.services_including_charges).toBe('$90.64');
+    expect(installed.extension_hair_including_charges_and_tax).toBe('$244.75');
+    expect(installed.estimated_total).toBe('$335.39');
   });
   it('returns separate extension hair and retail product subtotals', () => {
     const quote = calculateQuote({
