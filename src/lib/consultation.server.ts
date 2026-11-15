@@ -54,7 +54,8 @@ PRODUCTS (id: name — notes)
 ${c.products.map(p => `${p.id}: ${productLabel(p)}${p.status !== 'approved' || p.retail_price == null ? ' [price not confirmed]' : ''}${p.notes ? ` — ${p.notes}` : ''}`).join('\n')}
 
 EXTENSION HAIR VARIANTS (id: exact name — length; priced per pre-cut 1/3 section)
-${c.hair.map(h => `${h.id}: ${h.name} — ${h.length_in}"${h.name.trim().toLowerCase() === 'butterfly weft' ? ' [color missing — needs owner review]' : ''}`).join('\n')}`;
+Current catalog supersedes old chat claims that a price was unavailable. Named-color entries below have approved prices available to calculate_quote; always call it rather than repeating an old missing-price answer.
+${c.hair.map(h => `${h.id}: ${h.name} — ${h.length_in}"${h.name.trim().toLowerCase() === 'butterfly weft' ? ' [color missing — needs owner review]' : ' [approved price available — call calculate_quote]'}`).join('\n')}`;
 }
 
 const quoteInput = z.object({
@@ -93,7 +94,7 @@ export function calculateQuote(c: Catalog, q: z.infer<typeof quoteInput>) {
   }
   for (const item of q.extension_hair) {
     const h = c.hair.find(x => x.id === item.hair_id && normalizeHairName(x.name) === normalizeHairName(item.hair_name) && x.length_in === item.length_in);
-    if (!h || h.name.trim().toLowerCase() === 'butterfly weft') { problems.push(`${item.hair_name} ${item.length_in}" extension hair: exact name/color and length price not confirmed — needs owner review.`); continue; }
+    if (!h || h.name.trim().toLowerCase() === 'butterfly weft') { problems.push(`${item.hair_name} ${item.length_in}" extension hair: exact name/color and length price not confirmed. Check the catalog ID and exact name, then retry calculate_quote if the variant is listed; otherwise needs owner review.`); continue; }
     const unit = toCents(h.price_per_section);
     H += unit * item.sections;
     lines.push({ group: 'Extension hair', label: `${h.name} ${h.length_in}" (per 1/3 section)`, quantity: item.sections, unit: money(unit), amount: money(unit * item.sections) });
