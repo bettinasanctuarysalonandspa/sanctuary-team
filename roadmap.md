@@ -1,5 +1,9 @@
 # Roadmap
 
+- [x] Save and verify 24-inch Chocolate Butterfly Weft at $220 per pre-cut third; match exact name/color and length, including owner editing.
+- [x] Trace owner-supplied extension sources; never guess missing colors or prices. Original upload names no colors for 14/16-inch entries; leave those unassigned pending owner clarification.
+- [x] Verify extension hair remains a retail purchase separate from installation services.
+
 - [x] Fix Growth photo uploads failing on phones (HEIC fallback decode, per-photo errors, verified end-to-end save)
 - [x] Growth coach accepts monthly / multi-month catch-up numbers (save_month), still encourages week-by-week
 - [x] Starting numbers pre-loaded as the quarter baseline for all eight active stylists (Jasmine starts with Bootcamp)
